@@ -5,7 +5,8 @@ FROM ${NODE_IMAGE} AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci --ignore-scripts --no-audit --no-fund
+    npm ci --ignore-scripts --no-audit --no-fund && \
+    npm rebuild esbuild
 
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
