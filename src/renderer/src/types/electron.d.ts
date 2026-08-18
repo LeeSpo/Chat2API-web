@@ -170,6 +170,23 @@ interface AccountsAPI {
 }
 
 interface OAuthAPI {
+  bookmarklet: {
+    issue: (providerId: string, providerType: string) => Promise<{
+      ticket: string
+      expiresAt: number
+      ttlMs: number
+      ingestUrl: string
+      providerType: string
+      providerId: string
+      bookmarklet: { href: string; source: string; expectedOrigin?: string }
+    }>
+    poll: (ticket: string) => Promise<{
+      state: 'pending' | 'completed'
+      expiresAt?: number
+      result?: OAuthResult
+    }>
+    cancel: (ticket: string) => Promise<void>
+  }
   startLogin: (providerId: string, providerType: ProviderVendor) => Promise<OAuthResult>
   cancelLogin: () => Promise<void>
   loginWithToken: (providerId: string, providerType: ProviderVendor, token: string) => Promise<OAuthResult>

@@ -30,6 +30,19 @@ import {
   Check
 } from 'lucide-react'
 import type { Provider, CredentialField, Account, BuiltinProviderConfig, ProviderVendor } from '@/types/electron'
+import { BookmarkletPanel } from '@/components/oauth/BookmarkletPanel'
+
+const PROVIDER_LOGIN_URLS: Record<string, string> = {
+  deepseek: 'https://chat.deepseek.com',
+  glm: 'https://chatglm.cn',
+  kimi: 'https://www.kimi.com',
+  minimax: 'https://chat.minimaxi.com',
+  qwen: 'https://www.qianwen.com',
+  'qwen-ai': 'https://chat.qwen.ai',
+  zai: 'https://chat.z.ai',
+  mimo: 'https://aistudio.xiaomimimo.com',
+  perplexity: 'https://www.perplexity.ai',
+}
 
 /**
  * Map OAuth credentials to provider credential field names
@@ -260,7 +273,7 @@ export function AddAccountDialog({
     : []
   const supportsOAuth = provider && ['deepseek', 'glm', 'kimi', 'mimo', 'minimax', 'qwen', 'qwen-ai', 'zai', 'perplexity'].includes(provider.id)
   const isDockerWebAdmin = !!window.__CHAT2API_WEB_ADMIN__
-  const supportsBrowserImport = isDockerWebAdmin && provider && ['qwen', 'qwen-ai', 'kimi'].includes(provider.id)
+  const supportsBrowserImport = isDockerWebAdmin && !!provider
 
   useEffect(() => {
     if (open) {
@@ -537,12 +550,7 @@ export function AddAccountDialog({
 
   const openProviderLoginPage = async () => {
     if (!provider) return
-    const loginUrls: Record<string, string> = {
-      'qwen-ai': 'https://chat.qwen.ai',
-      qwen: 'https://www.qianwen.com',
-      kimi: 'https://www.kimi.com',
-    }
-    await window.electronAPI?.app.openExternal(loginUrls[provider.id] || provider.apiEndpoint)
+    await window.electronAPI?.app.openExternal(PROVIDER_LOGIN_URLS[provider.id] || provider.apiEndpoint)
   }
 
   useEffect(() => {
@@ -626,91 +634,20 @@ export function AddAccountDialog({
                 </TabsContent>
 
                 <TabsContent value="oauth" className="mt-4">
-                  {supportsBrowserImport ? (
-                    <div className="space-y-4">
-                      <div className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
-                        <p className="font-medium text-foreground">{t('providers.browserImportTitle')}</p>
-                        <p className="mt-1">{t('providers.browserImportDesc')}</p>
-                      </div>
-                      {oauthRefreshCredentialFields.length > 0 && (
-                        <div className="rounded-lg border p-3">
-                          <CredentialFieldsForm
-                            fields={oauthRefreshCredentialFields}
-                            credentials={credentials}
-                            onChange={handleCredentialChange}
-                            t={t}
-                            providerId={provider?.id}
-                          />
-                        </div>
-                      )}
-                      <div className="flex flex-wrap gap-2">
-                        <Button type="button" variant="outline" onClick={openProviderLoginPage}>
-                          <ExternalLink className="mr-2 h-4 w-4" />
-                          {t('providers.openProviderWebsite')}
-                        </Button>
-                        <Button type="button" onClick={startBrowserImport} disabled={isBrowserImportWaiting && !!browserImportScript}>
-                          {isBrowserImportWaiting && !browserImportScript ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : (
-                            <Copy className="mr-2 h-4 w-4" />
-                          )}
-                          {browserImportScript ? t('providers.regenerateImportScript') : t('providers.generateImportScript')}
-                        </Button>
-                      </div>
-                      {browserImportScript && (
-                        <div className="space-y-2">
-                          <Label>{t('providers.importScript')}</Label>
-                          <textarea
-                            ref={browserImportScriptRef}
-                            readOnly
-                            value={browserImportScript}
-                            className="h-32 w-full resize-none rounded-md border bg-background p-2 font-mono text-xs"
-                          />
-                          <Button type="button" variant="outline" onClick={copyBrowserImportScript}>
-                            {browserImportCopied ? (
-                              <Check className="mr-2 h-4 w-4" />
-                            ) : (
-                              <Copy className="mr-2 h-4 w-4" />
-                            )}
-                            {browserImportCopied ? t('common.copied') : t('providers.copyImportScript')}
-                          </Button>
-                          <div className="space-y-2 rounded-md border p-3">
-                            <Label>{t('providers.browserImportPayload')}</Label>
-                            <textarea
-                              value={browserImportPayload}
-                              onChange={(event) => setBrowserImportPayload(event.target.value)}
-                              placeholder={t('providers.browserImportPayloadPlaceholder')}
-                              className="h-24 w-full resize-none rounded-md border bg-background p-2 font-mono text-xs"
-                            />
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={applyBrowserImportPayload}
-                                disabled={!browserImportPayload.trim()}
-                              >
-                                <CheckCircle2 className="mr-2 h-4 w-4" />
-                                {t('providers.applyImportPayload')}
-                              </Button>
-                              <p className="text-xs text-muted-foreground">
-                                {t('providers.browserImportPayloadHelp')}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {isBrowserImportWaiting && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>{t('providers.waitingBrowserImport')}</span>
-                        </div>
-                      )}
-                      {oauthStatus && (
-                        <p className={`text-sm ${validationResult.valid ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {oauthStatus}
-                        </p>
-                      )}
-                    </div>
+                  {supportsBrowserImport && provider ? (
+                    <BookmarkletPanel
+                      providerId={provider.id}
+                      providerType={provider.id}
+                      providerName={provider.name}
+                      loginUrl={PROVIDER_LOGIN_URLS[provider.id] || provider.apiEndpoint}
+                      onSuccess={(incoming, accountInfo) => {
+                        const mappedCredentials = mapOAuthCredentials(provider.id, incoming)
+                        setCredentials((prev) => ({ ...prev, ...mappedCredentials }))
+                        setOAuthStatus(t('providers.loginSuccess'))
+                        if (accountInfo?.name) setName(accountInfo.name)
+                        setValidationResult({ valid: true, userInfo: accountInfo })
+                      }}
+                    />
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6 space-y-4">
                       {oauthRefreshCredentialFields.length > 0 && (

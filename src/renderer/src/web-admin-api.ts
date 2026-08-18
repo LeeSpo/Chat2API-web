@@ -823,6 +823,31 @@ const accounts = {
 }
 
 const oauth = {
+  bookmarklet: {
+    issue: (providerId: string, providerType: string) =>
+      managementFetch<{
+        ticket: string
+        expiresAt: number
+        ttlMs: number
+        ingestUrl: string
+        providerType: string
+        providerId: string
+        bookmarklet: { href: string; source: string; expectedOrigin?: string }
+      }>('/oauth/bookmarklet/issue', {
+        method: 'POST',
+        body: JSON.stringify({ providerId, providerType }),
+      }),
+    poll: (ticket: string) =>
+      managementFetch<{
+        state: 'pending' | 'completed'
+        expiresAt?: number
+        result?: OAuthResult
+      }>(`/oauth/bookmarklet/poll/${encodeURIComponent(ticket)}`),
+    cancel: async (ticket: string): Promise<void> => {
+      await managementFetch(`/oauth/bookmarklet/${encodeURIComponent(ticket)}`, { method: 'DELETE' })
+    },
+  },
+
   startLogin: (providerId: string, providerType: ProviderVendor): Promise<OAuthResult> =>
     managementFetch<OAuthResult>('/oauth/start-login', {
       method: 'POST',

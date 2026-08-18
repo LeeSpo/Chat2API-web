@@ -14,6 +14,7 @@ import statisticsRouter from './statistics'
 import proxyRouter from './proxy'
 import toolCallingRouter from './toolCalling'
 import qwenAiGovernorRouter from './qwenAiGovernor'
+import bookmarkletRouter from './oauth/bookmarklet'
 
 export {
   authRouter,
@@ -27,6 +28,7 @@ export {
   proxyRouter,
   toolCallingRouter,
   qwenAiGovernorRouter,
+  bookmarkletRouter,
 }
 
 export default [
@@ -42,4 +44,5 @@ export default [
   proxyRouter,
   toolCallingRouter,
   qwenAiGovernorRouter,
+  bookmarkletRouter,
 ]

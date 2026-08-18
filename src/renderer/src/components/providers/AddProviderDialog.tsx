@@ -16,6 +16,19 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Check, Plus, ArrowRight, Loader2, ExternalLink, AlertCircle, CheckCircle2, ArrowLeft, Info, Eye, EyeOff, Copy } from 'lucide-react'
 import type { BuiltinProviderConfig, ProviderVendor } from '@/types/electron'
+import { BookmarkletPanel } from '@/components/oauth/BookmarkletPanel'
+
+const PROVIDER_LOGIN_URLS: Record<string, string> = {
+  deepseek: 'https://chat.deepseek.com',
+  glm: 'https://chatglm.cn',
+  kimi: 'https://www.kimi.com',
+  minimax: 'https://chat.minimaxi.com',
+  qwen: 'https://www.qianwen.com',
+  'qwen-ai': 'https://chat.qwen.ai',
+  zai: 'https://chat.z.ai',
+  mimo: 'https://aistudio.xiaomimimo.com',
+  perplexity: 'https://www.perplexity.ai',
+}
 import { cn } from '@/lib/utils'
 import deepseekIcon from '@/assets/providers/deepseek.svg'
 import glmIcon from '@/assets/providers/glm.svg'
@@ -306,7 +319,7 @@ export function AddProviderDialog({
 
   const supportsOAuth = selectedProviderData && ['deepseek', 'glm', 'kimi', 'mimo', 'minimax', 'qwen', 'qwen-ai', 'zai', 'perplexity'].includes(selectedProviderData.id)
   const isDockerWebAdmin = !!window.__CHAT2API_WEB_ADMIN__
-  const supportsBrowserImport = isDockerWebAdmin && selectedProviderData && ['qwen', 'qwen-ai', 'kimi'].includes(selectedProviderData.id)
+  const supportsBrowserImport = isDockerWebAdmin && !!selectedProviderData
   const oauthRefreshCredentialFields = selectedProviderData?.id === 'qwen-ai'
     ? selectedProviderData.credentialFields.filter(field => ['email', 'password'].includes(field.name))
     : []
@@ -1024,7 +1037,19 @@ export function AddProviderDialog({
             </TabsContent>
 
             <TabsContent value="oauth" className="mt-4">
-              {supportsBrowserImport ? (
+              {supportsBrowserImport && selectedProviderData ? (
+                <BookmarkletPanel
+                  providerId={selectedProviderData.id}
+                  providerType={selectedProviderData.id}
+                  providerName={selectedProviderData.name}
+                  loginUrl={PROVIDER_LOGIN_URLS[selectedProviderData.id] || selectedProviderData.apiEndpoint}
+                  onSuccess={(incoming, accountInfo) => {
+                    setCredentials((prev) => ({ ...prev, ...incoming }))
+                    setOAuthStatus(t('providers.loginSuccess'))
+                    setValidationResult({ valid: true, userInfo: accountInfo })
+                  }}
+                />
+              ) : false ? (
                 <div className="space-y-4">
                   <div className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
                     <p className="font-medium text-foreground">{t('providers.browserImportTitle')}</p>
