@@ -6,7 +6,7 @@ const path = require('node:path')
 const DEFAULT_SCAN_ROOTS = [
   '.',
   'src/main',
-  'src/preload',
+  'src/server',
   'src/shared',
 ]
 

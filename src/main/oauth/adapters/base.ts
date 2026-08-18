@@ -3,7 +3,6 @@
  * Defines common interface and base implementation for all provider authentication adapters
  */
 
-import type { BrowserWindow } from 'electron'
 import http from 'http'
 import crypto from 'crypto'
 import { getRuntime } from '../../runtime'
@@ -27,7 +26,6 @@ export abstract class BaseOAuthAdapter {
   protected callbackServer: http.Server | null = null
   protected callbackPort: number
   protected state: string = ''
-  protected mainWindow: BrowserWindow | null = null
   protected progressCallback: ((event: OAuthProgressEvent) => void) | null = null
 
   constructor(config: AdapterConfig) {
@@ -47,13 +45,6 @@ export abstract class BaseOAuthAdapter {
    */
   getSupportedAuthMethods(): AuthMethod[] {
     return this.config.authMethods
-  }
-
-  /**
-   * Set main window reference
-   */
-  setMainWindow(window: BrowserWindow): void {
-    this.mainWindow = window
   }
 
   /**

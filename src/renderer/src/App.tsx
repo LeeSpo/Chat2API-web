@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { MainLayout } from '@/components/layout/MainLayout'
-import { TrayView } from '@/components/Tray/TrayView'
 import { Toaster } from '@/components/ui/toaster'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -32,7 +31,6 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/tray" element={<TrayView />} />
         <Route element={<MainLayout />}>
           <Route path="/" element={<Suspense fallback={<PageLoader />}><Dashboard /></Suspense>} />
           <Route path="/providers" element={<Suspense fallback={<PageLoader />}><Providers /></Suspense>} />

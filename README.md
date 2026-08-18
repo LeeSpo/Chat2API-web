@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/pyf-feifei/Chat2API/releases"><img src="https://img.shields.io/badge/version-1.4.0-2563eb?style=flat-square" alt="Version 1.4.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-2563eb?style=flat-square" alt="GPL-3.0 license"></a>
-  <a href="https://www.electronjs.org/"><img src="https://img.shields.io/badge/Electron-33%2B-47848F?style=flat-square&logo=electron&logoColor=white" alt="Electron 33+"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20+"></a>
   <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5"></a>
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey?style=flat-square" alt="macOS, Windows and Linux">
@@ -17,7 +17,7 @@
   <strong><a href="README_CN.md">中文</a> | <a href="https://chat2api-doc.vercel.app/">Website</a> | <a href="https://chat2api-doc.vercel.app/docs">Documentation</a></strong>
 </p>
 
-Chat2API is a cross-platform desktop app and headless server that turns web-based AI provider accounts into one local, OpenAI-compatible gateway. Configure providers and accounts once, then connect the same endpoint to OpenAI SDKs, coding agents, desktop clients, or internal tools.
+Chat2API is a web server that turns web-based AI provider accounts into one local, OpenAI-compatible gateway. Configure providers and accounts once, then connect the same endpoint to OpenAI SDKs, coding agents, desktop clients, or internal tools.
 
 ![Chat2API dashboard](docs/screenshots/preview.png)
 
@@ -27,8 +27,8 @@ Chat2API is a cross-platform desktop app and headless server that turns web-base
 - **Provider and account management**: Add multiple accounts per provider, validate credentials, map client model names, pin a model to a provider or account, and choose round-robin, fill-first, or failover routing.
 - **Tool and reasoning compatibility**: Function/custom tool calls, tool-result continuations, reasoning content, web search, deep research, and provider-specific thinking modes are normalized where the upstream service supports them.
 - **Long-running request controls**: Context compaction, request and stream deadlines, queue admission, keep-alives, bounded retries, and Qwen session/response recovery.
-- **Desktop and server deployments**: Use the Electron UI on macOS, Windows, or Linux, or run the Koa proxy and browser admin UI in Docker without Electron.
-- **Operations UI**: Dashboard metrics, request logs, model synchronization, API keys, proxy settings, themes, system tray access, and English/Simplified Chinese localization.
+- **Web and Docker deployments**: Run the Koa proxy and browser admin UI as a single Node process, locally or in Docker.
+- **Operations UI**: Dashboard metrics, request logs, model synchronization, API keys, proxy settings, themes, and English/Simplified Chinese localization.
 - **Client bridges**: [Codex CLI Responses compatibility](docs/codex.md) and an optional [Anthropic-compatible LiteLLM deployment](docs/litellm.md).
 
 ## Supported providers
@@ -70,8 +70,8 @@ Requirements: Node.js 18+, npm, and Git. The Docker image uses Node.js 22.
 git clone https://github.com/pyf-feifei/Chat2API.git
 cd Chat2API
 npm install
-npm run dev:win       # Windows
-npm run dev           # macOS/Linux
+npm run dev           # backend + frontend
+npm run build         # production server + web UI
 ```
 
 Production packages can be built with:

@@ -70,8 +70,8 @@ Chat2API 是一个跨平台桌面应用和无 Electron 服务端。它将基于 
 git clone https://github.com/pyf-feifei/Chat2API.git
 cd Chat2API
 npm install
-npm run dev:win       # Windows
-npm run dev           # macOS/Linux
+npm run dev           # 后端 + 前端
+npm run build         # 生产环境服务端和网页 UI
 ```
 
 构建生产版本：

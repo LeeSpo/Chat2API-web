@@ -5,9 +5,7 @@ import test from 'node:test'
 
 const repoRoot = process.cwd()
 
-const allowedElectronImports = new Set([
-  path.normalize('src/main/runtime/electronRuntime.ts'),
-])
+const allowedElectronImports = new Set()
 
 function walk(dir) {
   if (!fs.existsSync(dir)) {
@@ -32,8 +30,7 @@ function walk(dir) {
 test('server-owned files do not import electron directly', () => {
   const checkedRoots = [
     path.join(repoRoot, 'src/server'),
-    path.join(repoRoot, 'src/main/runtime'),
-    path.join(repoRoot, 'src/main/store/storage'),
+    path.join(repoRoot, 'src/main'),
   ]
 
   const violations = []

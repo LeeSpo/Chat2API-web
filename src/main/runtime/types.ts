@@ -1,5 +1,5 @@
 export interface RuntimeAdapter {
-  kind: 'electron' | 'node'
+  kind: 'node'
   getDataDir(): string
   isEncryptionAvailable(): boolean
   encryptString(value: string): string

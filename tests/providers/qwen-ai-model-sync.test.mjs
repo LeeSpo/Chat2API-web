@@ -7,7 +7,6 @@ import ts from 'typescript'
 const qwenAiSource = fs.readFileSync('src/main/providers/builtin/qwen-ai.ts', 'utf8')
 const storeTypesSource = fs.readFileSync('src/main/store/types.ts', 'utf8')
 const storeSource = fs.readFileSync('src/main/store/store.ts', 'utf8')
-const ipcSource = fs.readFileSync('src/main/ipc/handlers.ts', 'utf8')
 const managementProvidersSource = fs.readFileSync('src/main/proxy/routes/management/providers.ts', 'utf8')
 const providerCheckerSource = fs.readFileSync('src/main/providers/checker.ts', 'utf8')
 const modelSyncSource = fs.readFileSync('src/main/providers/modelSync.ts', 'utf8')
@@ -49,16 +48,13 @@ test('Qwen AI defaults include the current anonymous international model set', (
 
 test('Qwen AI dynamic model refreshes retain the three public mode aliases', () => {
   assert.match(providerCheckerSource, /withQwenAiModelModeAliases/)
-  assert.match(ipcSource, /withQwenAiModelModeAliases/)
   assert.match(managementProvidersSource, /withQwenAiModelModeAliases/)
 })
 
 test('Qwen AI model sync uses a shared parser that accepts v1 and v2 response envelopes', () => {
   assert.match(qwenAiSource, /modelsApiEndpoint:\s*'https:\/\/chat\.qwen\.ai\/api\/v2\/models\/'/)
-  assert.match(ipcSource, /parseProviderModelsResponse/)
   assert.match(managementProvidersSource, /parseProviderModelsResponse/)
   assert.match(providerCheckerSource, /parseProviderModelsResponse/)
-  assert.doesNotMatch(ipcSource, /const models = response\.data\.data \|\| response\.data/)
   assert.doesNotMatch(managementProvidersSource, /const models = response\.data\.data \|\| response\.data/)
   assert.doesNotMatch(providerCheckerSource, /const models = response\.data\.data \|\| \[\]/)
 })
@@ -173,7 +169,6 @@ test('model sync merges capability metadata instead of clearing it on sparse res
 })
 
 test('all model sync entry points use the shared capability merge helper', () => {
-  assert.match(ipcSource, /mergeProviderModelCapabilities\(/)
   assert.match(managementProvidersSource, /mergeProviderModelCapabilities\(/)
   assert.match(storeSource, /mergeProviderModelCapabilities\(/)
   assert.match(storeSource, /p\.modelCapabilities/)

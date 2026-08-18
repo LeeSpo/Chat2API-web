@@ -4,7 +4,6 @@
  * Uses runtime-specific encryption for sensitive data when available
  */
 
-import type { BrowserWindow } from 'electron'
 import { join } from 'path'
 import {
   StoreSchema,
@@ -45,7 +44,6 @@ import { AppLogManager } from '../appLogs/manager'
 import type { AppLogFilter } from '../appLogs/types'
 import { getRuntime } from '../runtime'
 import { NodeJsonStore } from './storage/nodeJsonStore'
-import { createElectronJsonStore } from './storage/electronJsonStore'
 import { mergeProviderModelCapabilities } from '../providers/modelSync'
 
 /**
@@ -60,14 +58,9 @@ type StoreType = any
 class StoreManager {
   private store: StoreType | null = null
   private isInitialized: boolean = false
-  private mainWindow: BrowserWindow | null = null
   private initializationError: Error | null = null
   private requestLogManager: RequestLogManager | null = null
   private appLogManager: AppLogManager | null = null
-
-  setMainWindow(window: BrowserWindow | null): void {
-    this.mainWindow = window
-  }
 
   /**
    * Check if storage has initialization error
@@ -126,19 +119,12 @@ class StoreManager {
   }
 
   private async createStore(storagePath: string): Promise<StoreType> {
-    const runtime = getRuntime()
-    const options = {
+    return new NodeJsonStore({
       name: 'data',
       cwd: storagePath,
       defaults: this.getDefaultData() as unknown as Record<string, unknown>,
       encryptionKey: this.getEncryptionKey(),
-    }
-
-    if (runtime.kind === 'electron') {
-      return createElectronJsonStore(options)
-    }
-
-    return new NodeJsonStore(options)
+    })
   }
 
   /**
@@ -174,9 +160,7 @@ class StoreManager {
 
   /**
    * Get Encryption Key
-   * Returns a fixed encryption key for electron-store
-   * Note: electron-store uses this key to encrypt/decrypt the data file,
-   * so it must be stable across app restarts
+   * Optional stable key used by the JSON store when encryption is available.
    */
   private getEncryptionKey(): string | undefined {
     return getRuntime().isEncryptionAvailable()

@@ -5,8 +5,6 @@ import { defineConfig } from 'vite'
 const external = [
   ...builtinModules,
   ...builtinModules.map((moduleName) => `node:${moduleName}`),
-  'electron',
-  'electron-store',
 ]
 
 export default defineConfig({

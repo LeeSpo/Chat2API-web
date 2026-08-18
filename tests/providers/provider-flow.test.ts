@@ -266,15 +266,15 @@ test('Kimi forwarder preserves feature aliases and provider conversation identif
 })
 
 test('Kimi and domestic Qwen support account-level chat cleanup', () => {
-  const handlersSource = readFileSync(join(root, 'src/main/ipc/handlers.ts'), 'utf8')
+  const accountsSource = readFileSync(join(root, 'src/main/proxy/routes/management/accounts.ts'), 'utf8')
   const accountListSource = readFileSync(join(root, 'src/renderer/src/components/providers/AccountList.tsx'), 'utf8')
   const kimiAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/kimi.ts'), 'utf8')
   const qwenAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/qwen.ts'), 'utf8')
 
-  assert.match(handlersSource, /import \{ KimiAdapter \} from '\.\.\/proxy\/adapters\/kimi'/)
-  assert.match(handlersSource, /import \{ QwenAdapter \} from '\.\.\/proxy\/adapters\/qwen'/)
-  assert.match(handlersSource, /kimi: async \(provider, account\) => new KimiAdapter\(provider, account\)\.deleteAllChats\(\)/)
-  assert.match(handlersSource, /qwen: async \(provider, account\) => new QwenAdapter\(provider, account\)\.deleteAllChats\(\)/)
+  assert.match(accountsSource, /import \{ KimiAdapter \} from '\.\.\/\.\.\/adapters\/kimi'/)
+  assert.match(accountsSource, /import \{ QwenAdapter \} from '\.\.\/\.\.\/adapters\/qwen'/)
+  assert.match(accountsSource, /kimi: \(\) => new KimiAdapter\(provider, account\)\.deleteAllChats\(\)/)
+  assert.match(accountsSource, /qwen: \(\) => new QwenAdapter\(provider, account\)\.deleteAllChats\(\)/)
   assert.match(accountListSource, /providerId === 'kimi'/)
   assert.match(accountListSource, /providerId === 'qwen'/)
 

@@ -1,9 +1,11 @@
+import * as dotenv from 'dotenv'
 import { setRuntime } from '../main/runtime'
 import { nodeRuntime } from '../main/runtime/nodeRuntime'
 import { proxyServer } from '../main/proxy/server'
 import { storeManager } from '../main/store/store'
 import { applyServerConfigOverrides } from './bootstrapConfig'
 
+dotenv.config()
 setRuntime(nodeRuntime)
 
 async function shutdown(signal: string): Promise<void> {

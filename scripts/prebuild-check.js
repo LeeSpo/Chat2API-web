@@ -5,9 +5,8 @@ const path = require('path');
 
 const requiredFiles = [
   'package.json',
-  'out/main/index.js',
-  'out/preload/index.js',
-  'out/renderer/index.html'
+  'out-server/server/index.js',
+  'out-admin/admin.html',
 ];
 
 const buildResources = [

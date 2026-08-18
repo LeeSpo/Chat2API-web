@@ -4,59 +4,36 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Project Overview
 
-Chat2API Manager is an Electron desktop application that provides an OpenAI-compatible API proxy for multiple AI service providers (DeepSeek, GLM, Kimi, MiniMax, Qwen, Z.ai, Perplexity). It enables using any OpenAI-compatible client with these providers across macOS, Windows, and Linux.
+Chat2API Manager is a Node.js web application that provides an OpenAI-compatible API proxy for multiple AI service providers (DeepSeek, GLM, Kimi, MiniMax, Qwen, Z.ai, Perplexity). It enables using any OpenAI-compatible client with these providers via a browser UI or Docker.
 
 ## Build Commands
 
 ```bash
 # Development
-npm run dev              # Start dev server (macOS/Linux)
-npm run dev:win          # Start dev server (Windows)
-
-# Build
-npm run build            # Build the application
-npm run build:mac        # Build for macOS (dmg, zip)
-npm run build:win        # Build for Windows (nsis)
-npm run build:linux      # Build for Linux (AppImage, deb)
-npm run build:all        # Build for all platforms
-
-# Preview production build
-npm run preview
+npm run dev              # Start backend + frontend
+npm run build            # Build the Node server and web UI
+npm start                # Run the production server bundle
 ```
 
 ## Architecture
 
 ```
 src/
-├── main/                    # Electron main process
-│   ├── index.ts            # App entry point
-│   ├── ipc/                # IPC handlers (main ↔ renderer communication)
+├── server/                  # Node entrypoint (no Electron)
+│   ├── index.ts            # Store init, first-run auth, listen
+│   └── admin/              # Static web UI serving
+├── main/                    # Server-side business logic
 │   ├── proxy/              # Proxy server (Koa)
 │   │   ├── server.ts       # HTTP server with middleware
 │   │   ├── forwarder.ts    # Request forwarding logic & auth
 │   │   ├── adapters/       # Provider-specific adapters
-│   │   ├── routes.ts       # Proxy routes registration
-│   │   ├── sessionManager.ts # Multi-turn conversation management
-│   │   └── services/       # Prompt injection & prompt generation
-│   ├── oauth/              # OAuth authentication
-│   │   ├── manager.ts      # OAuth flow orchestration
-│   │   ├── inAppLogin.ts   # In-app browser login with token auto-extraction
-│   │   └── adapters/       # Provider-specific OAuth adapters
+│   │   ├── sessionManager.ts
+│   │   └── services/
+│   ├── oauth/              # Token validation + bookmarklet ingest
 │   ├── providers/          # Provider configurations
-│   │   ├── builtin/        # Built-in provider configs (one file per provider)
-│   │   └── custom.ts       # Custom provider support
-│   ├── store/              # Persistent storage (electron-store)
-│   │   ├── store.ts        # Main store manager with IPC bridge
-│   │   ├── types.ts        # Type definitions and default values
-│   │   └── config.ts       # Configuration management
-│   └── tray/               # System tray integration
-├── preload/                # Context bridge (IPC API exposure)
-├── renderer/               # React frontend
-│   ├── components/         # UI components
-│   ├── pages/              # Page components
-│   ├── stores/             # Zustand state management
-│   └── i18n/               # Internationalization (en-US, zh-CN)
-└── shared/                 # Shared types between main and renderer
+│   └── store/              # JSON storage (Node)
+├── renderer/               # React web UI
+└── shared/                 # Shared types
 ```
 
 ## Key Concepts
@@ -75,8 +52,8 @@ To add a new provider:
 4. Create stream handler in `src/main/proxy/adapters/<provider>-stream.ts`
 5. Register in `src/main/providers/builtin/index.ts` and `src/main/proxy/adapters/index.ts`
 
-### IPC Communication
-All main-renderer communication uses IPC channels defined in `src/main/ipc/channels.ts`. The naming convention is `domain:action` (e.g., `proxy:start`, `accounts:add`).
+### Management API
+The web UI talks to the Koa process over HTTP at `/v0/management/*`. The naming convention is still `domain:action` in the compatibility shim (`web-admin-api.ts`).
 
 ### Session Management
 Multi-turn conversations are managed by `sessionManager.ts`:
@@ -109,7 +86,7 @@ Application data is stored in `~/.chat2api/`:
 | Frontend | React 18 + TypeScript |
 | Styling | Tailwind CSS |
 | State | Zustand |
-| Build | Vite + electron-vite |
+| Build | Vite |
 | Server | Koa |
 
 ## Coding Guidelines
