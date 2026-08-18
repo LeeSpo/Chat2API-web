@@ -2,6 +2,7 @@ import axios, { type AxiosResponse } from 'axios'
 import { createHash } from 'crypto'
 import type { Account } from '../../store/types'
 import { storeManager } from '../../store/store'
+import { resolveQwenAiClientHeaders } from './client-metadata'
 
 const QWEN_AI_BASE = 'https://chat.qwen.ai'
 const REFRESH_THRESHOLD_MS = 6 * 60 * 60 * 1000
@@ -112,9 +113,8 @@ export function resolveQwenAiAuthHeaders(token: string, cookieHeader: string): R
 
   return {
     ...(normalizedToken && !hasSessionCookie
-      ? { Authorization: `Bearer ${normalizedToken}` }
+      ? { Authorization: `Bearer ${normalizedToken}`, source: 'desktop' }
       : {}),
-    ...(normalizedToken && !hasSessionCookie && !cookies ? { source: 'desktop' } : {}),
     ...(cookies ? { Cookie: cookies } : {}),
   }
 }
@@ -387,13 +387,11 @@ export class QwenAiTokenRefresher {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         Origin: QWEN_AI_BASE,
         Referer: `${QWEN_AI_BASE}/`,
         source: 'web',
-        Version: '0.2.67',
+        ...resolveQwenAiClientHeaders(account.credentials),
         Timezone: currentTimezoneHeader(),
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
       },
       timeout: 15000,
       signal,

@@ -29,6 +29,13 @@ function loadTokenRefreshModule({ post, updateAccount } = {}) {
         updateAccount: updateAccount || (() => null),
       },
     },
+    './client-metadata': {
+      resolveQwenAiClientHeaders: credentials => ({
+        Version: credentials?.qwenWebVersion || '0.2.86',
+        'User-Agent': credentials?.browserUserAgent || 'test-browser',
+        'bx-v': credentials?.baxiaVersion || '2.5.37',
+      }),
+    },
   }
   const testRequire = specifier => {
     if (Object.prototype.hasOwnProperty.call(localModules, specifier)) {
@@ -94,7 +101,7 @@ test('Qwen AI adapter refreshes expiring web tokens by signing in with saved ema
   assert.match(refresherSource, /const credentials = \{\s*\.\.\.account\.credentials,\s*token,\s*\.\.\.\(cookies \? \{ cookies \} : \{\}\),\s*\}/s)
   assert.match(refresherSource, /!this\.isTokenExpiringSoon\(account\.credentials\.token \|\| ''\)/)
   assert.match(refresherSource, /source:\s*'web'/)
-  assert.match(refresherSource, /Version:\s*'0\.2\.67'/)
+  assert.match(refresherSource, /resolveQwenAiClientHeaders\(account\.credentials\)/)
   assert.match(refresherSource, /Timezone:\s*currentTimezoneHeader\(\)/)
 
   assert.match(adapterSource, /QwenAiTokenRefresher/)
@@ -200,6 +207,7 @@ test('Qwen AI authentication mode is selected from the actual session credential
     resolveQwenAiAuthHeaders('jwt-value', 'cnaui=auxiliary; x-ap=value'),
     {
       Authorization: 'Bearer jwt-value',
+      source: 'desktop',
       Cookie: 'cnaui=auxiliary; x-ap=value',
     },
   )

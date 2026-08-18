@@ -63,6 +63,8 @@ import {
   resolveQwenAiModelMode,
 } from './model-mode'
 import type { QwenAiSessionState } from './sessionBridge'
+import { resolveQwenAiClientHeaders } from './client-metadata'
+import { qwenAiBrowserBridgeManager } from './browserBridge'
 
 const QWEN_AI_BASE = 'https://chat.qwen.ai'
 const QWEN_AI_REQUEST_TIMEOUT_MS = positiveNumberFromEnv('QWEN_AI_REQUEST_TIMEOUT_MS', 840000)
@@ -117,17 +119,11 @@ export type QwenAiOutputStream = PassThrough & {
 
 const DEFAULT_HEADERS = {
   Accept: 'application/json',
-  'Accept-Language': 'zh-CN,zh;q=0.9',
   'Content-Type': 'application/json',
   source: 'web',
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-  'sec-ch-ua': '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
-  'sec-ch-ua-mobile': '?0',
-  'sec-ch-ua-platform': '"macOS"',
   'Sec-Fetch-Dest': 'empty',
   'Sec-Fetch-Mode': 'cors',
   'Sec-Fetch-Site': 'same-origin',
-  Version: '0.2.67',
   Origin: 'https://chat.qwen.ai',
 }
 
@@ -3187,13 +3183,26 @@ export class QwenAiAdapter {
     payload: unknown,
     createOptions: () => Record<string, any>,
   ): Promise<AxiosResponse> {
+    const send = async (options: Record<string, any>): Promise<AxiosResponse> => {
+      if (url.includes('/api/v2/chat/completions')) {
+        const bridged = await qwenAiBrowserBridgeManager.execute(
+          this.getToken(),
+          url,
+          payload,
+          options,
+        )
+        if (bridged) return bridged
+      }
+      return this.axiosInstance.post(url, payload, options)
+    }
+
     let options = createOptions()
-    let response = await this.axiosInstance.post(url, payload, options)
+    let response = await send(options)
 
     if (response.status === 401) {
       this.account = await this.tokenRefresher.refreshAfterUnauthorized(this.account, options.signal)
       options = createOptions()
-      response = await this.axiosInstance.post(url, payload, options)
+      response = await send(options)
     }
 
     return response
@@ -3252,6 +3261,7 @@ export class QwenAiAdapter {
     const token = this.getToken()
     const headers: Record<string, string> = {
       ...DEFAULT_HEADERS,
+      ...resolveQwenAiClientHeaders(this.account.credentials),
       'X-Request-Id': uuid(),
       Timezone: currentTimezoneHeader(),
       ...resolveQwenAiAuthHeaders(token, cookies),
@@ -3269,11 +3279,6 @@ export class QwenAiAdapter {
     const baxiaUa = this.getCredentialValue('baxiaUa', 'baxia_ua', 'bxUa', 'bx_ua')
     if (baxiaUa) {
       headers['bx-ua'] = baxiaUa
-    }
-
-    const baxiaVersion = this.getCredentialValue('baxiaVersion', 'baxia_version', 'bxV', 'bx_v')
-    if (baxiaVersion) {
-      headers['bx-v'] = baxiaVersion
     }
 
     const x5secdata = this.getCredentialValue('x5secdata')

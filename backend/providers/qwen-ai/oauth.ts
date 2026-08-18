@@ -6,6 +6,7 @@
 import axios from 'axios'
 import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import { resolveQwenAiAuthHeaders } from './token-refresh'
+import { resolveQwenAiClientHeaders } from './client-metadata'
 import {
   OAuthResult,
   OAuthOptions,
@@ -20,19 +21,13 @@ const QWEN_AI_API_BASE = 'https://chat.qwen.ai'
 const FAKE_HEADERS = {
   Accept: 'application/json',
   'Accept-Encoding': 'gzip, deflate, br, zstd',
-  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
   'Cache-Control': 'no-cache',
   Origin: QWEN_AI_API_BASE,
   Pragma: 'no-cache',
-  'Sec-Ch-Ua': '"Chromium";v="144", "Not(A:Brand";v="8", "Google Chrome";v="144"',
-  'Sec-Ch-Ua-Mobile': '?0',
-  'Sec-Ch-Ua-Platform': '"Windows"',
   'Sec-Fetch-Dest': 'empty',
   'Sec-Fetch-Mode': 'cors',
   'Sec-Fetch-Site': 'same-origin',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
   source: 'web',
-  Version: '0.2.67',
 }
 
 type UserInfoLookup =
@@ -210,15 +205,13 @@ export class QwenAiAdapter extends BaseOAuthAdapter {
       const response = await axios.get(`${QWEN_AI_API_BASE}/api/v2/user/info`, {
         headers: {
           ...FAKE_HEADERS,
+          ...resolveQwenAiClientHeaders(credentials),
           ...resolveQwenAiAuthHeaders(token, cookies),
           ...(readCredential(credentials, 'baxiaUidToken', 'baxia_uid_token', 'uidToken')
             ? { 'bx-umidtoken': readCredential(credentials, 'baxiaUidToken', 'baxia_uid_token', 'uidToken') }
             : {}),
           ...(readCredential(credentials, 'baxiaUa', 'baxia_ua', 'bxUa', 'bx_ua')
             ? { 'bx-ua': readCredential(credentials, 'baxiaUa', 'baxia_ua', 'bxUa', 'bx_ua') }
-            : {}),
-          ...(readCredential(credentials, 'baxiaVersion', 'baxia_version', 'bxV', 'bx_v')
-            ? { 'bx-v': readCredential(credentials, 'baxiaVersion', 'baxia_version', 'bxV', 'bx_v') }
             : {}),
           ...(readCredential(credentials, 'x5secdata')
             ? { x5secdata: readCredential(credentials, 'x5secdata') }

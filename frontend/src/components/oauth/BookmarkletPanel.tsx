@@ -120,6 +120,11 @@ export function BookmarkletPanel({
         <p className="text-sm text-muted-foreground">
           {t('oauth.bookmarklet.description', { provider: displayName })}
         </p>
+        {providerType === 'deepseek' && (
+          <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
+            {t('oauth.bookmarklet.deepseekUserTokenNotice')}
+          </p>
+        )}
         <Button type="button" onClick={() => void issueTicket()} disabled={phase === 'issuing'} className="w-full">
           {phase === 'issuing' ? (
             <>
@@ -156,6 +161,7 @@ export function BookmarkletPanel({
         </div>
         <ol className="list-decimal list-inside space-y-1.5 text-xs text-muted-foreground">
           <li>{t('oauth.bookmarklet.instructions.drag')}</li>
+          {providerType === 'deepseek' && <li>{t('oauth.bookmarklet.instructions.externalBrowser')}</li>}
           <li>{t('oauth.bookmarklet.instructions.open')}</li>
           <li>
             {t('oauth.bookmarklet.instructions.click')}{' '}

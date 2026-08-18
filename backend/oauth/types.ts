@@ -138,7 +138,7 @@ export const MANUAL_TOKEN_CONFIGS: Record<ProviderType, ManualTokenConfig[]> = {
       tokenType: 'token',
       label: 'User Token',
       placeholder: 'Enter the userToken obtained from browser LocalStorage',
-      description: 'Open Developer Tools on chat.deepseek.com, find userToken in Application > Local Storage',
+      description: 'Open Developer Tools on chat.deepseek.com, find userToken in Application > Local Storage (not a Cookie)',
       helpUrl: 'https://chat.deepseek.com',
     },
   ],

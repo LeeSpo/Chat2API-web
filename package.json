@@ -19,6 +19,7 @@
     "build": "npm run check:source-artifacts && npm run build:server",
     "start": "node out-server/server/index.js",
     "start:server": "node out-server/server/index.js",
+    "test:deepseek-auth": "tsx --test tests/providers/deepseek-auth.test.ts",
     "test:server-compat": "npm run build:server && node tests/server/run-server-tests.mjs",
     "test:litellm": "npm run build:server && node --test tests/litellm/integration.test.mjs",
     "prebuild:check": "node scripts/prebuild-check.js"

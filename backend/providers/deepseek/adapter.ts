@@ -11,32 +11,16 @@ import { getDeepSeekHash } from '../../lib/challenge'
 import type { Account, Provider } from '../../store/types'
 import { resolveDeepSeekChatOptions } from '../../proxy/adapters/providerModelOptions'
 import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles'
+import {
+  createDeepSeekWebHeaders,
+  getDeepSeekTokenValidationError,
+  normalizeDeepSeekUserToken,
+} from './credentials'
 
 const DEEPSEEK_API_BASE = 'https://chat.deepseek.com/api'
 
-const FAKE_HEADERS = {
-  Accept: '*/*',
-  'Accept-Encoding': 'gzip, deflate, br, zstd',
-  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-  Origin: 'https://chat.deepseek.com',
-  Referer: 'https://chat.deepseek.com/',
-  'Sec-Ch-Ua': '"Not/A)Brand";v="99", "Chromium";v="148"',
-  'Sec-Ch-Ua-Mobile': '?0',
-  'Sec-Ch-Ua-Platform': '"macOS"',
-  'Sec-Fetch-Dest': 'empty',
-  'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Site': 'same-origin',
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
-  'X-App-Version': '2.0.0',
-  'X-Client-Locale': 'zh_CN',
-  'X-Client-Platform': 'web',
-  'x-Client-Timezone-Offset': '28800',
-  'X-Client-Version': '2.0.0',
-}
-
 interface TokenInfo {
   accessToken: string
-  refreshToken: string
   expiresAt: number
 }
 
@@ -110,9 +94,9 @@ export class DeepSeekAdapter {
   constructor(provider: Provider, account: Account) {
     this.provider = provider
     this.account = account
-    console.log('[DeepSeek] Account credentials:', JSON.stringify(account.credentials, null, 2))
-    this.token = account.credentials.token || account.credentials.apiKey || account.credentials.refreshToken || ''
-    console.log('[DeepSeek] Using token:', this.token.substring(0, 20) + '...')
+    this.token = normalizeDeepSeekUserToken(
+      account.credentials.token || account.credentials.apiKey || account.credentials.refreshToken,
+    )
   }
 
   private async acquireToken(): Promise<string> {
@@ -125,44 +109,28 @@ export class DeepSeekAdapter {
       return cached.accessToken
     }
 
-    console.log('[DeepSeek] Acquiring token...')
-    
     const result = await axios.get(`${DEEPSEEK_API_BASE}/v0/users/current`, {
       headers: {
         Authorization: `Bearer ${this.token}`,
-        ...FAKE_HEADERS,
+        ...createDeepSeekWebHeaders(),
       },
       timeout: 15000,
       validateStatus: () => true,
     })
 
-    console.log('[DeepSeek] Token response status:', result.status)
-    
-    if (result.status === 401 || result.status === 403) {
-      throw new Error(`Token invalid or expired, please get a new Token`)
+    const validationError = getDeepSeekTokenValidationError(result.status, result.data)
+    if (validationError) {
+      throw new Error(validationError)
     }
 
-    if (result.status !== 200) {
-      throw new Error(`Failed to acquire token: HTTP ${result.status}`)
-    }
-
-    // Response structure: { code: 0, data: { biz_code: 0, biz_data: { token: "..." } } }
-    const bizData = result.data?.data?.biz_data || result.data?.biz_data
-    if (!bizData?.token) {
-      const errorMsg = result.data?.msg || result.data?.data?.biz_msg || 'Unknown error'
-      console.log('[DeepSeek] Token response data:', JSON.stringify(result.data, null, 2))
-      throw new Error(`Failed to acquire token: ${errorMsg}`)
-    }
-
-    const accessToken = bizData.token
+    // The current DeepSeek web client uses userToken itself for every request;
+    // it is not a refresh token that must be exchanged for another value.
     tokenCache.set(this.token, {
-      accessToken,
-      refreshToken: this.token,
+      accessToken: this.token,
       expiresAt: unixTimestamp() + 3600,
     })
 
-    console.log('[DeepSeek] Token acquired successfully')
-    return accessToken
+    return this.token
   }
 
   private async createSession(): Promise<string> {
@@ -179,15 +147,13 @@ export class DeepSeekAdapter {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          ...FAKE_HEADERS,
+          ...createDeepSeekWebHeaders(),
           Cookie: generateCookie(),
         },
         timeout: 15000,
         validateStatus: () => true,
       }
     )
-
-    console.log('[DeepSeek] Create session response:', JSON.stringify(result.data, null, 2))
 
     // Response structure: { code: 0, data: { biz_code: 0, biz_data: { id: "..." } } }
     const bizData = result.data?.data?.biz_data || result.data?.biz_data
@@ -210,25 +176,22 @@ export class DeepSeekAdapter {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            ...FAKE_HEADERS,
+            ...createDeepSeekWebHeaders(),
           },
           timeout: 15000,
           validateStatus: () => true,
         }
       )
 
-      console.log('[DeepSeek] Delete session response:', JSON.stringify(result.data, null, 2))
-
       const success = result.status === 200 && result.data?.code === 0
       if (success) {
         // Clear cache
         const cacheKey = this.account.id
         sessionCache.delete(cacheKey)
-        console.log('[DeepSeek] Session deleted:', sessionId)
       }
       return success
-    } catch (error) {
-      console.error('[DeepSeek] Failed to delete session:', error)
+    } catch {
+      console.error('[DeepSeek] Failed to delete session')
       return false
     }
   }
@@ -241,7 +204,7 @@ export class DeepSeekAdapter {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          ...FAKE_HEADERS,
+          ...createDeepSeekWebHeaders(),
         },
         timeout: 15000,
         validateStatus: () => true,
@@ -264,8 +227,6 @@ export class DeepSeekAdapter {
       throw new Error(`Unsupported algorithm: ${algorithm}`)
     }
     
-    console.log('[DeepSeek] Challenge parameters:', { difficulty })
-    
     const deepSeekHash = await getDeepSeekHash()
     const answer = deepSeekHash.calculateHash(algorithm, challengeStr, salt, difficulty, expire_at)
     
@@ -273,8 +234,6 @@ export class DeepSeekAdapter {
       throw new Error('Challenge calculation failed')
     }
     
-    console.log('[DeepSeek] Challenge answer found:', answer)
-
     return Buffer.from(JSON.stringify({
       algorithm,
       challenge: challengeStr,
@@ -376,8 +335,6 @@ export class DeepSeekAdapter {
     const token = await this.acquireToken()
     
     const sessionId = await this.createSession()
-    console.log('[DeepSeek] Created new session:', sessionId)
-    
     const challenge = await this.getChallenge('/api/v0/chat/completion')
     const challengeAnswer = await this.calculateChallengeAnswer(challenge)
 
@@ -412,7 +369,7 @@ export class DeepSeekAdapter {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          ...FAKE_HEADERS,
+          ...createDeepSeekWebHeaders(),
           Referer: `https://chat.deepseek.com/a/chat/s/${sessionId}`,
           Cookie: generateCookie(),
           'X-Ds-Pow-Response': challengeAnswer,
@@ -435,14 +392,12 @@ export class DeepSeekAdapter {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            ...FAKE_HEADERS,
+            ...createDeepSeekWebHeaders(),
           },
           timeout: 30000,
           validateStatus: () => true,
         }
       )
-
-      console.log('[DeepSeek] Delete all chats response:', JSON.stringify(result.data, null, 2))
 
       const success = result.status === 200 && result.data?.code === 0
       if (success) {
@@ -450,8 +405,8 @@ export class DeepSeekAdapter {
         console.log('[DeepSeek] All chats deleted')
       }
       return success
-    } catch (error) {
-      console.error('[DeepSeek] Failed to delete all chats:', error)
+    } catch {
+      console.error('[DeepSeek] Failed to delete all chats')
       return false
     }
   }
@@ -466,7 +421,6 @@ export class DeepSeekAdapter {
    */
   static clearSessionCache(accountId: string): void {
     sessionCache.delete(accountId)
-    console.log('[DeepSeek] Cleared session cache for account:', accountId)
   }
 }
 

@@ -7,36 +7,20 @@ import axios from 'axios'
 import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import { getRuntime } from '../../runtime'
 import {
+  createDeepSeekWebHeaders,
+  getDeepSeekTokenValidationError,
+  getDeepSeekUserData,
+  normalizeDeepSeekUserToken,
+} from './credentials'
+import {
   OAuthResult,
   OAuthOptions,
   TokenValidationResult,
-  CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
 } from '../../oauth/types'
 
 const DEEPSEEK_API_BASE = 'https://chat.deepseek.com'
-
-const FAKE_HEADERS = {
-  Accept: '*/*',
-  'Accept-Encoding': 'gzip, deflate, br, zstd',
-  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-  Origin: DEEPSEEK_API_BASE,
-  Pragma: 'no-cache',
-  Priority: 'u=1, i',
-  Referer: `${DEEPSEEK_API_BASE}/`,
-  'Sec-Ch-Ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-  'Sec-Ch-Ua-Mobile': '?0',
-  'Sec-Ch-Ua-Platform': '"macOS"',
-  'Sec-Fetch-Dest': 'empty',
-  'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Site': 'same-origin',
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-  'X-App-Version': '20241129.1',
-  'X-Client-Locale': 'zh-CN',
-  'X-Client-Platform': 'web',
-  'X-Client-Version': '1.6.1',
-}
 
 export class DeepSeekAdapter extends BaseOAuthAdapter {
   constructor(config: AdapterConfig) {
@@ -84,9 +68,10 @@ export class DeepSeekAdapter extends BaseOAuthAdapter {
    */
   async loginWithToken(providerId: string, token: string): Promise<OAuthResult> {
     this.emitProgress('pending', 'Validating Token...')
+    const normalizedToken = normalizeDeepSeekUserToken(token)
     
     try {
-      const validation = await this.validateToken({ token })
+      const validation = await this.validateToken({ token: normalizedToken })
       
       if (!validation.valid) {
         return {
@@ -103,7 +88,8 @@ export class DeepSeekAdapter extends BaseOAuthAdapter {
         success: true,
         providerId,
         providerType: 'deepseek',
-        credentials: { token },
+        // Persist only the bearer token, never DeepSeek's localStorage wrapper.
+        credentials: { token: normalizedToken },
         accountInfo: validation.accountInfo,
       }
     } catch (error) {
@@ -130,12 +116,12 @@ export class DeepSeekAdapter extends BaseOAuthAdapter {
    * Validate token validity
    */
   async validateToken(credentials: Record<string, string>): Promise<TokenValidationResult> {
-    const token = credentials.token || credentials.userToken
+    const token = normalizeDeepSeekUserToken(credentials.token || credentials.userToken)
     
     if (!token) {
       return {
         valid: false,
-        error: 'Token cannot be empty',
+        error: 'DeepSeek userToken cannot be empty',
       }
     }
     
@@ -143,28 +129,25 @@ export class DeepSeekAdapter extends BaseOAuthAdapter {
       const response = await axios.get(`${DEEPSEEK_API_BASE}/api/v0/users/current`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          ...FAKE_HEADERS,
+          ...createDeepSeekWebHeaders(),
         },
         timeout: 15000,
         validateStatus: () => true,
       })
       
-      console.log('[DeepSeek OAuth] Response:', response.status, response.data)
-      
-      if (response.status !== 200 || !response.data) {
+      const validationError = getDeepSeekTokenValidationError(response.status, response.data)
+      if (validationError) {
         return {
           valid: false,
-          error: 'Token is invalid or expired',
+          error: validationError,
         }
       }
       
-      // DeepSeek API returns: { code: 0, msg: '', data: { biz_code: 0, biz_msg: '', biz_data: { ... } } }
-      const bizData = response.data?.data?.biz_data
-      
+      const bizData = getDeepSeekUserData(response.data)
       if (!bizData) {
         return {
           valid: false,
-          error: 'Token validation failed: Invalid response data',
+          error: 'DeepSeek returned an unexpected account response. Sign in and import the userToken again.',
         }
       }
       
@@ -187,39 +170,12 @@ export class DeepSeekAdapter extends BaseOAuthAdapter {
   }
 
   /**
-   * Refresh token
+   * DeepSeek's web userToken is renewed by a browser login. The current web
+   * client does not expose a safe server-side refresh grant, so require a
+   * fresh bookmarklet import instead of attempting to exchange the token.
    */
-  async refreshToken(credentials: Record<string, string>): Promise<CredentialInfo | null> {
-    const token = credentials.token || credentials.refreshToken
-    
-    if (!token) {
-      return null
-    }
-    
-    try {
-      const response = await axios.get(`${DEEPSEEK_API_BASE}/api/v0/users/current`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          ...FAKE_HEADERS,
-        },
-        timeout: 15000,
-        validateStatus: () => true,
-      })
-      
-      if (response.status !== 200 || !response.data?.biz_data?.token) {
-        return null
-      }
-      
-      const newToken = response.data.biz_data.token
-      
-      return {
-        type: 'access',
-        value: newToken,
-        expiresAt: this.getTimestamp() + 3600,
-      }
-    } catch {
-      return null
-    }
+  async refreshToken(): Promise<null> {
+    return null
   }
 }
 

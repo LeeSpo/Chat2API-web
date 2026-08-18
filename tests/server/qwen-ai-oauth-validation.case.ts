@@ -2,6 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import axios from 'axios'
 import { QwenAiAdapter } from '../../backend/providers/qwen-ai/oauth.ts'
+import {
+  DEFAULT_QWEN_AI_BAXIA_VERSION,
+  DEFAULT_QWEN_AI_WEB_VERSION,
+  resolveQwenAiClientHeaders,
+} from '../../backend/providers/qwen-ai/client-metadata.ts'
 
 const adapter = new QwenAiAdapter({
   providerId: 'qwen-ai',
@@ -51,8 +56,32 @@ test('Qwen AI validation sends the imported session and returns user information
   assert.equal(receivedHeaders?.Cookie, 'token=session-token; x5secdata=cookie-x5')
   assert.equal(receivedHeaders?.Authorization, undefined)
   assert.equal(receivedHeaders?.['bx-umidtoken'], 'uid-token')
+  assert.equal(receivedHeaders?.Version, DEFAULT_QWEN_AI_WEB_VERSION)
+  assert.equal(receivedHeaders?.['bx-v'], DEFAULT_QWEN_AI_BAXIA_VERSION)
   assert.equal(receivedHeaders?.x5secdata, 'header-x5')
   assert.equal(receivedHeaders?.x5sectag, 'tag-x5')
+})
+
+test('Qwen AI client headers preserve imported browser and web-client metadata', () => {
+  const headers = resolveQwenAiClientHeaders({
+    qwenWebVersion: '0.2.test',
+    baxiaVersion: '2.5.test',
+    browserUserAgent: 'Captured Browser',
+    browserAcceptLanguage: 'en-US,en;q=0.9',
+    browserPlatform: 'Linux',
+    browserSecChUa: '"Captured";v="1"',
+    browserSecChUaMobile: '?1',
+  })
+
+  assert.deepEqual(headers, {
+    Version: '0.2.test',
+    'User-Agent': 'Captured Browser',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'sec-ch-ua': '"Captured";v="1"',
+    'sec-ch-ua-mobile': '?1',
+    'sec-ch-ua-platform': '"Linux"',
+    'bx-v': '2.5.test',
+  })
 })
 
 test('Qwen AI login preserves the complete imported browser session', async () => {

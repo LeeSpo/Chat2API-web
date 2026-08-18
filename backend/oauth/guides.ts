@@ -17,7 +17,7 @@ export const TOKEN_EXTRACTION_GUIDES: Record<string, TokenExtractionGuide> = {
       '3. Press F12 to open Developer Tools',
       '4. Switch to the Application tab',
       '5. Find Local Storage → chat.deepseek.com on the left',
-      '6. Find the userToken field and copy its value',
+      '6. Find the userToken field and copy its value (not a Cookie; Chat2API also accepts the current JSON-wrapped storage value)',
     ],
     tokenKey: 'userToken',
     tokenLabel: 'Token',

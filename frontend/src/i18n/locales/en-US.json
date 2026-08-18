@@ -950,6 +950,7 @@
     "bookmarklet": {
       "title": "Bookmarklet Auto-Capture",
       "description": "Use a bookmarklet to auto-extract the token from {{provider}}'s page — no DevTools needed.",
+      "deepseekUserTokenNotice": "DeepSeek uses Local Storage userToken (not cookies). The current browser format is decoded automatically.",
       "generate": "Generate bookmarklet",
       "generating": "Generating bookmarklet…",
       "dragHint": "Drag this link into your bookmark bar:",
@@ -957,6 +958,7 @@
       "clickWarning": "Drag this link to your bookmark bar, then click it while on the {{provider}} page.",
       "instructions": {
         "drag": "Drag the \"Save to Chat2API\" button above into your bookmark bar.",
+        "externalBrowser": "Use a regular browser with a visible bookmark bar; embedded browsers cannot run this bookmarklet.",
         "open": "Open the provider login page below and sign in.",
         "click": "While still on the provider page, click the bookmarklet in your bookmark bar.",
         "wait": "Come back here — the token will be picked up automatically."
@@ -964,7 +966,7 @@
       "openLogin": "Open login page · {{host}}",
       "waiting": "Waiting for bookmarklet…",
       "timeLeft": "time left",
-      "success": "Token received and validated. Saving account…",
+      "success": "Token received and validated. Click Add Account to save it.",
       "expired": "Ticket expired. Click \"Generate bookmarklet\" to try again.",
       "ticketUsed": "Ticket has already been used or expired.",
       "tryAgain": "Try again (new bookmarklet)",

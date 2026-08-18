@@ -43,6 +43,10 @@ import {
   PROVIDER_TOKEN_SPECS,
 } from '../../../../oauth/bookmarkletScript'
 import type { OAuthResult, ProviderType } from '../../../../oauth/types'
+import {
+  qwenAiBrowserBridgeManager,
+  type QwenAiBrowserBridgeEvent,
+} from '../../../../providers/qwen-ai/browserBridge'
 
 const router = new Router({ prefix: '/v0/management/oauth/bookmarklet' })
 
@@ -77,6 +81,74 @@ router.options('/ingest', (ctx) => {
   }
   applyIngestCors(ctx)
   ctx.status = 204
+})
+
+for (const path of ['/bridge/next', '/bridge/event']) {
+  router.options(path, (ctx) => {
+    if (disabled()) {
+      notFound(ctx)
+      return
+    }
+    applyIngestCors(ctx)
+    ctx.status = 204
+  })
+}
+
+router.post('/bridge/next', async (ctx: Context) => {
+  if (disabled()) {
+    notFound(ctx)
+    return
+  }
+  applyIngestCors(ctx)
+  const bridgeToken = (ctx.request.body as any)?.bridgeToken
+  if (typeof bridgeToken !== 'string' || !bridgeToken) {
+    ctx.status = 400
+    ctx.body = { success: false, error: { code: 'invalid_request', message: 'Missing bridge token' } }
+    return
+  }
+
+  const task = await qwenAiBrowserBridgeManager.poll(bridgeToken)
+  if (task === undefined) {
+    ctx.status = 410
+    ctx.body = { success: false, error: { code: 'bridge_expired', message: 'Browser bridge expired' } }
+    return
+  }
+  if (task === null) {
+    ctx.status = 204
+    return
+  }
+
+  ctx.body = { success: true, data: { task } }
+})
+
+router.post('/bridge/event', async (ctx: Context) => {
+  if (disabled()) {
+    notFound(ctx)
+    return
+  }
+  applyIngestCors(ctx)
+  const body = (ctx.request.body as any) || {}
+  const bridgeToken = body.bridgeToken
+  const event = body.event as QwenAiBrowserBridgeEvent | undefined
+  if (
+    typeof bridgeToken !== 'string'
+    || !event
+    || typeof event !== 'object'
+    || typeof event.taskId !== 'string'
+    || !['start', 'chunk', 'end', 'error'].includes(event.type)
+  ) {
+    ctx.status = 400
+    ctx.body = { success: false, error: { code: 'invalid_request', message: 'Invalid bridge event' } }
+    return
+  }
+
+  const accepted = qwenAiBrowserBridgeManager.handleEvent(bridgeToken, event)
+  if (!accepted) {
+    ctx.status = 410
+    ctx.body = { success: false, error: { code: 'bridge_task_gone', message: 'Browser bridge task is no longer active' } }
+    return
+  }
+  ctx.body = { success: true }
 })
 
 /**
@@ -205,7 +277,26 @@ router.post('/ingest', async (ctx: Context) => {
     bookmarkletTicketStore.complete(ticketValue, result)
 
     if (result.success) {
-      ctx.body = { success: true, data: { received: true } }
+      const bridge = ticket.providerType === 'qwen-ai'
+        ? qwenAiBrowserBridgeManager.register(token)
+        : undefined
+      const bridgeBaseUrl = `${ctx.protocol}://${ctx.host}/v0/management/oauth/bookmarklet/bridge`
+      ctx.body = {
+        success: true,
+        data: {
+          received: true,
+          ...(bridge
+            ? {
+                bridge: {
+                  token: bridge.bridgeToken,
+                  expiresAt: bridge.expiresAt,
+                  nextUrl: `${bridgeBaseUrl}/next`,
+                  eventUrl: `${bridgeBaseUrl}/event`,
+                },
+              }
+            : {}),
+        },
+      }
     } else {
       // The token reached us but failed validation upstream. Surface the
       // provider's error message so the bookmarklet's alert is useful.

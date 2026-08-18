@@ -93,6 +93,8 @@ const PUBLIC_AUTH_PATHS = new Set<string>([
   '/v0/management/auth/setup',
   '/v0/management/auth/login',
   '/v0/management/oauth/bookmarklet/ingest',
+  '/v0/management/oauth/bookmarklet/bridge/next',
+  '/v0/management/oauth/bookmarklet/bridge/event',
 ])
 
 export function isPublicManagementPath(path: string): boolean {
