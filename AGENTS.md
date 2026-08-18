@@ -43,11 +43,10 @@ Each AI provider has a dedicated adapter in `src/main/proxy/adapters/` that hand
 - Multi-turn conversation context
 
 To add a new provider:
-1. Create config in `src/main/providers/builtin/<provider>.ts`
-2. Create OAuth adapter in `src/main/oauth/adapters/<provider>.ts`
-3. Create proxy adapter in `src/main/proxy/adapters/<provider>.ts`
-4. Create stream handler in `src/main/proxy/adapters/<provider>-stream.ts`
-5. Register in `src/main/providers/builtin/index.ts` and `src/main/proxy/adapters/index.ts`
+1. Create `backend/providers/<id>/` with `config.ts`, `oauth.ts`, `adapter.ts`, `bookmarklet.ts`, and `index.ts` exporting a `ProviderPlugin`
+2. Import that plugin in `backend/providers/registry.ts` (qwen-ai must stay before qwen)
+3. Add the icon to `frontend/src/providers/icons.ts` and SVG under `frontend/src/assets/providers/`
+4. Add i18n keys in `frontend/src/i18n/locales/`
 
 ### Management API
 The web UI talks to the Koa process over HTTP at `/v0/management/*`. The naming convention is still `domain:action` in the compatibility shim (`web-admin-api.ts`).

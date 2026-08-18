@@ -30,14 +30,7 @@ const PROVIDER_LOGIN_URLS: Record<string, string> = {
   perplexity: 'https://www.perplexity.ai',
 }
 import { cn } from '@/lib/utils'
-import deepseekIcon from '@/assets/providers/deepseek.svg'
-import glmIcon from '@/assets/providers/glm.svg'
-import kimiIcon from '@/assets/providers/kimi.svg'
-import mimoIcon from '@/assets/providers/mimo.svg'
-import minimaxIcon from '@/assets/providers/minimax.svg'
-import perplexityIcon from '@/assets/providers/perplexity.svg'
-import qwenIcon from '@/assets/providers/qwen.svg'
-import zaiIcon from '@/assets/providers/zai.svg'
+import { providerIcons } from '@/providers/icons'
 
 interface AddProviderDialogProps {
   open: boolean
@@ -56,18 +49,6 @@ interface AddProviderDialogProps {
       used?: number
     }
   }>
-}
-
-const providerIcons: Record<string, string> = {
-  deepseek: deepseekIcon,
-  glm: glmIcon,
-  kimi: kimiIcon,
-  mimo: mimoIcon,
-  minimax: minimaxIcon,
-  perplexity: perplexityIcon,
-  qwen: qwenIcon,
-  'qwen-ai': qwenIcon,
-  zai: zaiIcon,
 }
 
 function mapOAuthCredentials(providerId: string | undefined, credentials: Record<string, string>): Record<string, string> {
