@@ -15,10 +15,41 @@ and web UI on one port.
 
 ## Quick start with Docker
 
+Build locally:
+
 ```bash
 docker compose up -d --build
 docker compose logs -f chat2api
 ```
+
+Or pull the multi-arch image published by GitHub Actions to GHCR
+(`linux/amd64` and `linux/arm64`):
+
+```bash
+docker pull ghcr.io/leespo/chat2api-web:latest
+docker run -d --name chat2api -p 8080:8080 \
+  -v chat2api-data:/data \
+  ghcr.io/leespo/chat2api-web:latest
+```
+
+Compose can use the same image without building:
+
+```bash
+CHAT2API_IMAGE=ghcr.io/leespo/chat2api-web:latest docker compose up -d
+```
+
+Tags:
+
+| Tag | When it is published |
+| --- | --- |
+| `latest` | Push to the default branch |
+| `sha-<short>` | Every non-PR push |
+| `<branch>` | Push to a named branch |
+| `1.4.0`, `1.4` | Git tag `v1.4.0` |
+
+The first image is private to the GitHub package until you set
+**Package settings → Change visibility → Public** on
+`ghcr.io/leespo/chat2api-web`.
 
 On first boot the logs include:
 

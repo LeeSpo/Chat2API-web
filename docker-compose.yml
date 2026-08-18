@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: chat2api:latest
+    image: ${CHAT2API_IMAGE:-chat2api:latest}
     container_name: chat2api
     restart: unless-stopped
     stop_grace_period: ${CHAT2API_STOP_GRACE_PERIOD:-10m}

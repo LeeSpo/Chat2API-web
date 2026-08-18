@@ -91,6 +91,12 @@ docker compose up -d --build
 docker compose logs -f chat2api
 ```
 
+Or pull a prebuilt image from GHCR (`linux/amd64`, `linux/arm64`):
+
+```bash
+CHAT2API_IMAGE=ghcr.io/leespo/chat2api-web:latest docker compose up -d
+```
+
 Open `http://localhost:8080/` and create an administrator password on first boot. The management secret is optional (`CHAT2API_MANAGEMENT_SECRET` in `.env` skips first-run). See [DEPLOYMENT.md](DEPLOYMENT.md) and the [Docker guide](docs/docker.md).
 
 ## Quick start

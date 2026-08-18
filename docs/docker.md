@@ -6,6 +6,12 @@ The Docker image runs the Koa proxy, management API, and web UI in one process. 
 docker compose up -d --build
 ```
 
+Or pull the image GitHub Actions publishes to GHCR:
+
+```bash
+CHAT2API_IMAGE=ghcr.io/leespo/chat2api-web:latest docker compose up -d
+```
+
 Open `http://localhost:8080/` and create an administrator password. `/admin` redirects to `/`.
 
 ## Build

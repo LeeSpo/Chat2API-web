@@ -91,6 +91,12 @@ docker compose up -d --build
 docker compose logs -f chat2api
 ```
 
+也可以直接拉取 GitHub Actions 发布到 GHCR 的多架构镜像（`linux/amd64`、`linux/arm64`）：
+
+```bash
+CHAT2API_IMAGE=ghcr.io/leespo/chat2api-web:latest docker compose up -d
+```
+
 打开 `http://localhost:8080/`，首次启动时创建管理员密码。也可以在 `.env` 中设置 `CHAT2API_MANAGEMENT_SECRET` 跳过首次设置。详见 [DEPLOYMENT.md](DEPLOYMENT.md) 和 [Docker 指南](docs/docker.md)。
 
 ## 快速开始
