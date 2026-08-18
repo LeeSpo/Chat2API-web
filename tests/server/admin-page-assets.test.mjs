@@ -10,8 +10,9 @@ test('docker admin uses the existing React renderer instead of the lightweight s
   assert.match(packageJson.scripts['build:server'], /build:admin/)
 
   assert.ok(fs.existsSync('src/renderer/admin.html'))
-  assert.ok(fs.existsSync('src/renderer/src/web-main.tsx'))
+  assert.ok(fs.existsSync('src/renderer/src/main.tsx'))
   assert.ok(fs.existsSync('src/renderer/src/web-admin-api.ts'))
+  assert.ok(fs.existsSync('src/renderer/src/components/auth/AuthProvider.tsx'))
   assert.ok(fs.existsSync('vite.admin.config.ts'))
 
   assert.match(serverSource, /mountWebAdminAssets/)

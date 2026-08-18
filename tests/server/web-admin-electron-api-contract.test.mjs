@@ -152,7 +152,7 @@ test('web admin tool-calling smoke preserves electron preload response shape', (
 })
 
 test('web admin marks docker runtime and disables electron-only proxy stop controls', () => {
-  const webMainSource = fs.readFileSync('src/renderer/src/web-main.tsx', 'utf8')
+  const webMainSource = fs.readFileSync('src/renderer/src/main.tsx', 'utf8')
   const headerSource = fs.readFileSync('src/renderer/src/components/layout/Header.tsx', 'utf8')
   const dashboardSource = fs.readFileSync('src/renderer/src/pages/Dashboard.tsx', 'utf8')
   const quickActionsSource = fs.readFileSync('src/renderer/src/components/dashboard/QuickActions.tsx', 'utf8')

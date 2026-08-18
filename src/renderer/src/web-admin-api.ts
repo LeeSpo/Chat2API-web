@@ -14,7 +14,8 @@ import type {
   SystemPrompt,
 } from './types/electron'
 
-const MANAGEMENT_SECRET_KEY = 'chat2api.managementSecret'
+const MANAGEMENT_SECRET_KEY = 'managementApiSecret'
+const LEGACY_SECRET_KEY = 'chat2api.managementSecret'
 const MANAGEMENT_BASE = '/v0/management'
 
 type ManagementResponse<T = unknown> = {
@@ -53,15 +54,22 @@ type BrowserImportPayload = {
 const browserImportSessions = new Map<string, BrowserImportSession>()
 
 export function getStoredManagementSecret(): string {
-  return sessionStorage.getItem(MANAGEMENT_SECRET_KEY) || ''
+  return localStorage.getItem(MANAGEMENT_SECRET_KEY)
+    || sessionStorage.getItem(MANAGEMENT_SECRET_KEY)
+    || sessionStorage.getItem(LEGACY_SECRET_KEY)
+    || ''
 }
 
 export function setManagementSecret(secret: string): void {
-  sessionStorage.setItem(MANAGEMENT_SECRET_KEY, secret)
+  localStorage.setItem(MANAGEMENT_SECRET_KEY, secret)
+  sessionStorage.removeItem(MANAGEMENT_SECRET_KEY)
+  sessionStorage.removeItem(LEGACY_SECRET_KEY)
 }
 
 export function clearManagementSecret(): void {
+  localStorage.removeItem(MANAGEMENT_SECRET_KEY)
   sessionStorage.removeItem(MANAGEMENT_SECRET_KEY)
+  sessionStorage.removeItem(LEGACY_SECRET_KEY)
 }
 
 export async function verifyManagementSecret(secret: string): Promise<boolean> {
@@ -109,6 +117,11 @@ async function managementFetch<T>(
     headers,
   })
 
+  if ((response.status === 401 || response.status === 403) && !path.startsWith('/auth/')) {
+    clearManagementSecret()
+    window.dispatchEvent(new Event('management-api-unauthorized'))
+  }
+
   const contentType = response.headers.get('Content-Type') || ''
   const payload = contentType.includes('application/json')
     ? await response.json() as ManagementResponse<T>
@@ -120,6 +133,48 @@ async function managementFetch<T>(
   }
 
   return payload.data as T
+}
+
+async function publicManagementFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers = new Headers(init.headers)
+  if (init.body !== undefined && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  const response = await fetch(`${MANAGEMENT_BASE}${path}`, {
+    ...init,
+    headers,
+  })
+
+  const payload = await response.json() as ManagementResponse<T>
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.error?.message || `Management API request failed: HTTP ${response.status}`)
+  }
+  return payload.data as T
+}
+
+export const auth = {
+  status: () => publicManagementFetch<{
+    firstRun: boolean
+    requirePassword: boolean
+    passwordSetAt: number | null
+  }>('/auth/status'),
+  setup: (password: string) =>
+    publicManagementFetch<{ secret: string }>('/auth/setup', {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    }),
+  login: (password: string) =>
+    publicManagementFetch<{ secret: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    }),
+  changePassword: (input: { oldPassword: string; newPassword: string; rotateSecret?: boolean }) =>
+    managementFetch<{ secret: string; rotated: boolean }>('/auth/change_password', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+  verifyStoredSecret: () => verifyManagementSecret(getStoredManagementSecret()),
 }
 
 function toQuery(params: Record<string, unknown>): string {

@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { Lock, FileText } from 'lucide-react'
+import { PasswordSettings } from './PasswordSettings'
 
 export function SecuritySettings() {
   const { t } = useTranslation()
@@ -16,6 +17,8 @@ export function SecuritySettings() {
 
   return (
     <div className="space-y-6">
+      {window.__CHAT2API_WEB_ADMIN__ && <PasswordSettings />}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
