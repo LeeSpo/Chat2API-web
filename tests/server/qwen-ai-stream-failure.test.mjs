@@ -16,11 +16,11 @@ import {
   getToolArgumentValidationIssues as realGetToolArgumentValidationIssues,
   normalizeArguments as realNormalizeArguments,
 } from '../../backend/proxy/toolCalling/protocols/shared.ts'
-import { createQwenAiFeatureConfig as realCreateQwenAiFeatureConfig } from '../../backend/proxy/adapters/qwen-ai-feature-config.ts'
+import { createQwenAiFeatureConfig as realCreateQwenAiFeatureConfig } from '../../backend/providers/qwen-ai/feature-config.ts'
 import {
   normalizeQwenAiModelModeName as realNormalizeQwenAiModelModeName,
   resolveQwenAiModelMode as realResolveQwenAiModelMode,
-} from '../../backend/providers/qwen-ai-model-mode.ts'
+} from '../../backend/providers/qwen-ai/model-mode.ts'
 import {
   hasManagedWorkflowCompletionMarker as realHasManagedWorkflowCompletionMarker,
   parseManagedWorkflowCompletionProof as realParseManagedWorkflowCompletionProof,
@@ -31,7 +31,7 @@ import {
 const runtimeRequire = createRequire(import.meta.url)
 
 function loadQwenAiStreamHandler(overrides = {}) {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -1278,7 +1278,7 @@ test('Qwen AI stream does not treat SSE heartbeats as generation progress', asyn
 })
 
 test('Qwen AI stream failure logs upstream event evidence', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   assert.match(source, /upstreamEventCount/)
   assert.match(source, /lastUpstreamEventAt/)
   assert.match(source, /lastUpstreamEventType/)

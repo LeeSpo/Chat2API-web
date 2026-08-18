@@ -8,7 +8,7 @@ import { createAssistantOutputBoundaryStream } from '../../backend/proxy/toolCal
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../backend/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/providers/qwen-ai/accountPolicy.ts'
 
 const QWEN_AI_STREAM_FAILURE_EVENT = 'qwen-ai-stream-failure'
 

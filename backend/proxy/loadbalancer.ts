@@ -7,8 +7,8 @@ import { Account, Provider, LoadBalanceStrategy } from '../store/types'
 import { AccountSelection } from './types'
 import { storeManager } from '../store/store'
 import { normalizeProviderModelForMatch } from './adapters/providerModelOptions'
-import { hasQwenAiSessionCookie } from './adapters/qwen-ai-token-refresh'
-import { qwenAiRequestGovernor } from './qwenAiRequestGovernor'
+import { hasQwenAiSessionCookie } from '../providers/qwen-ai/token-refresh'
+import { qwenAiRequestGovernor } from '../providers/qwen-ai/requestGovernor'
 
 const LOAD_BALANCER_DEBUG = process.env.CHAT2API_LOAD_BALANCER_DEBUG === 'true'
 

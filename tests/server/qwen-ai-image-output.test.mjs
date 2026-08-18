@@ -12,13 +12,13 @@ import {
 import {
   normalizeQwenAiModelModeName as realNormalizeQwenAiModelModeName,
   resolveQwenAiModelMode as realResolveQwenAiModelMode,
-} from '../../backend/providers/qwen-ai-model-mode.ts'
+} from '../../backend/providers/qwen-ai/model-mode.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 const ONE_PIXEL_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z3xkAAAAASUVORK5CYII='
 
 function loadQwenAiModule() {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

@@ -37,8 +37,8 @@ test('ProviderPlugin contract and registry are the single vendor list', () => {
   }
 })
 
-test('non-Qwen-AI vendors live under backend/providers/<id>/', () => {
-  for (const id of EXPECTED_IDS.filter((item) => item !== 'qwen-ai')) {
+test('each vendor lives under backend/providers/<id>/', () => {
+  for (const id of EXPECTED_IDS) {
     assert.equal(fs.existsSync(`backend/providers/${id}/config.ts`), true)
     assert.equal(fs.existsSync(`backend/providers/${id}/oauth.ts`), true)
     assert.equal(fs.existsSync(`backend/providers/${id}/adapter.ts`), true)
@@ -47,6 +47,7 @@ test('non-Qwen-AI vendors live under backend/providers/<id>/', () => {
     assert.equal(fs.existsSync(`backend/proxy/adapters/${id}.ts`), false)
     assert.equal(fs.existsSync(`backend/oauth/adapters/${id}.ts`), false)
   }
+  assert.equal(fs.existsSync('backend/proxy/qwenAiRequestGovernor.ts'), false)
 })
 
 test('OAuth factory delegates to the provider registry', () => {

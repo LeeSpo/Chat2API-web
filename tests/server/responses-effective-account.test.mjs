@@ -8,7 +8,7 @@ import ts from 'typescript'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../backend/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/providers/qwen-ai/accountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 const QWEN_STREAM_FAILURE_EVENT = 'qwen-ai-stream-failure'
@@ -30,7 +30,7 @@ function loadAccountFailoverModule() {
 const accountFailoverModule = loadAccountFailoverModule()
 
 function loadDeferredStreamModule() {
-  const source = fs.readFileSync('backend/proxy/qwenAiDeferredStream.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/deferredStream.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

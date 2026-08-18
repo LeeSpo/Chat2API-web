@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import type { ChatMessage } from './types'
-import type { QwenAiSessionBinding } from './qwenAiSessionBridge'
+import type { ChatMessage } from '../../proxy/types'
+import type { QwenAiSessionBinding } from './sessionBridge'
 import {
   hasTrailingMatchedToolResultBatch,
   isToolResultMessage,
-} from './toolCalling/workflowHeuristics'
+} from '../../proxy/toolCalling/workflowHeuristics'
 
 export interface QwenAiToolCallSessionStoreOptions {
   ttlMs?: number

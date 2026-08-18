@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { getBuiltinProvider } from './builtin'
 import { parseProviderModelsResponse } from './modelSync'
-import { withQwenAiModelModeAliases } from './qwen-ai-model-mode'
+import { withQwenAiModelModeAliases } from './qwen-ai/model-mode'
 import type { Provider, ProviderCheckResult, Account, ProviderModelCapability } from '../../shared/types'
 import type { BuiltinProviderConfig } from '../store/types'
 

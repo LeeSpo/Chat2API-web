@@ -8,7 +8,7 @@ import OSS from 'ali-oss'
 import {
   prepareQwenAiMultimodalMessage,
   QwenAiFileUploader,
-} from '../../backend/proxy/adapters/qwen-ai-files.ts'
+} from '../../backend/providers/qwen-ai/files.ts'
 import { createManagedToolPromptMessage } from '../../backend/proxy/toolCalling/managedPromptMetadata.ts'
 import {
   decodeXml,

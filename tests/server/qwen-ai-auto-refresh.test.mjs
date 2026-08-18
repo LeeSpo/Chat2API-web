@@ -7,7 +7,7 @@ import ts from 'typescript'
 const runtimeRequire = createRequire(import.meta.url)
 
 function loadTokenRefreshModule({ post, updateAccount } = {}) {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-token-refresh.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/token-refresh.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -57,7 +57,7 @@ function qwenAccount(credentials) {
 }
 
 test('Qwen AI credentials include optional email and password for automatic token refresh', () => {
-  const providerSource = fs.readFileSync('backend/providers/builtin/qwen-ai.ts', 'utf8')
+  const providerSource = fs.readFileSync('backend/providers/qwen-ai/config.ts', 'utf8')
   const storeTypesSource = fs.readFileSync('backend/store/types.ts', 'utf8')
   const addAccountSource = fs.readFileSync('frontend/src/components/providers/AddAccountDialog.tsx', 'utf8')
   const providersPageSource = fs.readFileSync('frontend/src/pages/Providers.tsx', 'utf8')
@@ -81,8 +81,8 @@ test('Qwen AI OAuth import form keeps optional refresh login fields', () => {
 })
 
 test('Qwen AI adapter refreshes expiring web tokens by signing in with saved email and password', () => {
-  const refresherSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-token-refresh.ts', 'utf8')
-  const adapterSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const refresherSource = fs.readFileSync('backend/providers/qwen-ai/token-refresh.ts', 'utf8')
+  const adapterSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(refresherSource, /class QwenAiTokenRefresher/)
   assert.match(refresherSource, /\/api\/v2\/auths\/signin/)
@@ -111,7 +111,7 @@ test('Qwen AI adapter refreshes expiring web tokens by signing in with saved ema
 })
 
 test('Qwen AI token refresher persists signin Set-Cookie values for web sessions', () => {
-  const refresherSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-token-refresh.ts', 'utf8')
+  const refresherSource = fs.readFileSync('backend/providers/qwen-ai/token-refresh.ts', 'utf8')
 
   assert.match(refresherSource, /export function mergeCookieHeaders/)
   assert.match(refresherSource, /parseCookiePair/)

@@ -39,7 +39,7 @@ test('client cancellation classifier separates expected disconnects from upstrea
 test('proxy logging keeps cancellation below warning/error while preserving timeout errors', () => {
   const chatSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
   const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
-  const qwenSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const qwenSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(chatSource, /requestFailureLogLevel\(status: number \| undefined\)/)
   assert.match(chatSource, /if \(status === 499\) return 'debug'/)

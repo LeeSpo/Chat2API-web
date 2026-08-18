@@ -8,13 +8,13 @@ import {
 } from '../forwarder'
 import { loadBalancer } from '../loadbalancer'
 import { forwardWithAccountFailover, resolveAccountFailoverLimit } from '../accountFailover'
-import { createDeferredQwenAiFailoverStream } from '../qwenAiDeferredStream'
-import { qwenAiRequestGovernor } from '../qwenAiRequestGovernor'
+import { createDeferredQwenAiFailoverStream } from '../../providers/qwen-ai/deferredStream'
+import { qwenAiRequestGovernor } from '../../providers/qwen-ai/requestGovernor'
 import {
   QwenAiAdapter,
   QWEN_AI_STREAM_FAILURE_EVENT,
   type QwenAiOutputStream,
-} from '../adapters/qwen-ai'
+} from '../../providers/qwen-ai/adapter'
 import { modelMapper } from '../modelMapper'
 import { proxyStatusManager } from '../status'
 import { streamHandler } from '../stream'
@@ -38,12 +38,12 @@ import {
   type QwenAiSessionBridge,
   type QwenAiSessionBinding,
   type QwenAiSessionState,
-} from '../qwenAiSessionBridge'
+} from '../../providers/qwen-ai/sessionBridge'
 import {
   getTrailingQwenAiToolResultBatch,
   qwenAiToolCallSessionStore,
   type QwenAiToolCallSessionClaim,
-} from '../qwenAiToolCallSessionStore'
+} from '../../providers/qwen-ai/toolCallSessionStore'
 import {
   createResponseImageResolver,
   ResponseImageResolutionError,
@@ -51,7 +51,7 @@ import {
 import {
   isQwenAiAccountFault as classifyQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../qwenAiAccountPolicy'
+} from '../../providers/qwen-ai/accountPolicy'
 
 function isQwenAiAccountFault(value: Parameters<typeof classifyQwenAiAccountFault>[0] | undefined): boolean {
   return classifyQwenAiAccountFault(value)

@@ -1,12 +1,12 @@
-import type { ForwardResult } from './types'
-import { storeManager } from '../store/store'
+import type { ForwardResult } from '../../proxy/types'
+import { storeManager } from '../../store/store'
 import type {
   Account,
   AccountStatus,
   Provider,
   QwenAiGovernorConfig,
-} from '../store/types'
-import { normalizeQwenAiGovernorConfig } from '../store/types'
+} from '../../store/types'
+import { normalizeQwenAiGovernorConfig } from '../../store/types'
 import type {
   QwenAiAccountFailoverRecord,
   QwenAiGovernorEffectiveConfig,
@@ -16,8 +16,8 @@ import {
   calculateQwenAiAdaptiveLimits,
   calculateQwenAiRequestReadyAt,
   parseQwenAiRetryAfterMs,
-} from './qwenAiGovernorPolicy'
-import { isQwenAiAccountFault as classifyQwenAiAccountFault } from './qwenAiAccountPolicy'
+} from './governorPolicy'
+import { isQwenAiAccountFault as classifyQwenAiAccountFault } from './accountPolicy'
 
 function isQwenAiAccountFault(value: Parameters<typeof classifyQwenAiAccountFault>[0] | undefined): boolean {
   return classifyQwenAiAccountFault(value)

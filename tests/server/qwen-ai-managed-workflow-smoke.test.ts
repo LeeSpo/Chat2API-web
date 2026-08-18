@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { prepareQwenAiMultimodalMessage } from '../../backend/proxy/adapters/qwen-ai-files.ts'
-import { createQwenAiFeatureConfig } from '../../backend/proxy/adapters/qwen-ai-feature-config.ts'
+import { prepareQwenAiMultimodalMessage } from '../../backend/providers/qwen-ai/files.ts'
+import { createQwenAiFeatureConfig } from '../../backend/providers/qwen-ai/feature-config.ts'
 import { ToolCallingEngine } from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
 import { ToolStreamParser } from '../../backend/proxy/toolCalling/ToolStreamParser.ts'
 import {

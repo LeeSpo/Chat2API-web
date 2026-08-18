@@ -18,14 +18,14 @@ import {
   shouldDeferQwenAiManagedStreamCommit,
 } from '../forwarder'
 import { forwardWithAccountFailover, resolveAccountFailoverLimit } from '../accountFailover'
-import { createDeferredQwenAiFailoverStream } from '../qwenAiDeferredStream'
-import { qwenAiRequestGovernor } from '../qwenAiRequestGovernor'
+import { createDeferredQwenAiFailoverStream } from '../../providers/qwen-ai/deferredStream'
+import { qwenAiRequestGovernor } from '../../providers/qwen-ai/requestGovernor'
 import { KimiAdapter } from '../../providers/kimi/adapter'
 import {
   QwenAiAdapter,
   QWEN_AI_STREAM_FAILURE_EVENT,
   type QwenAiOutputStream,
-} from '../adapters/qwen-ai'
+} from '../../providers/qwen-ai/adapter'
 import { streamHandler } from '../stream'
 import { proxyStatusManager } from '../status'
 import { modelMapper } from '../modelMapper'
@@ -45,16 +45,16 @@ import {
   type QwenAiSessionBinding,
   type QwenAiSessionBridge,
   type QwenAiSessionState,
-} from '../qwenAiSessionBridge'
+} from '../../providers/qwen-ai/sessionBridge'
 import {
   getTrailingQwenAiToolResultBatch,
   qwenAiToolCallSessionStore,
   type QwenAiToolCallSessionClaim,
-} from '../qwenAiToolCallSessionStore'
+} from '../../providers/qwen-ai/toolCallSessionStore'
 import {
   isQwenAiAccountFault as classifyQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../qwenAiAccountPolicy'
+} from '../../providers/qwen-ai/accountPolicy'
 
 function isQwenAiAccountFault(value: Parameters<typeof classifyQwenAiAccountFault>[0] | undefined): boolean {
   return classifyQwenAiAccountFault(value)

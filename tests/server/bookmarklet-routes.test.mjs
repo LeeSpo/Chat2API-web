@@ -30,10 +30,11 @@ test('bookmarklet ticket store is single-use with a 10 minute ttl', () => {
 
 test('bookmarklet script covers built-in providers including qwen-ai cookies', () => {
   const source = fs.readFileSync('backend/oauth/bookmarkletScript.ts', 'utf8')
+  const qwenAi = fs.readFileSync('backend/providers/qwen-ai/bookmarklet.ts', 'utf8')
   for (const provider of ['deepseek', 'glm', 'kimi', 'minimax', 'qwen', "'qwen-ai'", 'zai', 'mimo', 'perplexity']) {
     assert.match(source, new RegExp(provider))
   }
-  assert.match(source, /cookies/)
+  assert.match(qwenAi, /cookies/)
   assert.match(source, /document\.cookie/)
 })
 

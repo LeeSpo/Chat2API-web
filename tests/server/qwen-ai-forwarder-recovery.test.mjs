@@ -34,7 +34,7 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const qwenAiAccountPolicy = loadTypeScriptModule('backend/proxy/qwenAiAccountPolicy.ts')
+const qwenAiAccountPolicy = loadTypeScriptModule('backend/providers/qwen-ai/accountPolicy.ts')
 
 function adapterWithMatcher(name, matches = false) {
   const Adapter = class {}

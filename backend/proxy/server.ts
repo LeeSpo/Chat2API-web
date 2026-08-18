@@ -13,7 +13,7 @@ import managementRoutes from './routes/management'
 import { proxyStatusManager } from './status'
 import { storeManager } from '../store/store'
 import { sessionManager } from './sessionManager'
-import { qwenAiSessionRepairService } from './qwenAiSessionRepair'
+import { qwenAiSessionRepairService } from '../providers/qwen-ai/sessionRepair'
 import { mountWebAdminAssets } from '../admin/assets'
 import { isPublicManagementPath } from './middleware/managementAuth'
 

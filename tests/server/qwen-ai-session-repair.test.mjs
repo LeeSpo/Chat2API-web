@@ -4,7 +4,7 @@ import test from 'node:test'
 import ts from 'typescript'
 
 function loadRepairModule({ accounts, providers, repairWebSession }) {
-  const source = fs.readFileSync('backend/proxy/qwenAiSessionRepair.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/sessionRepair.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

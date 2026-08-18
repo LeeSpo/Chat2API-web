@@ -6,7 +6,7 @@ import { minimaxConfig } from '../minimax'
 import { mimoConfig } from '../mimo'
 import { perplexityConfig } from '../perplexity'
 import { qwenConfig } from '../qwen'
-import qwenAiConfig from './qwen-ai.ts'
+import { qwenAiConfig } from '../qwen-ai/config'
 import { zaiConfig } from '../zai'
 
 export const builtinProviders: BuiltinProviderConfig[] = [

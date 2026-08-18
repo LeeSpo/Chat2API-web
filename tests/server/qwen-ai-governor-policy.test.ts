@@ -5,7 +5,7 @@ import {
   calculateQwenAiAdaptiveLimits,
   calculateQwenAiRequestReadyAt,
   parseQwenAiRetryAfterMs,
-} from '../../backend/proxy/qwenAiGovernorPolicy.ts'
+} from '../../backend/providers/qwen-ai/governorPolicy.ts'
 
 const baseInput = {
   lastGlobalStartAt: 1_000,

@@ -1,5 +1,5 @@
 import type { ChatMessage, ChatMessageContent } from '../types'
-import type { QwenAiSessionBinding } from '../qwenAiSessionBridge'
+import type { QwenAiSessionBinding } from '../../providers/qwen-ai/sessionBridge'
 
 export interface ResponsesConversationStoreOptions {
   ttlMs?: number

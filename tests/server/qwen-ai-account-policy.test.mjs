@@ -7,7 +7,7 @@ import ts from 'typescript'
 const require = createRequire(import.meta.url)
 
 function loadPolicy() {
-  const source = fs.readFileSync('backend/proxy/qwenAiAccountPolicy.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/accountPolicy.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,

@@ -4,12 +4,12 @@ import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
 import OSS from 'ali-oss'
 import mime from 'mime-types'
 import path from 'path'
-import type { ChatMessage, ChatMessageContent } from '../types.ts'
-import { getProviderToolProfile } from '../toolCalling/providerProfiles.ts'
+import type { ChatMessage, ChatMessageContent } from '../../proxy/types.ts'
+import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles.ts'
 import {
   getManagedToolDocumentPrompt,
   isManagedToolPromptMessage,
-} from '../toolCalling/managedPromptMetadata.ts'
+} from '../../proxy/toolCalling/managedPromptMetadata.ts'
 import { getRuntime } from '../../runtime/index.ts'
 
 const QWEN_AI_BASE = 'https://chat.qwen.ai'

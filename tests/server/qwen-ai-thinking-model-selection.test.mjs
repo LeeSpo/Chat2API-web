@@ -15,7 +15,7 @@ test('load balancer matches Qwen AI mode aliases against the base model', () => 
 })
 
 test('Qwen AI resolves explicit model modes before translated client thinking parameters', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.doesNotMatch(source, /THINKING_REQUIRED_MODEL_IDS/)
   assert.match(source, /findModelCapability\(this\.provider, modelForThinking, modelId\)/)

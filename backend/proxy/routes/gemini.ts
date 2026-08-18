@@ -6,7 +6,7 @@ import { modelMapper } from '../modelMapper'
 import { requestForwarder } from '../forwarder'
 import { proxyStatusManager } from '../status'
 import { storeManager } from '../../store/store'
-import { QwenAiAdapter } from '../adapters/qwen-ai'
+import { QwenAiAdapter } from '../../providers/qwen-ai/adapter'
 import {
   chatCompletionStreamToGeminiSse,
   chatCompletionToGeminiResponse,
@@ -16,7 +16,7 @@ import { geminiFileStore } from '../gemini/fileStore'
 import {
   getQwenAiDirectUploadSessionScope,
   type QwenAiDirectUploadInput,
-} from '../adapters/qwen-ai-files'
+} from '../../providers/qwen-ai/files'
 import type { ProxyContext } from '../types'
 
 const router = new Router()

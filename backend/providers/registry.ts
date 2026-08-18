@@ -1,10 +1,6 @@
 import type { AdapterConfig, ProviderType } from '../oauth/types'
-import { QwenAiAdapter as QwenAiOAuth } from '../oauth/adapters/qwen-ai'
-import { PROVIDER_TOKEN_SPECS } from '../oauth/bookmarkletScript'
-import { QwenAiAdapter } from '../proxy/adapters/qwen-ai'
 import type { Provider } from '../store/types'
 import type { BuiltinProviderConfig } from '../store/types'
-import qwenAiConfig from './builtin/qwen-ai'
 import { deepseekPlugin } from './deepseek'
 import { glmPlugin } from './glm'
 import { kimiPlugin } from './kimi'
@@ -12,20 +8,9 @@ import { minimaxPlugin } from './minimax'
 import { mimoPlugin } from './mimo'
 import { perplexityPlugin } from './perplexity'
 import { qwenPlugin } from './qwen'
+import { qwenAiPlugin } from './qwen-ai'
 import { zaiPlugin } from './zai'
 import type { ProviderPlugin } from './types'
-
-const qwenAiPlugin: ProviderPlugin = {
-  id: 'qwen-ai',
-  config: qwenAiConfig,
-  createOAuthAdapter: (config) => new QwenAiOAuth(config),
-  getSupportedAuthMethods: () => ['manual'],
-  matches: QwenAiAdapter.isQwenAiProvider,
-  bookmarklet: PROVIDER_TOKEN_SPECS['qwen-ai'],
-  forward: async () => {
-    throw new Error('Provider qwen-ai forward is still owned by RequestForwarder')
-  },
-}
 
 // qwen-ai is registered before qwen so chat.qwen.ai never matches the China Qwen matcher.
 export const providerPlugins: ProviderPlugin[] = [

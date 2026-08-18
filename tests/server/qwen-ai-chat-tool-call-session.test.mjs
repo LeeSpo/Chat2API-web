@@ -8,7 +8,7 @@ import ts from 'typescript'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../backend/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/providers/qwen-ai/accountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
@@ -35,10 +35,10 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const sessionBridge = loadTypeScriptModule('backend/proxy/qwenAiSessionBridge.ts')
+const sessionBridge = loadTypeScriptModule('backend/providers/qwen-ai/sessionBridge.ts')
 const workflowHeuristics = loadTypeScriptModule('backend/proxy/toolCalling/workflowHeuristics.ts')
 const toolCallSessionStoreModule = loadTypeScriptModule(
-  'backend/proxy/qwenAiToolCallSessionStore.ts',
+  'backend/providers/qwen-ai/toolCallSessionStore.ts',
   { './toolCalling/workflowHeuristics': workflowHeuristics },
 )
 const accountFailover = loadTypeScriptModule('backend/proxy/accountFailover.ts')

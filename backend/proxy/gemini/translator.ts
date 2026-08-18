@@ -1,6 +1,6 @@
 import type { ChatCompletionRequest, ChatCompletionResponse, ChatMessageContent } from '../types'
 import { geminiFileStore } from './fileStore'
-import { QWEN_AI_DIRECT_FILE_SCHEME, getQwenAiDirectUploadFile } from '../adapters/qwen-ai-files'
+import { QWEN_AI_DIRECT_FILE_SCHEME, getQwenAiDirectUploadFile } from '../../providers/qwen-ai/files'
 import { SseKeepAliveStream } from '../utils/sseKeepAlive'
 
 interface GeminiPart {

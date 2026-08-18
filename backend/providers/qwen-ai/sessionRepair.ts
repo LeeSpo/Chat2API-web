@@ -1,9 +1,9 @@
-import type { Account, Provider } from '../store/types'
-import { storeManager } from '../store/store'
+import type { Account, Provider } from '../../store/types'
+import { storeManager } from '../../store/store'
 import {
   hasQwenAiSessionCookie,
   qwenAiTokenRefresher,
-} from './adapters/qwen-ai-token-refresh'
+} from './token-refresh'
 
 const DEFAULT_REPAIR_INTERVAL_MS = 25_000
 const DEFAULT_RESCAN_INTERVAL_MS = 60_000

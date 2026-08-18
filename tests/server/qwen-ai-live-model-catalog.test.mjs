@@ -23,7 +23,7 @@ function loadTypeScriptModule(path, localModules = {}) {
 }
 
 test('Qwen built-in fallback advertises only the current website catalogue', () => {
-  const { qwenAiConfig } = loadTypeScriptModule('backend/providers/builtin/qwen-ai.ts')
+  const { qwenAiConfig } = loadTypeScriptModule('backend/providers/qwen-ai/config.ts')
 
   assert.deepEqual(qwenAiConfig.supportedModels, [
     'Qwen3.8-Max',
@@ -49,7 +49,7 @@ test('Qwen3.8-Max aliases resolve two independent switches and normalize upstrea
     normalizeQwenAiModelModeName,
     resolveQwenAiModelMode,
     withQwenAiModelModeAliases,
-  } = loadTypeScriptModule('backend/providers/qwen-ai-model-mode.ts')
+  } = loadTypeScriptModule('backend/providers/qwen-ai/model-mode.ts')
 
   const cases = [
     ['Qwen3.8-Max', true, false, false],

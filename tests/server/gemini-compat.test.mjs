@@ -16,7 +16,7 @@ test('Gemini compatibility routes are registered alongside OpenAI routes', () =>
 
 test('Gemini translator maps contents parts to OpenAI-compatible chat messages', () => {
   const source = fs.readFileSync('backend/proxy/gemini/translator.ts', 'utf8')
-  const qwenFileSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const qwenFileSource = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
   const typeSource = fs.readFileSync('backend/proxy/types.ts', 'utf8')
 
   assert.match(source, /export function geminiToChatCompletionRequest/)

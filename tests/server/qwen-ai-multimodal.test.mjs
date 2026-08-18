@@ -22,7 +22,7 @@ test('OpenAI chat content type includes audio and video parts for multimodal cli
 })
 
 test('Qwen AI has a dedicated multimodal upload helper', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /class QwenAiFileUploader/)
   assert.match(source, /\/api\/v2\/files\/getstsToken/)
@@ -34,7 +34,7 @@ test('Qwen AI has a dedicated multimodal upload helper', () => {
 })
 
 test('Qwen AI OSS uploads use multipart upload for web-sized video files', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
   const types = fs.readFileSync('backend/types/ali-oss.d.ts', 'utf8')
 
   assert.match(source, /OSS_SINGLE_PUT_MAX_BYTES/)
@@ -58,7 +58,7 @@ test('Qwen AI OSS uploads use multipart upload for web-sized video files', () =>
 })
 
 test('Qwen AI document upload waits for parse completion with a bounded timeout', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /QWEN_AI_FILE_PARSE_POLL_INTERVAL_MS',\s*2000/)
   assert.match(source, /QWEN_AI_FILE_PARSE_TIMEOUT_MS',\s*120000/)
@@ -68,7 +68,7 @@ test('Qwen AI document upload waits for parse completion with a bounded timeout'
 })
 
 test('Qwen AI long text documents add generic evidence excerpts near the user request', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /QWEN_AI_DOCUMENT_EVIDENCE_MARKER/)
   assert.match(source, /createDocumentEvidence\(file,\s*evidenceQueryText\)/)
@@ -83,7 +83,7 @@ test('Qwen AI long text documents add generic evidence excerpts near the user re
 })
 
 test('Qwen AI document evidence is bounded and configurable instead of hard-coded to one fixture', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /QWEN_AI_DOCUMENT_EVIDENCE_MAX_TEXT_BYTES/)
   assert.match(source, /QWEN_AI_DOCUMENT_EVIDENCE_MAX_TOTAL_CHARS/)
@@ -96,8 +96,8 @@ test('Qwen AI document evidence is bounded and configurable instead of hard-code
 })
 
 test('Qwen AI does not forge or rewrite tool arguments from document evidence', () => {
-  const adapterSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
-  const filesSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const adapterSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
+  const filesSource = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.doesNotMatch(adapterSource, /filePath['"]?\s*[:=]/)
   assert.doesNotMatch(adapterSource, /arguments\s*=\s*.*preparedUserMessage/)
@@ -105,7 +105,7 @@ test('Qwen AI does not forge or rewrite tool arguments from document evidence', 
 })
 
 test('Qwen AI multimodal helper preserves full tool-call transcript instead of only the last user message', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /function buildQwenAiTranscript\(messages: ChatMessage\[\]\)/)
   assert.match(source, /getProviderToolProfile\('qwen-ai'\)/)
@@ -128,8 +128,8 @@ test('Qwen AI multimodal helper preserves full tool-call transcript instead of o
 })
 
 test('Qwen AI stream converts only declared upstream native function calls without fabricated arguments', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
-  const nativeToolsSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-native-tools.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
+  const nativeToolsSource = fs.readFileSync('backend/providers/qwen-ai/native-tools.ts', 'utf8')
 
   assert.match(source, /normalizeNativeFunctionCallDelta/)
   assert.match(nativeToolsSource, /delta\.function_call/)
@@ -147,7 +147,7 @@ test('Qwen AI stream converts only declared upstream native function calls witho
 })
 
 test('Qwen AI stream rejects malformed internal tool protocol even when tool choice is auto', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const policySource = fs.readFileSync('backend/proxy/toolCalling/streamValidationPolicy.ts', 'utf8')
 
   assert.match(source, /hadPendingToolProtocol/)
@@ -157,7 +157,7 @@ test('Qwen AI stream rejects malformed internal tool protocol even when tool cho
 })
 
 test('Qwen AI stream isolates the primary upstream response branch before parsing tool calls', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /ignoredResponseIds = new Set<string>\(\)/)
   assert.match(source, /responseBranchLocked = false/)
@@ -172,7 +172,7 @@ test('Qwen AI stream isolates the primary upstream response branch before parsin
 })
 
 test('Qwen AI multimodal helper accepts audio and video inputs', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /part\.type === 'input_audio'/)
   assert.match(source, /part\.type === 'video_url'/)
@@ -183,7 +183,7 @@ test('Qwen AI multimodal helper accepts audio and video inputs', () => {
 })
 
 test('Qwen AI local Gemini files upload by path without reading full videos into memory', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
   const translatorSource = fs.readFileSync('backend/proxy/gemini/translator.ts', 'utf8')
 
   assert.match(source, /localPath/)
@@ -196,8 +196,8 @@ test('Qwen AI local Gemini files upload by path without reading full videos into
 })
 
 test('Qwen AI local file uploads are cached per account to avoid repeat OSS uploads', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
-  const adapterSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
+  const adapterSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /QWEN_AI_FILE_CACHE_ENABLED/)
   assert.match(source, /QWEN_AI_FILE_CACHE_TTL_MS/)
@@ -217,7 +217,7 @@ test('Qwen AI local file uploads are cached per account to avoid repeat OSS uplo
 })
 
 test('Qwen AI direct upload API avoids proxying large Gemini files through the VPS', () => {
-  const filesSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const filesSource = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
   const routeSource = fs.readFileSync('backend/proxy/routes/gemini.ts', 'utf8')
   const translatorSource = fs.readFileSync('backend/proxy/gemini/translator.ts', 'utf8')
 
@@ -235,7 +235,7 @@ test('Qwen AI direct upload API avoids proxying large Gemini files through the V
 })
 
 test('Qwen AI file upload logs each slow stage with elapsed timings', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /\[QwenAI\]\[File\] resolve start/)
   assert.match(source, /\[QwenAI\]\[File\] resolve done/)
@@ -250,14 +250,14 @@ test('Qwen AI file upload logs each slow stage with elapsed timings', () => {
 })
 
 test('Qwen AI Docker upload limit defaults to the web video limit of 2000 MB', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /const MAX_FILE_SIZE = 2000 \* 1024 \* 1024/)
   assert.match(source, /Qwen AI file upload exceeds \$\{MAX_FILE_SIZE\} bytes/)
 })
 
 test('Qwen AI file payload preserves audio and video file types', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/files.ts', 'utf8')
 
   assert.match(source, /const type = file\.coarseType/)
   assert.match(source, /showType:\s*type/)
@@ -265,7 +265,7 @@ test('Qwen AI file payload preserves audio and video file types', () => {
 })
 
 test('Qwen AI adapter sends prepared multimodal files instead of a fixed empty list', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const chatCompletionSource = source.slice(
     source.indexOf('async chatCompletion('),
     source.indexOf('async resumeChatCompletion('),
@@ -278,7 +278,7 @@ test('Qwen AI adapter sends prepared multimodal files instead of a fixed empty l
 })
 
 test('Qwen AI adapter measures and sends the same serialized UTF-8 request body', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const chatCompletionSource = source.slice(
     source.indexOf('async chatCompletion('),
     source.indexOf('async resumeChatCompletion('),
@@ -291,7 +291,7 @@ test('Qwen AI adapter measures and sends the same serialized UTF-8 request body'
 })
 
 test('Qwen AI adapter request timeout is configurable for long-context document runs', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /QWEN_AI_REQUEST_TIMEOUT_MS/)
   assert.match(source, /positiveNumberFromEnv\('QWEN_AI_REQUEST_TIMEOUT_MS',\s*840000\)/)
@@ -300,7 +300,7 @@ test('Qwen AI adapter request timeout is configurable for long-context document 
 })
 
 test('Qwen AI credential warnings require either a JWT or the session token cookie', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /if \(!token && !hasQwenAiSessionCookie\(cookies\)\)/)
   assert.match(source, /No JWT or session token cookie provided/)
@@ -310,7 +310,7 @@ test('Qwen AI credential warnings require either a JWT or the session token cook
 test('Docker Compose exposes Qwen timeout overrides under their runtime names', () => {
   const source = fs.readFileSync('docker-compose.yml', 'utf8')
   const dockerfile = fs.readFileSync('Dockerfile', 'utf8')
-  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/providers/qwen-ai/requestGovernor.ts', 'utf8')
 
   assert.match(source, /CHAT2API_QWEN_AI_QUEUE_TIMEOUT_MS:\s*\$\{CHAT2API_QWEN_AI_QUEUE_TIMEOUT_MS:-120000\}/)
   assert.match(source, /CHAT2API_QWEN_AI_RECOVERY_BUDGET_MS:\s*\$\{CHAT2API_QWEN_AI_RECOVERY_BUDGET_MS:-180000\}/)
@@ -351,7 +351,7 @@ test('Docker Compose exposes Qwen timeout overrides under their runtime names', 
 })
 
 test('Qwen AI stream readers support an optional absolute timeout and enforce idle timeouts', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /nonNegativeNumberFromEnv\('QWEN_AI_RESPONSE_TIMEOUT_MS',\s*0\)/)
   assert.match(source, /if \(responseTimeoutMs > 0\)/)
@@ -363,7 +363,7 @@ test('Qwen AI stream readers support an optional absolute timeout and enforce id
 })
 
 test('Qwen AI stream readers reject transport close before provider completion', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /sawUpstreamCompletion/)
   assert.match(source, /ended before an upstream completion signal/)
@@ -372,7 +372,7 @@ test('Qwen AI stream readers reject transport close before provider completion',
 })
 
 test('Qwen AI adapter redacts sensitive request headers in logs', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /sanitizeHeadersForLog/)
   assert.match(source, /sanitizePayloadForLog/)
@@ -392,7 +392,7 @@ test('Qwen AI adapter redacts sensitive request headers in logs', () => {
 })
 
 test('Qwen AI adapter rejects risk-control and non-stream upstream responses', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /assertChatCompletionStreamResponse/)
   assert.match(source, /hasRiskControlHeaders/)
@@ -407,7 +407,7 @@ test('Qwen AI adapter rejects risk-control and non-stream upstream responses', (
 })
 
 test('Qwen AI temporary chats are cleaned up once across every failure path', () => {
-  const adapterSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const adapterSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
   const forwarderSource = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
   const qwenForwarderSource = forwarderSource.slice(
     forwarderSource.indexOf('private async forwardQwenAi'),
@@ -435,7 +435,7 @@ test('Qwen AI temporary chats are cleaned up once across every failure path', ()
 })
 
 test('Qwen AI adapter no longer hard-codes stale Baxia challenge headers', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /Version:\s*'0\.2\.67'/)
   assert.match(source, /currentTimezoneHeader/)
@@ -448,8 +448,8 @@ test('Qwen AI adapter no longer hard-codes stale Baxia challenge headers', () =>
 })
 
 test('Qwen AI adapter selects cookie-only mode only for a real session token cookie', () => {
-  const adapterSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
-  const authSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-token-refresh.ts', 'utf8')
+  const adapterSource = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
+  const authSource = fs.readFileSync('backend/providers/qwen-ai/token-refresh.ts', 'utf8')
 
   assert.match(adapterSource, /const cookies = this\.getCookies\(\)/)
   assert.match(adapterSource, /resolveQwenAiAuthHeaders\(token, cookies\)/)
@@ -460,7 +460,7 @@ test('Qwen AI adapter selects cookie-only mode only for a real session token coo
 })
 
 test('Qwen AI non-stream responses reject empty upstream output instead of returning fake success', () => {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/providers/qwen-ai/adapter.ts', 'utf8')
 
   assert.match(source, /let sawAnswerFinish = false/)
   assert.match(source, /let sawUpstreamCompletion = false/)

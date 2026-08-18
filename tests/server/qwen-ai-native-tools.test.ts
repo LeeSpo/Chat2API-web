@@ -5,7 +5,7 @@ import {
   mergeNativeToolArguments,
   mergeNativeToolName,
   normalizeNativeFunctionCallDelta,
-} from '../../backend/proxy/adapters/qwen-ai-native-tools.ts'
+} from '../../backend/providers/qwen-ai/native-tools.ts'
 import { getToolArgumentValidationIssues } from '../../backend/proxy/toolCalling/protocols/shared.ts'
 
 test('Qwen AI native tool argument merge supports cumulative chunks without duplication', () => {

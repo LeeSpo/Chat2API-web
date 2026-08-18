@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream'
-import type { AccountFailoverOutcome } from './accountFailover'
-import type { QwenAiOutputStream } from './adapters/qwen-ai'
-import type { ForwardResult } from './types'
+import type { AccountFailoverOutcome } from '../../proxy/accountFailover'
+import type { QwenAiOutputStream } from './adapter'
+import type { ForwardResult } from '../../proxy/types'
 
 const QWEN_AI_STREAM_FAILURE_EVENT = 'qwen-ai-stream-failure'
 

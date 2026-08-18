@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import type { ChatCompletionRequest, ChatMessage } from './types'
+import type { ChatCompletionRequest, ChatMessage } from '../../proxy/types'
 
 /**
  * Provider state retained for one Responses API conversation edge. The values

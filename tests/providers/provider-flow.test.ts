@@ -11,7 +11,7 @@ import { minimaxConfig } from '../../backend/providers/minimax/config.ts'
 import { mimoConfig } from '../../backend/providers/mimo/config.ts'
 import { perplexityConfig } from '../../backend/providers/perplexity/config.ts'
 import { qwenConfig } from '../../backend/providers/qwen/config.ts'
-import { qwenAiConfig } from '../../backend/providers/builtin/qwen-ai.ts'
+import { qwenAiConfig } from '../../backend/providers/qwen-ai/config.ts'
 import { zaiConfig } from '../../backend/providers/zai/config.ts'
 import {
   DEEPSEEK_PRIMARY_MODELS,
@@ -365,7 +365,7 @@ test('Qwen AI defaults prefer the configured stable model while retaining explic
     assert.equal(qwenAiConfig.modelMappings?.[removedModel], undefined, removedModel)
   }
 
-  const qwenAiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen-ai.ts'), 'utf8')
+  const qwenAiAdapterSource = readFileSync(join(root, 'backend/providers/qwen-ai/adapter.ts'), 'utf8')
   assert.match(qwenAiAdapterSource, /'qwen3\.8':\s*'qwen3\.8-max'/)
   assert.match(qwenAiAdapterSource, /'qwen3\.8-max-preview':\s*'qwen3\.8-max-preview'/)
   assert.match(qwenAiAdapterSource, /qwen:\s*'qwen3\.7-max'/)

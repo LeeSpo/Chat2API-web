@@ -9,14 +9,14 @@ import { PassThrough } from 'stream'
 import { performance } from 'node:perf_hooks'
 import { createParser } from 'eventsource-parser'
 import { Account, Provider } from '../../store/types'
-import type { ChatMessage } from '../types'
-import type { ProviderModelCapability } from '../../../shared/types'
-import { hasToolUse, parseToolUse } from '../promptToolUse'
+import type { ChatMessage } from '../../proxy/types'
+import type { ProviderModelCapability } from '../../shared/types'
+import { hasToolUse, parseToolUse } from '../../proxy/promptToolUse'
 import {
   hasQwenAiSessionCookie,
   QwenAiTokenRefresher,
   resolveQwenAiAuthHeaders,
-} from './qwen-ai-token-refresh'
+} from './token-refresh'
 import {
   QwenAiFileUploader,
   QWEN_AI_DOCUMENT_EVIDENCE_MARKER,
@@ -25,44 +25,44 @@ import {
   type QwenAiDirectUploadStartResult,
   type QwenAiManagedDocumentMode,
   type QwenAiMessageTransport,
-} from './qwen-ai-files'
-import { createBaseChunk } from '../utils/streamToolHandler'
-import { isClientCancellationError, sanitizeForwardedErrorHeaders } from '../utils/errors'
-import { ToolStreamParser } from '../toolCalling/ToolStreamParser'
-import type { ToolCallingPlan } from '../toolCalling/types'
-import { getToolProtocol } from '../toolCalling/protocols'
+} from './files'
+import { createBaseChunk } from '../../proxy/utils/streamToolHandler'
+import { isClientCancellationError, sanitizeForwardedErrorHeaders } from '../../proxy/utils/errors'
+import { ToolStreamParser } from '../../proxy/toolCalling/ToolStreamParser'
+import type { ToolCallingPlan } from '../../proxy/toolCalling/types'
+import { getToolProtocol } from '../../proxy/toolCalling/protocols'
 import {
   ManagedToolResultGuard,
   stripManagedToolResultWrappers,
   type ManagedToolResultGuardOutput,
-} from '../toolCalling/managedToolResultGuard'
+} from '../../proxy/toolCalling/managedToolResultGuard'
 import {
   hasManagedWorkflowCompletionMarker,
   parseManagedWorkflowCompletionProof,
   requiresManagedWorkflowCompletionMarker,
-} from '../toolCalling/workflowCompletion'
+} from '../../proxy/toolCalling/workflowCompletion'
 import {
   getToolArgumentValidationIssues,
   normalizeArguments,
-} from '../toolCalling/protocols/shared'
+} from '../../proxy/toolCalling/protocols/shared'
 import {
   getToolStreamValidationFailure,
   type ToolStreamValidationFailure,
-} from '../toolCalling/streamValidationPolicy'
-import type { ToolCall } from '../types'
+} from '../../proxy/toolCalling/streamValidationPolicy'
+import type { ToolCall } from '../../proxy/types'
 import {
   isCompleteJsonText,
   mergeNativeToolArguments,
   mergeNativeToolName,
   normalizeNativeFunctionCallDelta,
   type NativeToolCallState,
-} from './qwen-ai-native-tools'
-import { createQwenAiFeatureConfig } from './qwen-ai-feature-config'
+} from './native-tools'
+import { createQwenAiFeatureConfig } from './feature-config'
 import {
   normalizeQwenAiModelModeName,
   resolveQwenAiModelMode,
-} from '../../providers/qwen-ai-model-mode'
-import type { QwenAiSessionState } from '../qwenAiSessionBridge'
+} from './model-mode'
+import type { QwenAiSessionState } from './sessionBridge'
 
 const QWEN_AI_BASE = 'https://chat.qwen.ai'
 const QWEN_AI_REQUEST_TIMEOUT_MS = positiveNumberFromEnv('QWEN_AI_REQUEST_TIMEOUT_MS', 840000)

@@ -7,6 +7,7 @@ import { mimoBookmarklet } from '../providers/mimo/bookmarklet'
 import { perplexityBookmarklet } from '../providers/perplexity/bookmarklet'
 import { qwenBookmarklet } from '../providers/qwen/bookmarklet'
 import { zaiBookmarklet } from '../providers/zai/bookmarklet'
+import { qwenAiBookmarklet } from '../providers/qwen-ai/bookmarklet'
 
 export interface ProviderTokenSpec {
   storageType: 'localStorage' | 'cookie'
@@ -28,16 +29,7 @@ export const PROVIDER_TOKEN_SPECS: Record<ProviderType, ProviderTokenSpec> = {
   kimi: kimiBookmarklet,
   minimax: minimaxBookmarklet,
   qwen: qwenBookmarklet,
-  'qwen-ai': {
-    storageType: 'localStorage',
-    tokenKey: 'token',
-    tokenField: 'token',
-    extras: [
-      { sourceKey: '*', storageType: 'cookie', field: 'cookies' },
-    ],
-    originLabel: 'Qwen Chat',
-    expectedOrigin: 'https://chat.qwen.ai',
-  },
+  'qwen-ai': qwenAiBookmarklet,
   zai: zaiBookmarklet,
   mimo: mimoBookmarklet,
   perplexity: perplexityBookmarklet,

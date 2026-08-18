@@ -4,7 +4,7 @@ import test from 'node:test'
 import vm from 'node:vm'
 import ts from 'typescript'
 
-const qwenAiSource = fs.readFileSync('backend/providers/builtin/qwen-ai.ts', 'utf8')
+const qwenAiSource = fs.readFileSync('backend/providers/qwen-ai/config.ts', 'utf8')
 const storeTypesSource = fs.readFileSync('backend/store/types.ts', 'utf8')
 const storeSource = fs.readFileSync('backend/store/store.ts', 'utf8')
 const managementProvidersSource = fs.readFileSync('backend/proxy/routes/management/providers.ts', 'utf8')

@@ -35,8 +35,8 @@ import {
   qwenAiResponsesContinuationRetryAttemptsFromEnv,
   type QwenAiOutputStream,
   createQwenAiResumableStream,
-} from './adapters/qwen-ai'
-import type { QwenAiMessageTransport } from './adapters/qwen-ai-files'
+} from '../providers/qwen-ai/adapter'
+import type { QwenAiMessageTransport } from '../providers/qwen-ai/files'
 import { ZaiAdapter, ZaiStreamHandler } from '../providers/zai/adapter'
 import { MiniMaxAdapter, MiniMaxStreamHandler } from '../providers/minimax/adapter'
 import { PerplexityAdapter, PerplexityStreamHandler } from '../providers/perplexity'
@@ -50,7 +50,7 @@ import { sanitizeAssistantInputHistory } from './toolCalling/assistantInputBound
 import {
   qwenAiRequestGovernor,
   type QwenAiRequestClass,
-} from './qwenAiRequestGovernor'
+} from '../providers/qwen-ai/requestGovernor'
 import { BufferedSseError, bufferValidatedSseStream } from './utils/validatedSseStream'
 import { isClientCancellationError, sanitizeForwardedErrorHeaders } from './utils/errors'
 import { sessionManager } from './sessionManager'
@@ -68,13 +68,13 @@ import {
   estimateQwenAiRequestInputTokens,
   planQwenAiCompactionChunks,
   type QwenAiCompactionChunk,
-} from './qwenAiCompactionBoundary'
+} from '../providers/qwen-ai/compactionBoundary'
 import {
   isQwenAiAccountFault as classifyQwenAiAccountFault,
   qwenAiAccountFailureDetails,
   qwenAiSafeExplicitRetryScope,
   qwenAiAccountRetryScope,
-} from './qwenAiAccountPolicy'
+} from '../providers/qwen-ai/accountPolicy'
 
 function isQwenAiAccountFault(value: Parameters<typeof classifyQwenAiAccountFault>[0] | undefined): boolean {
   return classifyQwenAiAccountFault(value)

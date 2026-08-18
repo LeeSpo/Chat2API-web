@@ -11,7 +11,7 @@ export { MimoAdapter } from '../../providers/mimo/oauth'
 export { MiniMaxAdapter } from '../../providers/minimax/oauth'
 export { PerplexityAdapter } from '../../providers/perplexity/oauth'
 export { QwenAdapter } from '../../providers/qwen/oauth'
-export { QwenAiAdapter } from './qwen-ai'
+export { QwenAiAdapter } from '../../providers/qwen-ai/oauth'
 export { ZaiAdapter } from '../../providers/zai/oauth'
 
 import {

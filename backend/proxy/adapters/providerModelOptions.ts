@@ -1,4 +1,4 @@
-import { normalizeQwenAiModelModeName } from '../../providers/qwen-ai-model-mode.ts'
+import { normalizeQwenAiModelModeName } from '../../providers/qwen-ai/model-mode.ts'
 
 export interface DeepSeekChatOptionInput {
   model: string

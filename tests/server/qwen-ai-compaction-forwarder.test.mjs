@@ -10,7 +10,7 @@ import {
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../backend/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/providers/qwen-ai/accountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 

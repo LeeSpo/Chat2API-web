@@ -6,7 +6,7 @@
 import { storeManager } from './store'
 import { Account, AccountStatus, ValidationResult } from './types'
 import { validateCredentials } from './validator'
-import { qwenAiTokenRefresher } from '../proxy/adapters/qwen-ai-token-refresh'
+import { qwenAiTokenRefresher } from '../providers/qwen-ai/token-refresh'
 
 /**
  * Account Manager class

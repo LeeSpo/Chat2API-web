@@ -1,5 +1,5 @@
 import type { ProviderModelCapability } from '../../shared/types'
-import type { ChatCompletionRequest, ChatMessage, ChatMessageContent } from './types'
+import type { ChatCompletionRequest, ChatMessage, ChatMessageContent } from '../../proxy/types'
 
 function positiveIntegerFromEnv(name: string, fallback: number): number {
   const raw = process.env[name]

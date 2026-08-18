@@ -6,7 +6,7 @@
 import type {
   QwenAiSessionBridge,
   QwenAiSessionState,
-} from './qwenAiSessionBridge'
+} from '../providers/qwen-ai/sessionBridge'
 
 /**
  * OpenAI Message Format

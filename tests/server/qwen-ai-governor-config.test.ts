@@ -157,7 +157,7 @@ test('Qwen tool session mode validation rejects unknown values', () => {
 })
 
 test('Qwen queue admission defaults stay at 120 seconds across Docker and source', () => {
-  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/providers/qwen-ai/requestGovernor.ts', 'utf8')
   const dockerfile = fs.readFileSync('Dockerfile', 'utf8')
   const compose = fs.readFileSync('docker-compose.yml', 'utf8')
   const dockerDocs = fs.readFileSync('docs/docker.md', 'utf8')

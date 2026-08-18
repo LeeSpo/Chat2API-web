@@ -4,8 +4,8 @@ import ConfigManager from '../../../store/config'
 import { storeManager } from '../../../store/store'
 import { managementAuthMiddleware } from '../../middleware/managementAuth'
 import { loadBalancer } from '../../loadbalancer'
-import { qwenAiRequestGovernor } from '../../qwenAiRequestGovernor'
-import { qwenAiSessionRepairService } from '../../qwenAiSessionRepair'
+import { qwenAiRequestGovernor } from '../../../providers/qwen-ai/requestGovernor'
+import { qwenAiSessionRepairService } from '../../../providers/qwen-ai/sessionRepair'
 import type {
   ManagementApiResponse,
   QwenAiGovernorConfig,

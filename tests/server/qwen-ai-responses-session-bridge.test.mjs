@@ -31,15 +31,15 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const sessionBridge = loadTypeScriptModule('backend/proxy/qwenAiSessionBridge.ts')
-const qwenAiAccountPolicy = loadTypeScriptModule('backend/proxy/qwenAiAccountPolicy.ts')
+const sessionBridge = loadTypeScriptModule('backend/providers/qwen-ai/sessionBridge.ts')
+const qwenAiAccountPolicy = loadTypeScriptModule('backend/providers/qwen-ai/accountPolicy.ts')
 const storeModule = loadTypeScriptModule('backend/proxy/responses/store.ts', {
   '../qwenAiSessionBridge': sessionBridge,
 })
 const accountFailover = loadTypeScriptModule('backend/proxy/accountFailover.ts')
 const workflowHeuristics = loadTypeScriptModule('backend/proxy/toolCalling/workflowHeuristics.ts')
 const toolCallSessionStoreModule = loadTypeScriptModule(
-  'backend/proxy/qwenAiToolCallSessionStore.ts',
+  'backend/providers/qwen-ai/toolCallSessionStore.ts',
   { './toolCalling/workflowHeuristics': workflowHeuristics },
 )
 
