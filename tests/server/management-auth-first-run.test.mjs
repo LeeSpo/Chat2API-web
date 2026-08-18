@@ -85,6 +85,8 @@ test('server bootstrap enables management API and treats an env secret as first-
   assert.match(source, /CHAT2API_DISABLE_MANAGEMENT_API/)
   assert.match(source, /firstRunCompleted/)
   assert.match(source, /CHAT2API_MANAGEMENT_SECRET/)
+  assert.match(source, /process\.env\.HOST/)
+  assert.match(source, /process\.env\.PORT/)
 })
 
 test('server entry surfaces first-run setup to the operator', () => {

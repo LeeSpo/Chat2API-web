@@ -86,21 +86,12 @@ npm run build:all
 
 ### Docker 服务端
 
-Docker 镜像运行 Koa 代理和浏览器管理端，数据保存在 `/data`，默认监听 `8080`：
-
 ```bash
-docker build -t chat2api:server .
-docker run -d --name chat2api \
-  -p 8080:8080 \
-  -v chat2api-data:/data \
-  -e CHAT2API_HOST=0.0.0.0 \
-  -e CHAT2API_PORT=8080 \
-  -e CHAT2API_ENABLE_MANAGEMENT_API=true \
-  -e CHAT2API_MANAGEMENT_SECRET=change-me \
-  chat2api:server
+docker compose up -d --build
+docker compose logs -f chat2api
 ```
 
-打开 `http://localhost:8080/admin/`，使用管理密钥登录。完整的 [Docker 部署指南](docs/docker.md) 介绍了 Compose、浏览器辅助导入账户、存储加密、Qwen 会话修复和运行参数调优。
+打开 `http://localhost:8080/`，首次启动时创建管理员密码。也可以在 `.env` 中设置 `CHAT2API_MANAGEMENT_SECRET` 跳过首次设置。详见 [DEPLOYMENT.md](DEPLOYMENT.md) 和 [Docker 指南](docs/docker.md)。
 
 ## 快速开始
 

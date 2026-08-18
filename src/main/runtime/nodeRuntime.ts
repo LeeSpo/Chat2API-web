@@ -7,7 +7,7 @@ import type { RuntimeAdapter } from './types.ts'
 const ENCRYPTION_PREFIX = 'c2a:v1:'
 
 function getEncryptionKey(): Buffer | null {
-  const secret = process.env.CHAT2API_STORAGE_ENCRYPTION_KEY
+  const secret = process.env.CHAT2API_ENCRYPTION_KEY || process.env.CHAT2API_STORAGE_ENCRYPTION_KEY
   if (!secret) {
     return null
   }

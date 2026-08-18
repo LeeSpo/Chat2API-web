@@ -1,9 +1,11 @@
-ARG NODE_IMAGE=node:22.21.1
+# syntax=docker/dockerfile:1.7
+ARG NODE_IMAGE=node:22-alpine
 
 FROM ${NODE_IMAGE} AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --ignore-scripts --no-audit --no-fund
 
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
@@ -13,10 +15,12 @@ RUN npm run build:server
 
 FROM ${NODE_IMAGE} AS runtime
 WORKDIR /app
-ENV NODE_ENV=production
-ENV CHAT2API_HOST=0.0.0.0
-ENV CHAT2API_PORT=8080
-ENV CHAT2API_DATA_DIR=/data
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=8080 \
+    CHAT2API_HOST=0.0.0.0 \
+    CHAT2API_PORT=8080 \
+    CHAT2API_DATA_DIR=/data
 ENV CHAT2API_COMPACTION_DETECTION=auto
 ENV CHAT2API_QWEN_AI_COMPACTION_THINKING=auto
 # Compaction input uses live model limits first; these values are deployment
@@ -103,11 +107,16 @@ ENV QWEN_AI_FILE_PARSE_POLL_INTERVAL_MS=2000
 ENV QWEN_AI_FILE_PARSE_TIMEOUT_MS=120000
 ENV QWEN_AI_OSS_STS_REFRESH_INTERVAL_MS=240000
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev --ignore-scripts --no-audit --no-fund && \
+    npm cache clean --force
 COPY --from=build /app/out-server ./out-server
 COPY --from=build /app/out-admin ./out-admin
 COPY --from=build /app/sha3_wasm_bg.7b9ca65ddd.wasm ./sha3_wasm_bg.7b9ca65ddd.wasm
-RUN mkdir -p /data
+RUN mkdir -p /data && \
+    addgroup -S chat2api && adduser -S chat2api -G chat2api && \
+    chown -R chat2api:chat2api /app /data
 VOLUME ["/data"]
 EXPOSE 8080
+USER chat2api
 CMD ["node", "out-server/server/index.js"]

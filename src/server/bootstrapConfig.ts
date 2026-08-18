@@ -30,8 +30,8 @@ function parseBoolean(value: string | undefined): boolean | undefined {
 
 export function createServerConfigOverrides(): Partial<AppConfig> {
   const overrides: Partial<AppConfig> = {}
-  const port = parsePort(process.env.CHAT2API_PORT)
-  const host = process.env.CHAT2API_HOST
+  const port = parsePort(process.env.CHAT2API_PORT || process.env.PORT)
+  const host = process.env.CHAT2API_HOST || process.env.HOST
   const strategy = process.env.CHAT2API_LOAD_BALANCE_STRATEGY as LoadBalanceStrategy | undefined
   const enableManagementApi = parseBoolean(process.env.CHAT2API_ENABLE_MANAGEMENT_API)
   const disableManagementApi = process.env.CHAT2API_DISABLE_MANAGEMENT_API === '1'

@@ -1,6 +1,12 @@
 # Chat2API Docker Server
 
-The Docker image runs the existing Koa proxy and management API without Electron. Data is stored under `/data`, so mount it as a volume.
+The Docker image runs the Koa proxy, management API, and web UI in one process. Data is stored under `/data`. For the operator-facing install path see [DEPLOYMENT.md](../DEPLOYMENT.md).
+
+```bash
+docker compose up -d --build
+```
+
+Open `http://localhost:8080/` and create an administrator password. `/admin` redirects to `/`.
 
 ## Build
 

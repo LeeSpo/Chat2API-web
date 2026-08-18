@@ -14,3 +14,8 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 docs/screenshots
+Chat2API-web-ver
+.git
+.worktrees
+tests
+*.md

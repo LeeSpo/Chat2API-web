@@ -86,21 +86,12 @@ npm run build:all
 
 ### Docker server
 
-The server image runs the Koa proxy and browser admin UI, stores state in `/data`, and listens on port `8080` by default:
-
 ```bash
-docker build -t chat2api:server .
-docker run -d --name chat2api \
-  -p 8080:8080 \
-  -v chat2api-data:/data \
-  -e CHAT2API_HOST=0.0.0.0 \
-  -e CHAT2API_PORT=8080 \
-  -e CHAT2API_ENABLE_MANAGEMENT_API=true \
-  -e CHAT2API_MANAGEMENT_SECRET=change-me \
-  chat2api:server
+docker compose up -d --build
+docker compose logs -f chat2api
 ```
 
-Open `http://localhost:8080/admin/` and use the management secret to sign in. The complete [Docker guide](docs/docker.md) covers Compose, browser-assisted account import, storage encryption, Qwen session repair, and deployment tuning.
+Open `http://localhost:8080/` and create an administrator password on first boot. The management secret is optional (`CHAT2API_MANAGEMENT_SECRET` in `.env` skips first-run). See [DEPLOYMENT.md](DEPLOYMENT.md) and the [Docker guide](docs/docker.md).
 
 ## Quick start
 
