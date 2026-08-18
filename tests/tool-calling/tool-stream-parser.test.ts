@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { ToolStreamParser } from '../../src/main/proxy/toolCalling/ToolStreamParser.ts'
-import { ManagedToolResultGuard } from '../../src/main/proxy/toolCalling/managedToolResultGuard.ts'
-import type { ToolCallingPlan } from '../../src/main/proxy/toolCalling/types.ts'
+import { ToolStreamParser } from '../../backend/proxy/toolCalling/ToolStreamParser.ts'
+import { ManagedToolResultGuard } from '../../backend/proxy/toolCalling/managedToolResultGuard.ts'
+import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 const tools = [
   { name: 'default_api:read_file', parameters: { type: 'object' }, source: 'openai' as const },

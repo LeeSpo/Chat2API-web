@@ -8,16 +8,14 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "typeRoots": ["./node_modules/@types", "./backend/types"]
   },
   "include": [
     "vite.config.ts",
     "vite.admin.config.ts",
     "vite.server.config.ts",
-    "src/main/**/*.ts",
-    "src/server/**/*.ts",
-    "src/shared/**/*.ts",
-    "src/types/**/*.d.ts",
-    "src/main/types/**/*.d.ts"
+    "backend/**/*.ts",
+    "shared/**/*.ts",
+    "backend/types/**/*.d.ts"
   ]
 }

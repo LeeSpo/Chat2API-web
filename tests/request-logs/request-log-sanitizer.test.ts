@@ -1,13 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import type { RequestLogEntry } from '../../src/main/store/types.ts'
-import type { RequestLogConfig } from '../../src/main/requestLogs/types.ts'
+import type { RequestLogEntry } from '../../backend/store/types.ts'
+import type { RequestLogConfig } from '../../backend/requestLogs/types.ts'
 import {
   sanitizeRequestLogEntry,
   sanitizeRequestLogUpdates,
   trimRequestLogsToMaxEntries,
-} from '../../src/main/requestLogs/sanitizer.ts'
+} from '../../backend/requestLogs/sanitizer.ts'
 
 function createEntry(overrides: Partial<RequestLogEntry> = {}): Omit<RequestLogEntry, 'id'> {
   return {

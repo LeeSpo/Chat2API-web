@@ -15,10 +15,10 @@ export default defineConfig({
     ssr: true,
     rollupOptions: {
       input: {
-        'server/index': resolve(__dirname, 'src/server/index.ts'),
-        'server/bootstrapConfig': resolve(__dirname, 'src/server/bootstrapConfig.ts'),
-        'main/runtime/nodeRuntime': resolve(__dirname, 'src/main/runtime/nodeRuntime.ts'),
-        'main/store/storage/nodeJsonStore': resolve(__dirname, 'src/main/store/storage/nodeJsonStore.ts'),
+        'server/index': resolve(__dirname, 'backend/index.ts'),
+        'server/bootstrapConfig': resolve(__dirname, 'backend/bootstrapConfig.ts'),
+        'main/runtime/nodeRuntime': resolve(__dirname, 'backend/runtime/nodeRuntime.ts'),
+        'main/store/storage/nodeJsonStore': resolve(__dirname, 'backend/store/storage/nodeJsonStore.ts'),
       },
       external,
       output: {
@@ -30,7 +30,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@shared': resolve(__dirname, 'src/shared'),
+      '@shared': resolve(__dirname, 'shared'),
     },
   },
 })

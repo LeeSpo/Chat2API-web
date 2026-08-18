@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { getProviderToolProfile } from '../../src/main/proxy/toolCalling/providerProfiles.ts'
+import { getProviderToolProfile } from '../../backend/proxy/toolCalling/providerProfiles.ts'
 
 const calls = [
   { id: 'call_1', name: 'default_api:read_file', arguments: '{"filePath":"/tmp/a"}' },

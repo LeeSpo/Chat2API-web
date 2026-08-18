@@ -13,7 +13,7 @@ test('findSourceArtifacts reports generated JavaScript and declaration files nex
   const root = mkdtempSync(join(tmpdir(), 'source-artifacts-'))
   t.after(() => rmSync(root, { recursive: true, force: true }))
 
-  const srcDir = join(root, 'src/main/proxy')
+  const srcDir = join(root, 'backend/proxy')
   mkdirSync(srcDir, { recursive: true })
   writeFileSync(join(srcDir, 'forwarder.ts'), 'export const source = true\n')
   writeFileSync(join(srcDir, 'forwarder.js'), 'exports.source = true\n')
@@ -23,8 +23,8 @@ test('findSourceArtifacts reports generated JavaScript and declaration files nex
   const artifacts = findSourceArtifacts(root)
 
   assert.deepEqual(artifacts, [
-    'src/main/proxy/forwarder.d.ts',
-    'src/main/proxy/forwarder.js',
+    'backend/proxy/forwarder.d.ts',
+    'backend/proxy/forwarder.js',
   ])
 })
 
@@ -32,7 +32,7 @@ test('removeSourceArtifacts deletes only detected sibling artifacts', (t) => {
   const root = mkdtempSync(join(tmpdir(), 'source-artifacts-remove-'))
   t.after(() => rmSync(root, { recursive: true, force: true }))
 
-  const srcDir = join(root, 'src/main/proxy')
+  const srcDir = join(root, 'backend/proxy')
   mkdirSync(srcDir, { recursive: true })
   const source = join(srcDir, 'forwarder.ts')
   const generated = join(srcDir, 'forwarder.js')
@@ -43,7 +43,7 @@ test('removeSourceArtifacts deletes only detected sibling artifacts', (t) => {
 
   const removed = removeSourceArtifacts(root)
 
-  assert.deepEqual(removed, ['src/main/proxy/forwarder.js'])
+  assert.deepEqual(removed, ['backend/proxy/forwarder.js'])
   assert.equal(existsSync(source), true)
   assert.equal(existsSync(generated), false)
   assert.equal(existsSync(standalone), true)

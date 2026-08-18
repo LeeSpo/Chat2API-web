@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  root: resolve(__dirname, 'src/renderer'),
+  root: resolve(__dirname, 'frontend'),
   base: '/',
   plugins: [react()],
   build: {
@@ -11,14 +11,14 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        admin: resolve(__dirname, 'src/renderer/admin.html'),
+        admin: resolve(__dirname, 'frontend/admin.html'),
       },
     },
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src/renderer/src'),
-      '@shared': resolve(__dirname, 'src/shared'),
+      '@': resolve(__dirname, 'frontend/src'),
+      '@shared': resolve(__dirname, 'shared'),
     },
   },
   server: {

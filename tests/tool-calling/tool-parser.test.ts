@@ -1,9 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { managedBracketProtocol } from '../../src/main/proxy/toolCalling/protocols/managedBracket.ts'
-import { managedXmlProtocol } from '../../src/main/proxy/toolCalling/protocols/managedXml.ts'
-import { anthropicToolUseProtocol } from '../../src/main/proxy/toolCalling/protocols/anthropicToolUse.ts'
-import { codexResponsesProtocol } from '../../src/main/proxy/toolCalling/protocols/codexResponses.ts'
+import { managedBracketProtocol } from '../../backend/proxy/toolCalling/protocols/managedBracket.ts'
+import { managedXmlProtocol } from '../../backend/proxy/toolCalling/protocols/managedXml.ts'
+import { anthropicToolUseProtocol } from '../../backend/proxy/toolCalling/protocols/anthropicToolUse.ts'
+import { codexResponsesProtocol } from '../../backend/proxy/toolCalling/protocols/codexResponses.ts'
 
 const tools = [
   {

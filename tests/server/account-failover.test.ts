@@ -5,8 +5,8 @@ import {
   forwardWithAccountFailover,
   isNextAccountFailoverEligible,
   resolveAccountFailoverLimit,
-} from '../../src/main/proxy/accountFailover.ts'
-import type { AccountSelection, ForwardResult } from '../../src/main/proxy/types.ts'
+} from '../../backend/proxy/accountFailover.ts'
+import type { AccountSelection, ForwardResult } from '../../backend/proxy/types.ts'
 
 function selection(accountId: string): AccountSelection {
   return {
@@ -307,15 +307,15 @@ test('account failover is bounded and never reselects an excluded account', asyn
   assert.equal(outcome.failoverCount, 1)
   assert.equal(outcome.result.success, false)
 
-  const loadBalancerSource = fs.readFileSync('src/main/proxy/loadbalancer.ts', 'utf8')
+  const loadBalancerSource = fs.readFileSync('backend/proxy/loadbalancer.ts', 'utf8')
   assert.match(loadBalancerSource, /excludedAccountIds: ReadonlySet<string>/)
   assert.match(loadBalancerSource, /!excludedAccountIds\.has\(account\.id\)/)
 })
 
 test('both OpenAI-compatible generation routes use the shared account failover policy', () => {
   for (const routePath of [
-    'src/main/proxy/routes/chat.ts',
-    'src/main/proxy/routes/responses.ts',
+    'backend/proxy/routes/chat.ts',
+    'backend/proxy/routes/responses.ts',
   ]) {
     const source = fs.readFileSync(routePath, 'utf8')
     assert.match(source, /forwardWithAccountFailover\(\{/)
@@ -325,8 +325,8 @@ test('both OpenAI-compatible generation routes use the shared account failover p
     assert.match(source, /data:\s*\{\s*attempt,\s*status:\s*result\.status,\s*accountFault:\s*result\.accountFault/)
   }
 
-  const chatSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
-  const responsesSource = fs.readFileSync('src/main/proxy/routes/responses.ts', 'utf8')
+  const chatSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
+  const responsesSource = fs.readFileSync('backend/proxy/routes/responses.ts', 'utf8')
   assert.match(chatSource, /maxFailovers,/)
   assert.match(chatSource, /resolveAccountFailoverLimit\(\{/)
   assert.match(responsesSource, /maxFailovers,/)

@@ -1,11 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import type { ChatMessage } from '../../src/main/proxy/types.ts'
+import type { ChatMessage } from '../../backend/proxy/types.ts'
 import {
   hasTrailingMatchedToolResultBatch,
   isToolCallMessage,
   isToolResultMessage,
-} from '../../src/main/proxy/toolCalling/workflowHeuristics.ts'
+} from '../../backend/proxy/toolCalling/workflowHeuristics.ts'
 
 function openAiCall(id: string, name = 'inspect'): ChatMessage {
   return {

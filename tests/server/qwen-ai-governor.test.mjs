@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { Readable } from 'node:stream'
 import test from 'node:test'
 import ts from 'typescript'
-import { isQwenAiAccountFault } from '../../src/main/proxy/qwenAiAccountPolicy.ts'
+import { isQwenAiAccountFault } from '../../backend/proxy/qwenAiAccountPolicy.ts'
 
 function deferred() {
   let resolve
@@ -17,7 +17,7 @@ function deferred() {
 }
 
 function loadGovernorForRuntimeTest(queueTimeoutMs = 1_000, configOverrides = {}, accountPool = {}) {
-  const source = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -85,7 +85,7 @@ function loadGovernorForRuntimeTest(queueTimeoutMs = 1_000, configOverrides = {}
 }
 
 function loadLoadBalancerForRuntimeTest(storeOverrides = {}) {
-  const source = fs.readFileSync('src/main/proxy/loadbalancer.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/loadbalancer.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -114,8 +114,8 @@ function loadLoadBalancerForRuntimeTest(storeOverrides = {}) {
 }
 
 test('Qwen AI requests are routed through a per-provider governor', () => {
-  const forwarderSource = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
-  const governorSource = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const forwarderSource = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
   const qwenAiForwarderSource = forwarderSource.slice(
     forwarderSource.indexOf('private async forwardQwenAi'),
     forwarderSource.indexOf('/**\n   * Z.ai Dedicated Forward'),
@@ -1128,9 +1128,9 @@ test('Qwen AI governor does not cool an account when an account-neutral request 
 })
 
 test('Qwen AI account-neutral failures bypass load-balancer penalties on immediate and deferred paths', () => {
-  const proxyTypes = fs.readFileSync('src/main/proxy/types.ts', 'utf8')
-  const forwarderSource = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
-  const chatRouteSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
+  const proxyTypes = fs.readFileSync('backend/proxy/types.ts', 'utf8')
+  const forwarderSource = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
+  const chatRouteSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
 
   assert.match(proxyTypes, /accountFault\?: boolean/)
   assert.match(forwarderSource, /qwenAiAccountFailureDetails\(/)
@@ -1143,9 +1143,9 @@ test('Qwen AI account-neutral failures bypass load-balancer penalties on immedia
 })
 
 test('Qwen AI risk-control failures cool the account and require distinct accounts before global circuit', () => {
-  const chatRouteSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
-  const loadBalancerSource = fs.readFileSync('src/main/proxy/loadbalancer.ts', 'utf8')
-  const governorSource = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const chatRouteSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
+  const loadBalancerSource = fs.readFileSync('backend/proxy/loadbalancer.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
 
   assert.match(chatRouteSource, /isQwenAiRiskControl/)
   assert.match(chatRouteSource, /FAIL_SYS_USER_VALIDATE\|RGV587/)
@@ -1173,11 +1173,11 @@ test('Qwen AI risk-control failures cool the account and require distinct accoun
 })
 
 test('Qwen AI governor exposes configurable global risk circuit settings', () => {
-  const sharedTypes = fs.readFileSync('src/shared/types.ts', 'utf8')
-  const storeTypes = fs.readFileSync('src/main/store/types.ts', 'utf8')
-  const configSource = fs.readFileSync('src/main/store/config.ts', 'utf8')
-  const panelSource = fs.readFileSync('src/renderer/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
-  const zh = fs.readFileSync('src/renderer/src/i18n/locales/zh-CN.json', 'utf8')
+  const sharedTypes = fs.readFileSync('shared/types.ts', 'utf8')
+  const storeTypes = fs.readFileSync('backend/store/types.ts', 'utf8')
+  const configSource = fs.readFileSync('backend/store/config.ts', 'utf8')
+  const panelSource = fs.readFileSync('frontend/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
+  const zh = fs.readFileSync('frontend/src/i18n/locales/zh-CN.json', 'utf8')
 
   for (const source of [sharedTypes, storeTypes, panelSource]) {
     assert.match(source, /globalRiskCooldownMs/)
@@ -1198,12 +1198,12 @@ test('Qwen AI governor exposes configurable global risk circuit settings', () =>
 })
 
 test('Qwen AI governor auto-tunes effective rate limits from healthy accounts and risk events', () => {
-  const sharedTypes = fs.readFileSync('src/shared/types.ts', 'utf8')
-  const storeTypes = fs.readFileSync('src/main/store/types.ts', 'utf8')
-  const configSource = fs.readFileSync('src/main/store/config.ts', 'utf8')
-  const governorSource = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
-  const panelSource = fs.readFileSync('src/renderer/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
-  const en = fs.readFileSync('src/renderer/src/i18n/locales/en-US.json', 'utf8')
+  const sharedTypes = fs.readFileSync('shared/types.ts', 'utf8')
+  const storeTypes = fs.readFileSync('backend/store/types.ts', 'utf8')
+  const configSource = fs.readFileSync('backend/store/config.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const panelSource = fs.readFileSync('frontend/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
+  const en = fs.readFileSync('frontend/src/i18n/locales/en-US.json', 'utf8')
 
   for (const source of [sharedTypes, storeTypes]) {
     assert.match(source, /autoTuneEnabled/)
@@ -1231,15 +1231,15 @@ test('Qwen AI governor auto-tunes effective rate limits from healthy accounts an
 })
 
 test('Qwen AI cancellation and timeout paths are not retried or logged as success', () => {
-  const forwarderSource = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
-  const governorSource = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
-  const qwenAiSource = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
-  const proxyTypes = fs.readFileSync('src/main/proxy/types.ts', 'utf8')
+  const forwarderSource = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const qwenAiSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
+  const proxyTypes = fs.readFileSync('backend/proxy/types.ts', 'utf8')
 
   assert.match(proxyTypes, /retryable\?: boolean/)
   assert.match(forwarderSource, /context\.signal\?\.aborted/)
   assert.match(forwarderSource, /isClientCancellationError\(error\)/)
-  const errorsSource = fs.readFileSync('src/main/proxy/utils/errors.ts', 'utf8')
+  const errorsSource = fs.readFileSync('backend/proxy/utils/errors.ts', 'utf8')
   assert.match(errorsSource, /name === 'CanceledError'/)
   assert.match(errorsSource, /code === 'ERR_CANCELED'/)
   assert.match(forwarderSource, /timed out\|timeout\|idle for more than/)
@@ -1256,7 +1256,7 @@ test('Qwen AI cancellation and timeout paths are not retried or logged as succes
   assert.match(qwenAiSource, /stream\.once\('error', onUpstreamError\)[\s\S]*if \(options\.signal\?\.aborted\)/)
   assert.match(forwarderSource, /retryable = status === 499[\s\S]*status === 403[\s\S]*status === 429[\s\S]*status === 504[\s\S]*\? false/)
 
-  const chatRouteSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
+  const chatRouteSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
   assert.match(chatRouteSource, /deferStreamOutcome/)
   assert.match(chatRouteSource, /QWEN_AI_STREAM_FAILURE_EVENT/)
   assert.match(chatRouteSource, /streamFailureStatus/)
@@ -1267,7 +1267,7 @@ test('Qwen AI cancellation and timeout paths are not retried or logged as succes
   assert.match(governorSource, /settledByAbort \|\| item\.signal\?\.aborted \|\| item\.cancelled/)
   assert.match(governorSource, /item\.cancelled = true\s*\n\s*this\.clearQueueItemWaiters\(item\)/)
 
-  const geminiRouteSource = fs.readFileSync('src/main/proxy/routes/gemini.ts', 'utf8')
+  const geminiRouteSource = fs.readFileSync('backend/proxy/routes/gemini.ts', 'utf8')
   assert.match(geminiRouteSource, /ctx\.res\.once\('close',[\s\S]*!ctx\.res\.writableEnded/)
 })
 
@@ -1435,7 +1435,7 @@ test('Qwen AI complete-session failover never falls through to an incomplete ses
 })
 
 test('Qwen AI production logs avoid dumping full prompts by default', () => {
-  const qwenAiSource = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const qwenAiSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
 
   assert.match(qwenAiSource, /CHAT2API_QWEN_AI_DEBUG_PAYLOADS/)
   assert.match(qwenAiSource, /CHAT2API_QWEN_AI_DEBUG_STREAM/)
@@ -1495,7 +1495,7 @@ test('Qwen AI governor exposes the latest structured failover for each account',
 
   assert.deepEqual(status.accounts[0].recentFailover, record)
 
-  const panelSource = fs.readFileSync('src/renderer/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
+  const panelSource = fs.readFileSync('frontend/src/components/proxy/QwenAiGovernorPanel.tsx', 'utf8')
   assert.match(panelSource, /loadBalancerRecoveryInMs/)
   assert.match(panelSource, /loadBalancerFailures > 0/)
   assert.match(panelSource, /recentFailover/)

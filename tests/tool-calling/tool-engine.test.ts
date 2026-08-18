@@ -1,9 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { ToolCallingEngine } from '../../src/main/proxy/toolCalling/ToolCallingEngine.ts'
-import { MANAGED_TOOL_PROMPT_MESSAGE_NAME } from '../../src/main/proxy/toolCalling/managedPromptMetadata.ts'
-import type { ChatCompletionRequest } from '../../src/main/proxy/types.ts'
-import type { Provider } from '../../src/main/store/types.ts'
+import { ToolCallingEngine } from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
+import { MANAGED_TOOL_PROMPT_MESSAGE_NAME } from '../../backend/proxy/toolCalling/managedPromptMetadata.ts'
+import type { ChatCompletionRequest } from '../../backend/proxy/types.ts'
+import type { Provider } from '../../backend/store/types.ts'
 
 const provider = {
   id: 'deepseek',

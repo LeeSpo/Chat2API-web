@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import test from 'node:test'
 
 test('forwarder preserves provider error status after retry loop', () => {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
 
   assert.match(source, /let lastStatus: number \| undefined/)
   assert.match(source, /lastStatus = result\.status/)
@@ -12,7 +12,7 @@ test('forwarder preserves provider error status after retry loop', () => {
 })
 
 test('forwarder does not retry cancellations or completed response timeouts', () => {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
 
   assert.match(source, /result\.status === 499/)
   assert.match(source, /lastStatus === 499[\s\S]*isQwenAiProvider && lastStatus === 504[\s\S]*\? false/)
@@ -21,7 +21,7 @@ test('forwarder does not retry cancellations or completed response timeouts', ()
 })
 
 test('forwarder leaves ordinary Qwen account failover to the route instead of requeueing the same account', () => {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
 
   assert.match(source, /const maxRetries = QwenAiAdapter\.isQwenAiProvider\(provider\)[\s\S]*requestIntent === 'context_compaction'[\s\S]*\? 0[\s\S]*recoverManagedToolStream[\s\S]*qwenAiRetryCountFromEnv\(recoverManagedToolStream\)[\s\S]*: 0[\s\S]*: config\.retryCount/)
   assert.match(source, /lastRetryScope = result\.retryScope/)
@@ -29,7 +29,7 @@ test('forwarder leaves ordinary Qwen account failover to the route instead of re
 })
 
 test('forwarder retry backoff stops promptly when the client aborts', () => {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
 
   assert.match(source, /this\.delay\(\s*Math\.min\(nextRetryDelayMs, remainingBudgetMs\),\s*context\.signal,?\s*\)/)
   assert.match(source, /if \(!delayCompleted\) \{[\s\S]*lastStatus = 499/)

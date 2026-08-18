@@ -6,16 +6,16 @@ import test from 'node:test'
 import ts from 'typescript'
 import {
   sanitizeAssistantInputHistory as sanitizeRealAssistantInputHistory,
-} from '../../src/main/proxy/toolCalling/assistantInputBoundary.ts'
+} from '../../backend/proxy/toolCalling/assistantInputBoundary.ts'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../src/main/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/proxy/qwenAiAccountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
 function loadRequestForwarder(overrides = {}) {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

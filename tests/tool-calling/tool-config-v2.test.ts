@@ -6,7 +6,7 @@ import {
   normalizeToolCallingConfig,
   P0_TOOL_CLIENT_ADAPTERS,
   P0_TOOL_PROVIDER_SUPPORT,
-} from '../../src/shared/toolCalling.ts'
+} from '../../shared/toolCalling.ts'
 
 test('v2 tool calling defaults use managed standard OpenAI tools', () => {
   assert.deepEqual(DEFAULT_TOOL_CALLING_CONFIG, {

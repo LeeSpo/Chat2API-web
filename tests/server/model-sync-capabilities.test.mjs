@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 import test from 'node:test'
 import ts from 'typescript'
 
-const source = fs.readFileSync('src/main/providers/modelSync.ts', 'utf8')
+const source = fs.readFileSync('backend/providers/modelSync.ts', 'utf8')
 const require = createRequire(import.meta.url)
 const output = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },

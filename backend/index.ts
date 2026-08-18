@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv'
-import { setRuntime } from '../main/runtime'
-import { nodeRuntime } from '../main/runtime/nodeRuntime'
-import { proxyServer } from '../main/proxy/server'
-import { storeManager } from '../main/store/store'
+import { setRuntime } from './runtime'
+import { nodeRuntime } from './runtime/nodeRuntime'
+import { proxyServer } from './proxy/server'
+import { storeManager } from './store/store'
 import { applyServerConfigOverrides } from './bootstrapConfig'
 
 dotenv.config()

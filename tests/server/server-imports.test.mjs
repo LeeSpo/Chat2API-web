@@ -29,8 +29,7 @@ function walk(dir) {
 
 test('server-owned files do not import electron directly', () => {
   const checkedRoots = [
-    path.join(repoRoot, 'src/server'),
-    path.join(repoRoot, 'src/main'),
+    path.join(repoRoot, 'backend'),
   ]
 
   const violations = []

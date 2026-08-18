@@ -10,14 +10,14 @@ import {
   normalizeQwenAiConcurrency,
   normalizeQwenAiGovernorConfig,
   normalizeQwenAiSessionMode,
-} from '../../src/main/store/types.ts'
+} from '../../backend/store/types.ts'
 
 type ConfigManagerShape = {
   validate(config: Record<string, unknown>): { valid: boolean; errors: string[] }
 }
 
 function loadConfigManagerForValidation(): ConfigManagerShape {
-  const source = fs.readFileSync('src/main/store/config.ts', 'utf8')
+  const source = fs.readFileSync('backend/store/config.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -157,7 +157,7 @@ test('Qwen tool session mode validation rejects unknown values', () => {
 })
 
 test('Qwen queue admission defaults stay at 120 seconds across Docker and source', () => {
-  const governorSource = fs.readFileSync('src/main/proxy/qwenAiRequestGovernor.ts', 'utf8')
+  const governorSource = fs.readFileSync('backend/proxy/qwenAiRequestGovernor.ts', 'utf8')
   const dockerfile = fs.readFileSync('Dockerfile', 'utf8')
   const compose = fs.readFileSync('docker-compose.yml', 'utf8')
   const dockerDocs = fs.readFileSync('docs/docker.md', 'utf8')

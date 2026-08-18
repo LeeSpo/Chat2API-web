@@ -96,7 +96,7 @@ const expectedContract = {
 }
 
 test('web admin adapter exposes the preload electronAPI contract', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(source, /window\.electronAPI\s*=/)
   assert.match(source, /sessionStorage/)
@@ -117,7 +117,7 @@ test('web admin adapter exposes the preload electronAPI contract', () => {
 })
 
 test('web admin keeps browser management secret in sync after settings changes', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(
     source,
@@ -132,7 +132,7 @@ test('web admin keeps browser management secret in sync after settings changes',
 })
 
 test('web admin proxy start is idempotent when docker server is already running', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(
     source,
@@ -142,7 +142,7 @@ test('web admin proxy start is idempotent when docker server is already running'
 })
 
 test('web admin tool-calling smoke preserves electron preload response shape', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(
     source,
@@ -152,12 +152,12 @@ test('web admin tool-calling smoke preserves electron preload response shape', (
 })
 
 test('web admin marks docker runtime and disables electron-only proxy stop controls', () => {
-  const webMainSource = fs.readFileSync('src/renderer/src/main.tsx', 'utf8')
-  const headerSource = fs.readFileSync('src/renderer/src/components/layout/Header.tsx', 'utf8')
-  const dashboardSource = fs.readFileSync('src/renderer/src/pages/Dashboard.tsx', 'utf8')
-  const quickActionsSource = fs.readFileSync('src/renderer/src/components/dashboard/QuickActions.tsx', 'utf8')
-  const proxyStatusSource = fs.readFileSync('src/renderer/src/components/proxy/ProxyStatus.tsx', 'utf8')
-  const proxyConfigFormSource = fs.readFileSync('src/renderer/src/components/proxy/ProxyConfigForm.tsx', 'utf8')
+  const webMainSource = fs.readFileSync('frontend/src/main.tsx', 'utf8')
+  const headerSource = fs.readFileSync('frontend/src/components/layout/Header.tsx', 'utf8')
+  const dashboardSource = fs.readFileSync('frontend/src/pages/Dashboard.tsx', 'utf8')
+  const quickActionsSource = fs.readFileSync('frontend/src/components/dashboard/QuickActions.tsx', 'utf8')
+  const proxyStatusSource = fs.readFileSync('frontend/src/components/proxy/ProxyStatus.tsx', 'utf8')
+  const proxyConfigFormSource = fs.readFileSync('frontend/src/components/proxy/ProxyConfigForm.tsx', 'utf8')
 
   assert.match(webMainSource, /__CHAT2API_WEB_ADMIN__\s*=\s*true/)
   assert.match(headerSource, /isDockerWebAdmin/)
@@ -168,11 +168,11 @@ test('web admin marks docker runtime and disables electron-only proxy stop contr
 })
 
 test('web admin uses bookmarklet OAuth instead of docker in-app oauth', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
-  const addAccountSource = fs.readFileSync('src/renderer/src/components/providers/AddAccountDialog.tsx', 'utf8')
-  const addProviderSource = fs.readFileSync('src/renderer/src/components/providers/AddProviderDialog.tsx', 'utf8')
-  const electronTypes = fs.readFileSync('src/renderer/src/types/electron.d.ts', 'utf8')
-  const panelSource = fs.readFileSync('src/renderer/src/components/oauth/BookmarkletPanel.tsx', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
+  const addAccountSource = fs.readFileSync('frontend/src/components/providers/AddAccountDialog.tsx', 'utf8')
+  const addProviderSource = fs.readFileSync('frontend/src/components/providers/AddProviderDialog.tsx', 'utf8')
+  const electronTypes = fs.readFileSync('frontend/src/types/electron.d.ts', 'utf8')
+  const panelSource = fs.readFileSync('frontend/src/components/oauth/BookmarkletPanel.tsx', 'utf8')
 
   assert.match(source, /bookmarklet:\s*\{/)
   assert.match(source, /\/oauth\/bookmarklet\/issue/)

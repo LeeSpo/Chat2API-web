@@ -2,14 +2,14 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import test from 'node:test'
 
-const authSource = () => fs.readFileSync('src/main/proxy/routes/management/auth.ts', 'utf8')
-const middlewareSource = () => fs.readFileSync('src/main/proxy/middleware/managementAuth.ts', 'utf8')
-const indexSource = () => fs.readFileSync('src/main/proxy/routes/management/index.ts', 'utf8')
-const serverSource = () => fs.readFileSync('src/main/proxy/server.ts', 'utf8')
-const storeTypesSource = () => fs.readFileSync('src/main/store/types.ts', 'utf8')
-const sharedTypesSource = () => fs.readFileSync('src/shared/types.ts', 'utf8')
-const bootstrapSource = () => fs.readFileSync('src/server/bootstrapConfig.ts', 'utf8')
-const serverEntrySource = () => fs.readFileSync('src/server/index.ts', 'utf8')
+const authSource = () => fs.readFileSync('backend/proxy/routes/management/auth.ts', 'utf8')
+const middlewareSource = () => fs.readFileSync('backend/proxy/middleware/managementAuth.ts', 'utf8')
+const indexSource = () => fs.readFileSync('backend/proxy/routes/management/index.ts', 'utf8')
+const serverSource = () => fs.readFileSync('backend/proxy/server.ts', 'utf8')
+const storeTypesSource = () => fs.readFileSync('backend/store/types.ts', 'utf8')
+const sharedTypesSource = () => fs.readFileSync('shared/types.ts', 'utf8')
+const bootstrapSource = () => fs.readFileSync('backend/bootstrapConfig.ts', 'utf8')
+const serverEntrySource = () => fs.readFileSync('backend/index.ts', 'utf8')
 
 test('management auth routes expose public first-run and login endpoints', () => {
   const source = authSource()

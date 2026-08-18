@@ -4,7 +4,7 @@ import {
   createQwenHermesDocumentPrompt,
   qwenHermesRoutingSummaryMaxCodePointsFromEnv,
   qwenHermesProtocol,
-} from '../../src/main/proxy/toolCalling/protocols/qwenHermes.ts'
+} from '../../backend/proxy/toolCalling/protocols/qwenHermes.ts'
 
 const tools = [
   {

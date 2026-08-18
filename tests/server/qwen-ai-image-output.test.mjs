@@ -8,17 +8,17 @@ import ts from 'typescript'
 import {
   ManagedToolResultGuard as RealManagedToolResultGuard,
   stripManagedToolResultWrappers as realStripManagedToolResultWrappers,
-} from '../../src/main/proxy/toolCalling/managedToolResultGuard.ts'
+} from '../../backend/proxy/toolCalling/managedToolResultGuard.ts'
 import {
   normalizeQwenAiModelModeName as realNormalizeQwenAiModelModeName,
   resolveQwenAiModelMode as realResolveQwenAiModelMode,
-} from '../../src/main/providers/qwen-ai-model-mode.ts'
+} from '../../backend/providers/qwen-ai-model-mode.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 const ONE_PIXEL_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z3xkAAAAASUVORK5CYII='
 
 function loadQwenAiModule() {
-  const source = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -417,7 +417,7 @@ test('Qwen AI ordinary Chat Completions retain t2t without image-generation meta
 })
 
 test('Qwen AI forwarder preserves the internal Responses image-generation hint', () => {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
   assert.match(source, /if \(intent !== 'context_compaction'\) return request/)
   assert.match(source, /image_generation:\s*providerRequest\.image_generation/)
 })

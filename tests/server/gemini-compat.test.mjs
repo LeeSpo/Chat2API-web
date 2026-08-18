@@ -3,8 +3,8 @@ import fs from 'node:fs'
 import test from 'node:test'
 
 test('Gemini compatibility routes are registered alongside OpenAI routes', () => {
-  const routeIndex = fs.readFileSync('src/main/proxy/routes/index.ts', 'utf8')
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
+  const routeIndex = fs.readFileSync('backend/proxy/routes/index.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
 
   assert.match(routeIndex, /geminiRouter/)
   assert.match(routeIndex, /from '\.\/gemini'/)
@@ -15,9 +15,9 @@ test('Gemini compatibility routes are registered alongside OpenAI routes', () =>
 })
 
 test('Gemini translator maps contents parts to OpenAI-compatible chat messages', () => {
-  const source = fs.readFileSync('src/main/proxy/gemini/translator.ts', 'utf8')
-  const qwenFileSource = fs.readFileSync('src/main/proxy/adapters/qwen-ai-files.ts', 'utf8')
-  const typeSource = fs.readFileSync('src/main/proxy/types.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/gemini/translator.ts', 'utf8')
+  const qwenFileSource = fs.readFileSync('backend/proxy/adapters/qwen-ai-files.ts', 'utf8')
+  const typeSource = fs.readFileSync('backend/proxy/types.ts', 'utf8')
 
   assert.match(source, /export function geminiToChatCompletionRequest/)
   assert.match(source, /inlineData/)
@@ -41,7 +41,7 @@ test('Gemini translator maps contents parts to OpenAI-compatible chat messages',
 })
 
 test('Gemini file store supports official resumable upload flow and 48 hour ttl', () => {
-  const source = fs.readFileSync('src/main/proxy/gemini/fileStore.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/gemini/fileStore.ts', 'utf8')
 
   assert.match(source, /GEMINI_FILE_TTL_MS = 48 \* 60 \* 60 \* 1000/)
   assert.match(source, /X-Goog-Upload-Protocol/)
@@ -55,7 +55,7 @@ test('Gemini file store supports official resumable upload flow and 48 hour ttl'
 })
 
 test('Gemini route forwards generateContent through existing OpenAI request forwarder', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/gemini.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/gemini.ts', 'utf8')
 
   assert.match(source, /new Router\(\)/)
   assert.doesNotMatch(source, /router\.post\('\/v1beta\/models\/:model:generateContent'/)
@@ -71,7 +71,7 @@ test('Gemini route forwards generateContent through existing OpenAI request forw
 })
 
 test('Gemini route records failures for aborted or timed out forwarding paths', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/gemini.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/gemini.ts', 'utf8')
 
   assert.match(source, /let statisticsRecorded = false/)
   assert.match(source, /const recordFailure = \(\) =>/)
@@ -83,7 +83,7 @@ test('Gemini route records failures for aborted or timed out forwarding paths', 
 })
 
 test('Gemini route writes detailed request logs for generateContent calls', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/gemini.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/gemini.ts', 'utf8')
 
   assert.match(source, /storeManager\.addRequestLog/)
   assert.match(source, /url: ctx\.path/)

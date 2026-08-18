@@ -5,7 +5,7 @@ import test from 'node:test'
 import ts from 'typescript'
 
 const runtimeRequire = createRequire(import.meta.url)
-const source = fs.readFileSync('src/main/proxy/requestIntent.ts', 'utf8')
+const source = fs.readFileSync('backend/proxy/requestIntent.ts', 'utf8')
 const output = ts.transpileModule(source, {
   compilerOptions: {
     esModuleInterop: true,

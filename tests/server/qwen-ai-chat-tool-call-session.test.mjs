@@ -8,7 +8,7 @@ import ts from 'typescript'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../src/main/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/proxy/qwenAiAccountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
@@ -35,13 +35,13 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const sessionBridge = loadTypeScriptModule('src/main/proxy/qwenAiSessionBridge.ts')
-const workflowHeuristics = loadTypeScriptModule('src/main/proxy/toolCalling/workflowHeuristics.ts')
+const sessionBridge = loadTypeScriptModule('backend/proxy/qwenAiSessionBridge.ts')
+const workflowHeuristics = loadTypeScriptModule('backend/proxy/toolCalling/workflowHeuristics.ts')
 const toolCallSessionStoreModule = loadTypeScriptModule(
-  'src/main/proxy/qwenAiToolCallSessionStore.ts',
+  'backend/proxy/qwenAiToolCallSessionStore.ts',
   { './toolCalling/workflowHeuristics': workflowHeuristics },
 )
-const accountFailover = loadTypeScriptModule('src/main/proxy/accountFailover.ts')
+const accountFailover = loadTypeScriptModule('backend/proxy/accountFailover.ts')
 
 const tools = [{
   type: 'function',
@@ -94,7 +94,7 @@ function toolResultTurnRequest() {
 }
 
 function loadChatRouteHarness(options = {}) {
-  const source = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

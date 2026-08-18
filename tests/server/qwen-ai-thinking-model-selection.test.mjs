@@ -3,8 +3,8 @@ import fs from 'node:fs'
 import test from 'node:test'
 
 test('load balancer matches Qwen AI mode aliases against the base model', () => {
-  const source = fs.readFileSync('src/main/proxy/loadbalancer.ts', 'utf8')
-  const optionsSource = fs.readFileSync('src/main/proxy/adapters/providerModelOptions.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/loadbalancer.ts', 'utf8')
+  const optionsSource = fs.readFileSync('backend/proxy/adapters/providerModelOptions.ts', 'utf8')
 
   assert.match(source, /normalizeModelForProviderMatch/)
   assert.match(source, /normalizeProviderModelForMatch\(model\)/)
@@ -15,7 +15,7 @@ test('load balancer matches Qwen AI mode aliases against the base model', () => 
 })
 
 test('Qwen AI resolves explicit model modes before translated client thinking parameters', () => {
-  const source = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
 
   assert.doesNotMatch(source, /THINKING_REQUIRED_MODEL_IDS/)
   assert.match(source, /findModelCapability\(this\.provider, modelForThinking, modelId\)/)
@@ -29,7 +29,7 @@ test('Qwen AI resolves explicit model modes before translated client thinking pa
 })
 
 test('load balancer avoids a failed Qwen AI account on the next selection', () => {
-  const source = fs.readFileSync('src/main/proxy/loadbalancer.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/loadbalancer.ts', 'utf8')
 
   assert.match(source, /FAIL_THRESHOLD = 1/)
   assert.match(source, /RECOVERY_TIME = 60000/)

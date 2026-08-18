@@ -18,22 +18,19 @@ npm start                # Run the production server bundle
 ## Architecture
 
 ```
-src/
-├── server/                  # Node entrypoint (no Electron)
-│   ├── index.ts            # Store init, first-run auth, listen
-│   └── admin/              # Static web UI serving
-├── main/                    # Server-side business logic
-│   ├── proxy/              # Proxy server (Koa)
-│   │   ├── server.ts       # HTTP server with middleware
-│   │   ├── forwarder.ts    # Request forwarding logic & auth
-│   │   ├── adapters/       # Provider-specific adapters
-│   │   ├── sessionManager.ts
-│   │   └── services/
-│   ├── oauth/              # Token validation + bookmarklet ingest
-│   ├── providers/          # Provider configurations
-│   └── store/              # JSON storage (Node)
-├── renderer/               # React web UI
-└── shared/                 # Shared types
+backend/                     # Node entrypoint + server-side business logic
+├── index.ts                # Store init, first-run auth, listen
+├── admin/                  # Static web UI serving
+├── proxy/                  # Proxy server (Koa)
+│   ├── server.ts
+│   ├── forwarder.ts
+│   ├── adapters/           # Shared prompt adapters (vendors live under providers/)
+│   └── sessionManager.ts
+├── oauth/                  # Token validation + bookmarklet ingest
+├── providers/              # Provider configurations and vendor packages
+└── store/                  # JSON storage (Node)
+frontend/                   # React web UI
+shared/                     # Shared types
 ```
 
 ## Key Concepts
@@ -82,7 +79,7 @@ Application data is stored in `~/.chat2api/`:
 
 | Component | Technology |
 |-----------|------------|
-| Framework | Electron 33+ |
+| Framework | Node.js 22 + Koa |
 | Frontend | React 18 + TypeScript |
 | Styling | Tailwind CSS |
 | State | Zustand |

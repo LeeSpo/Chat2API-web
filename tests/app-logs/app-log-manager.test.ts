@@ -4,8 +4,8 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import type { LogEntry } from '../../src/main/store/types.ts'
-import { AppLogManager } from '../../src/main/appLogs/manager.ts'
+import type { LogEntry } from '../../backend/store/types.ts'
+import { AppLogManager } from '../../backend/appLogs/manager.ts'
 
 function createLog(id: string, timestamp: number, level: LogEntry['level'] = 'info'): LogEntry {
   return {

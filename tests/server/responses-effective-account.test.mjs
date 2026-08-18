@@ -8,13 +8,13 @@ import ts from 'typescript'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../src/main/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/proxy/qwenAiAccountPolicy.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 const QWEN_STREAM_FAILURE_EVENT = 'qwen-ai-stream-failure'
 
 function loadAccountFailoverModule() {
-  const source = fs.readFileSync('src/main/proxy/accountFailover.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/accountFailover.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -30,7 +30,7 @@ function loadAccountFailoverModule() {
 const accountFailoverModule = loadAccountFailoverModule()
 
 function loadDeferredStreamModule() {
-  const source = fs.readFileSync('src/main/proxy/qwenAiDeferredStream.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/qwenAiDeferredStream.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -46,7 +46,7 @@ function loadDeferredStreamModule() {
 const deferredStreamModule = loadDeferredStreamModule()
 
 function loadResponsesRoute(createResult, options = {}) {
-  const source = fs.readFileSync('src/main/proxy/routes/responses.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/responses.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

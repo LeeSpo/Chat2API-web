@@ -1,5 +1,5 @@
-import type { AppConfig, LoadBalanceStrategy } from '../main/store/types'
-import { storeManager } from '../main/store/store'
+import type { AppConfig, LoadBalanceStrategy } from './store/types'
+import { storeManager } from './store/store'
 
 const VALID_STRATEGIES = new Set<LoadBalanceStrategy>([
   'round-robin',

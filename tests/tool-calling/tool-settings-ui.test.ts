@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 test('normal tool-calling UI exposes client adapter and managed mode controls', () => {
-  const panel = readFileSync('src/renderer/src/components/models/ToolCallingPanel.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/models/ToolCallingPanel.tsx', 'utf8')
 
   assert.match(panel, /toolCallingConfig/)
   assert.match(panel, /standard-openai-tools/)
@@ -14,7 +14,7 @@ test('normal tool-calling UI exposes client adapter and managed mode controls', 
 })
 
 test('normal UI hides protocol and prompt-template internals', () => {
-  const panel = readFileSync('src/renderer/src/components/models/ToolCallingPanel.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/models/ToolCallingPanel.tsx', 'utf8')
 
   assert.doesNotMatch(panel, /defaultFormat/)
   assert.doesNotMatch(panel, /ProtocolFormat/)
@@ -24,14 +24,14 @@ test('normal UI hides protocol and prompt-template internals', () => {
 })
 
 test('provider support matrix shows display labels instead of provider ids', () => {
-  const panel = readFileSync('src/renderer/src/components/models/ToolCallingPanel.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/models/ToolCallingPanel.tsx', 'utf8')
 
   assert.match(panel, /provider\.label/)
   assert.doesNotMatch(panel, /<span className="text-sm font-medium">\{provider\.providerId\}<\/span>/)
 })
 
 test('Models page delegates tool settings to ToolCallingPanel', () => {
-  const models = readFileSync('src/renderer/src/pages/Models.tsx', 'utf8')
+  const models = readFileSync('frontend/src/pages/Models.tsx', 'utf8')
 
   assert.match(models, /ToolCallingPanel/)
   assert.doesNotMatch(models, /PromptTemplateCard/)
@@ -39,7 +39,7 @@ test('Models page delegates tool settings to ToolCallingPanel', () => {
 })
 
 test('model mapping UI protects built-in mappings and confirms restore defaults', () => {
-  const panel = readFileSync('src/renderer/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
 
   assert.match(panel, /DEFAULT_MODEL_MAPPINGS/)
   assert.match(panel, /isBuiltInMapping/)
@@ -55,13 +55,13 @@ test('model mapping UI protects built-in mappings and confirms restore defaults'
 })
 
 test('model mapping UI keeps save controls above the mapping list', () => {
-  const panel = readFileSync('src/renderer/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
 
   assert.match(panel, /proxy\.saveConfig[\s\S]*proxy\.searchMappings/)
 })
 
 test('model mapping provider choices are filtered by selected actual model', () => {
-  const panel = readFileSync('src/renderer/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
 
   assert.match(panel, /modelMatchedProviders/)
   assert.match(panel, /provider\.supportedModels\?\.includes\(formData\.actualModel\)/)
@@ -71,7 +71,7 @@ test('model mapping provider choices are filtered by selected actual model', () 
 })
 
 test('model mapping model selection carries provider identity', () => {
-  const panel = readFileSync('src/renderer/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
+  const panel = readFileSync('frontend/src/components/proxy/ModelMappingConfig.tsx', 'utf8')
 
   assert.match(panel, /createModelOptionValue\(provider\.id, model\)/)
   assert.match(panel, /parseModelOptionValue\(value\)/)
@@ -81,7 +81,7 @@ test('model mapping model selection carries provider identity', () => {
 })
 
 test('dashboard chart avoids the broken recharts dependency path', () => {
-  const chart = readFileSync('src/renderer/src/components/dashboard/RequestChart.tsx', 'utf8')
+  const chart = readFileSync('frontend/src/components/dashboard/RequestChart.tsx', 'utf8')
 
   assert.doesNotMatch(chart, /from 'recharts/)
   assert.match(chart, /<svg/)

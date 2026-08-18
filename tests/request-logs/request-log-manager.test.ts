@@ -4,9 +4,9 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import type { RequestLogEntry } from '../../src/main/store/types.ts'
-import type { RequestLogConfig } from '../../src/main/requestLogs/types.ts'
-import { RequestLogManager } from '../../src/main/requestLogs/manager.ts'
+import type { RequestLogEntry } from '../../backend/store/types.ts'
+import type { RequestLogConfig } from '../../backend/requestLogs/types.ts'
+import { RequestLogManager } from '../../backend/requestLogs/manager.ts'
 
 function createConfig(overrides: Partial<RequestLogConfig> = {}): RequestLogConfig {
   return {

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { NormalizedToolDefinition } from '../../src/main/proxy/toolCalling/types.ts'
+import type { NormalizedToolDefinition } from '../../backend/proxy/toolCalling/types.ts'
 import {
   getToolArgumentValidationIssues,
   normalizeArguments,
   normalizeArgumentsForSchema,
-} from '../../src/main/proxy/toolCalling/protocols/shared.ts'
+} from '../../backend/proxy/toolCalling/protocols/shared.ts'
 
 function tool(parameters: Record<string, unknown>): NormalizedToolDefinition {
   return {

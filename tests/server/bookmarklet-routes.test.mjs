@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import test from 'node:test'
 
 test('bookmarklet routes cover issue, public ingest, poll, and disable flag', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/management/oauth/bookmarklet.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/management/oauth/bookmarklet.ts', 'utf8')
 
   assert.match(source, /prefix:\s*'\/v0\/management\/oauth\/bookmarklet'/)
   assert.match(source, /router\.post\('\/issue'/)
@@ -16,20 +16,20 @@ test('bookmarklet routes cover issue, public ingest, poll, and disable flag', ()
 })
 
 test('bookmarklet ingest is a public management path', () => {
-  const source = fs.readFileSync('src/main/proxy/middleware/managementAuth.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/middleware/managementAuth.ts', 'utf8')
   assert.match(source, /\/v0\/management\/oauth\/bookmarklet\/ingest/)
   assert.match(source, /isPublicManagementPath/)
 })
 
 test('bookmarklet ticket store is single-use with a 10 minute ttl', () => {
-  const source = fs.readFileSync('src/main/oauth/bookmarkletTickets.ts', 'utf8')
+  const source = fs.readFileSync('backend/oauth/bookmarkletTickets.ts', 'utf8')
   assert.match(source, /TICKET_TTL_MS\s*=\s*10 \* 60 \* 1000/)
   assert.match(source, /complete\(/)
   assert.match(source, /consume\(/)
 })
 
 test('bookmarklet script covers built-in providers including qwen-ai cookies', () => {
-  const source = fs.readFileSync('src/main/oauth/bookmarkletScript.ts', 'utf8')
+  const source = fs.readFileSync('backend/oauth/bookmarkletScript.ts', 'utf8')
   for (const provider of ['deepseek', 'glm', 'kimi', 'minimax', 'qwen', "'qwen-ai'", 'zai', 'mimo', 'perplexity']) {
     assert.match(source, new RegExp(provider))
   }
@@ -38,7 +38,7 @@ test('bookmarklet script covers built-in providers including qwen-ai cookies', (
 })
 
 test('management router registers bookmarklet routes before other oauth handlers', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/management/index.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/management/index.ts', 'utf8')
   assert.match(source, /bookmarkletRouter/)
   const exportDefault = source.slice(source.indexOf('export default'))
   assert.ok(

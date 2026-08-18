@@ -8,10 +8,10 @@ import ts from 'typescript'
 import {
   createToolWorkflowContinuationMessage as createRealToolWorkflowContinuationMessage,
   extractLatestActiveUserRequest as extractRealLatestActiveUserRequest,
-} from '../../src/main/proxy/toolCalling/ToolCallingEngine.ts'
+} from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
 import {
   sanitizeAssistantInputHistory as sanitizeRealAssistantInputHistory,
-} from '../../src/main/proxy/toolCalling/assistantInputBoundary.ts'
+} from '../../backend/proxy/toolCalling/assistantInputBoundary.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
@@ -34,7 +34,7 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const qwenAiAccountPolicy = loadTypeScriptModule('src/main/proxy/qwenAiAccountPolicy.ts')
+const qwenAiAccountPolicy = loadTypeScriptModule('backend/proxy/qwenAiAccountPolicy.ts')
 
 function adapterWithMatcher(name, matches = false) {
   const Adapter = class {}
@@ -43,7 +43,7 @@ function adapterWithMatcher(name, matches = false) {
 }
 
 function loadRequestForwarder(overrides = {}) {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

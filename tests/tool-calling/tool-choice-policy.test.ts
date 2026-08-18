@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {
   normalizeToolChoicePolicy,
   ToolChoicePolicyError,
-} from '../../src/main/proxy/toolCalling/toolChoicePolicy.ts'
+} from '../../backend/proxy/toolCalling/toolChoicePolicy.ts'
 
 const tools = [
   { name: 'default_api:read_file', parameters: { type: 'object' }, source: 'openai' as const },

@@ -5,16 +5,16 @@ import {
   createToolWorkflowContinuationMessage,
   extractLatestActiveUserRequest,
   ToolCallingEngine,
-} from '../../src/main/proxy/toolCalling/ToolCallingEngine.ts'
+} from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
 import {
   hasManagedWorkflowCompletionMarker,
   parseManagedWorkflowCompletionProof,
   requiresManagedWorkflowCompletionMarker,
   stripManagedWorkflowCompletionMarker,
   supportsManagedWorkflowCompletionMarker,
-} from '../../src/main/proxy/toolCalling/workflowCompletion.ts'
-import type { Provider } from '../../src/main/store/types.ts'
-import type { ToolCallingPlan } from '../../src/main/proxy/toolCalling/types.ts'
+} from '../../backend/proxy/toolCalling/workflowCompletion.ts'
+import type { Provider } from '../../backend/store/types.ts'
+import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 function managedPlan(overrides: Partial<ToolCallingPlan> = {}): ToolCallingPlan {
   return {

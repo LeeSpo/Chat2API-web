@@ -7,13 +7,13 @@ import {
   responseOutputToChatMessages,
   responsesRequestToChatCompletion,
   type ResponseCreateRequest,
-} from '../../src/main/proxy/responses/compat.ts'
-import { ResponsesConversationStore } from '../../src/main/proxy/responses/store.ts'
-import { createResponsesStreamTransform } from '../../src/main/proxy/responses/stream.ts'
+} from '../../backend/proxy/responses/compat.ts'
+import { ResponsesConversationStore } from '../../backend/proxy/responses/store.ts'
+import { createResponsesStreamTransform } from '../../backend/proxy/responses/stream.ts'
 import {
   createResponseImageResolver,
   isPublicImageAddress,
-} from '../../src/main/proxy/responses/image.ts'
+} from '../../backend/proxy/responses/image.ts'
 
 const ONE_PIXEL_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z3xkAAAAASUVORK5CYII='
 

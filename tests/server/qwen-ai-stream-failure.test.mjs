@@ -5,33 +5,33 @@ import { createRequire } from 'node:module'
 import { PassThrough } from 'node:stream'
 import test from 'node:test'
 import ts from 'typescript'
-import { ToolStreamParser as RealToolStreamParser } from '../../src/main/proxy/toolCalling/ToolStreamParser.ts'
-import { getToolProtocol as realGetToolProtocol } from '../../src/main/proxy/toolCalling/protocols/index.ts'
-import { getToolStreamValidationFailure as realGetToolStreamValidationFailure } from '../../src/main/proxy/toolCalling/streamValidationPolicy.ts'
+import { ToolStreamParser as RealToolStreamParser } from '../../backend/proxy/toolCalling/ToolStreamParser.ts'
+import { getToolProtocol as realGetToolProtocol } from '../../backend/proxy/toolCalling/protocols/index.ts'
+import { getToolStreamValidationFailure as realGetToolStreamValidationFailure } from '../../backend/proxy/toolCalling/streamValidationPolicy.ts'
 import {
   ManagedToolResultGuard as RealManagedToolResultGuard,
   stripManagedToolResultWrappers as realStripManagedToolResultWrappers,
-} from '../../src/main/proxy/toolCalling/managedToolResultGuard.ts'
+} from '../../backend/proxy/toolCalling/managedToolResultGuard.ts'
 import {
   getToolArgumentValidationIssues as realGetToolArgumentValidationIssues,
   normalizeArguments as realNormalizeArguments,
-} from '../../src/main/proxy/toolCalling/protocols/shared.ts'
-import { createQwenAiFeatureConfig as realCreateQwenAiFeatureConfig } from '../../src/main/proxy/adapters/qwen-ai-feature-config.ts'
+} from '../../backend/proxy/toolCalling/protocols/shared.ts'
+import { createQwenAiFeatureConfig as realCreateQwenAiFeatureConfig } from '../../backend/proxy/adapters/qwen-ai-feature-config.ts'
 import {
   normalizeQwenAiModelModeName as realNormalizeQwenAiModelModeName,
   resolveQwenAiModelMode as realResolveQwenAiModelMode,
-} from '../../src/main/providers/qwen-ai-model-mode.ts'
+} from '../../backend/providers/qwen-ai-model-mode.ts'
 import {
   hasManagedWorkflowCompletionMarker as realHasManagedWorkflowCompletionMarker,
   parseManagedWorkflowCompletionProof as realParseManagedWorkflowCompletionProof,
   requiresManagedWorkflowCompletionMarker as realRequiresManagedWorkflowCompletionMarker,
   stripManagedWorkflowCompletionMarker as realStripManagedWorkflowCompletionMarker,
-} from '../../src/main/proxy/toolCalling/workflowCompletion.ts'
+} from '../../backend/proxy/toolCalling/workflowCompletion.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
 function loadQwenAiStreamHandler(overrides = {}) {
-  const source = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -1278,7 +1278,7 @@ test('Qwen AI stream does not treat SSE heartbeats as generation progress', asyn
 })
 
 test('Qwen AI stream failure logs upstream event evidence', () => {
-  const source = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
   assert.match(source, /upstreamEventCount/)
   assert.match(source, /lastUpstreamEventAt/)
   assert.match(source, /lastUpstreamEventType/)

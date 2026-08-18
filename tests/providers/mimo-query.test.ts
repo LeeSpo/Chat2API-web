@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Readable } from 'node:stream'
 
-import { buildMimoQuery, MimoStreamHandler } from '../../src/main/proxy/adapters/mimo.ts'
-import { ToolCallingEngine } from '../../src/main/proxy/toolCalling/ToolCallingEngine.ts'
+import { buildMimoQuery, MimoStreamHandler } from '../../backend/proxy/adapters/mimo.ts'
+import { ToolCallingEngine } from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
 
 test('Mimo query includes injected tool prompt and the user request', () => {
   const query = buildMimoQuery([

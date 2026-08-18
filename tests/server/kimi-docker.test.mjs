@@ -46,11 +46,11 @@ async function waitForServer(url, child, output) {
 }
 
 test('Docker browser-assisted import is wired for Kimi credentials', () => {
-  const routeSource = readSource('src/main/proxy/routes/management/statistics.ts')
-  const webAdminSource = readSource('src/renderer/src/web-admin-api.ts')
-  const addAccountSource = readSource('src/renderer/src/components/providers/AddAccountDialog.tsx')
-  const addProviderSource = readSource('src/renderer/src/components/providers/AddProviderDialog.tsx')
-  const chatRouteSource = readSource('src/main/proxy/routes/chat.ts')
+  const routeSource = readSource('backend/proxy/routes/management/statistics.ts')
+  const webAdminSource = readSource('frontend/src/web-admin-api.ts')
+  const addAccountSource = readSource('frontend/src/components/providers/AddAccountDialog.tsx')
+  const addProviderSource = readSource('frontend/src/components/providers/AddProviderDialog.tsx')
+  const chatRouteSource = readSource('backend/proxy/routes/chat.ts')
   const dockerDocs = readSource('docs/docker.md')
 
   assert.match(routeSource, /type BrowserImportProviderId[^\n]*'kimi'/)

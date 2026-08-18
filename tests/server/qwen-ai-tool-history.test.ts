@@ -8,12 +8,12 @@ import OSS from 'ali-oss'
 import {
   prepareQwenAiMultimodalMessage,
   QwenAiFileUploader,
-} from '../../src/main/proxy/adapters/qwen-ai-files.ts'
-import { createManagedToolPromptMessage } from '../../src/main/proxy/toolCalling/managedPromptMetadata.ts'
+} from '../../backend/proxy/adapters/qwen-ai-files.ts'
+import { createManagedToolPromptMessage } from '../../backend/proxy/toolCalling/managedPromptMetadata.ts'
 import {
   decodeXml,
   parseJsonValue,
-} from '../../src/main/proxy/toolCalling/protocols/shared.ts'
+} from '../../backend/proxy/toolCalling/protocols/shared.ts'
 
 function assistantToolCall(id: string, name: string, round: number) {
   return {

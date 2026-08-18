@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import test from 'node:test'
 
 test('management API exposes browser-assisted import completion route', () => {
-  const source = fs.readFileSync('src/main/proxy/routes/management/statistics.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/management/statistics.ts', 'utf8')
 
   assert.match(source, /router\.post\('\/browser-import\/complete'/)
   assert.match(source, /router\.get\('\/browser-import\/:importId'/)
@@ -18,7 +18,7 @@ test('management API exposes browser-assisted import completion route', () => {
 })
 
 test('web admin browser import session store has bounded ttl', () => {
-  const source = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const source = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(source, /BROWSER_IMPORT_SESSION_TTL_MS/)
   assert.match(source, /10 \* 60 \* 1000/)
@@ -30,8 +30,8 @@ test('web admin browser import session store has bounded ttl', () => {
 })
 
 test('browser-assisted import has bounded result storage and local-network cors support', () => {
-  const routeSource = fs.readFileSync('src/main/proxy/routes/management/statistics.ts', 'utf8')
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
+  const routeSource = fs.readFileSync('backend/proxy/routes/management/statistics.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
 
   assert.match(routeSource, /BROWSER_IMPORT_RESULT_LIMIT/)
   assert.match(routeSource, /browserImportResults\.delete/)
@@ -39,8 +39,8 @@ test('browser-assisted import has bounded result storage and local-network cors 
 })
 
 test('browser-assisted import accepts text/plain JSON from provider pages and reports HTTP failures', () => {
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
-  const webAdminSource = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
+  const webAdminSource = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(
     serverSource,
@@ -56,7 +56,7 @@ test('browser-assisted import accepts text/plain JSON from provider pages and re
 })
 
 test('browser-assisted import script falls back to offline payload when direct post is blocked', () => {
-  const webAdminSource = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const webAdminSource = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(webAdminSource, /function buildBrowserImportFallbackBlock/)
   assert.match(webAdminSource, /const payloadText = JSON\.stringify\(payload\)/)
@@ -72,7 +72,7 @@ test('browser-assisted import script falls back to offline payload when direct p
 })
 
 test('web admin can apply pasted browser import payload to the active session', () => {
-  const webAdminSource = fs.readFileSync('src/renderer/src/web-admin-api.ts', 'utf8')
+  const webAdminSource = fs.readFileSync('frontend/src/web-admin-api.ts', 'utf8')
 
   assert.match(webAdminSource, /type BrowserImportPayload/)
   assert.match(webAdminSource, /function parseBrowserImportPayload/)

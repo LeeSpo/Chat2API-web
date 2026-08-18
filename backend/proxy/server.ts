@@ -14,7 +14,7 @@ import { proxyStatusManager } from './status'
 import { storeManager } from '../store/store'
 import { sessionManager } from './sessionManager'
 import { qwenAiSessionRepairService } from './qwenAiSessionRepair'
-import { mountWebAdminAssets } from '../../server/admin/assets'
+import { mountWebAdminAssets } from '../admin/assets'
 import { isPublicManagementPath } from './middleware/managementAuth'
 
 const SLOW_REQUEST_THRESHOLD_MS = 1500

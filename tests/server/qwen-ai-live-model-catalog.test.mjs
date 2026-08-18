@@ -23,7 +23,7 @@ function loadTypeScriptModule(path, localModules = {}) {
 }
 
 test('Qwen built-in fallback advertises only the current website catalogue', () => {
-  const { qwenAiConfig } = loadTypeScriptModule('src/main/providers/builtin/qwen-ai.ts')
+  const { qwenAiConfig } = loadTypeScriptModule('backend/providers/builtin/qwen-ai.ts')
 
   assert.deepEqual(qwenAiConfig.supportedModels, [
     'Qwen3.8-Max',
@@ -49,7 +49,7 @@ test('Qwen3.8-Max aliases resolve two independent switches and normalize upstrea
     normalizeQwenAiModelModeName,
     resolveQwenAiModelMode,
     withQwenAiModelModeAliases,
-  } = loadTypeScriptModule('src/main/providers/qwen-ai-model-mode.ts')
+  } = loadTypeScriptModule('backend/providers/qwen-ai-model-mode.ts')
 
   const cases = [
     ['Qwen3.8-Max', true, false, false],
@@ -90,7 +90,7 @@ test('Qwen3.8-Max aliases resolve two independent switches and normalize upstrea
 })
 
 test('Qwen live catalogue keeps distinct capabilities for Max and Preview', () => {
-  const { parseProviderModelsResponse } = loadTypeScriptModule('src/main/providers/modelSync.ts')
+  const { parseProviderModelsResponse } = loadTypeScriptModule('backend/providers/modelSync.ts')
   const parsed = parseProviderModelsResponse({
     data: [
       {
@@ -133,7 +133,7 @@ test('Qwen live catalogue keeps distinct capabilities for Max and Preview', () =
 })
 
 test('server startup refreshes dynamic model catalogues before accepting traffic', () => {
-  const serverSource = fs.readFileSync('src/server/index.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/index.ts', 'utf8')
   const initializeAt = serverSource.indexOf('await storeManager.initialize()')
   const syncAt = serverSource.indexOf('await storeManager.syncDynamicBuiltinProviderModels()')
   const startAt = serverSource.indexOf('await proxyServer.start(')
@@ -144,8 +144,8 @@ test('server startup refreshes dynamic model catalogues before accepting traffic
 })
 
 test('server shutdown is idempotent and drains HTTP streams before destroying sessions', () => {
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
-  const entrySource = fs.readFileSync('src/server/index.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
+  const entrySource = fs.readFileSync('backend/index.ts', 'utf8')
   const composeSource = fs.readFileSync('docker-compose.yml', 'utf8')
   assert.match(serverSource, /private draining = false/)
   assert.match(serverSource, /private activeResponses = new Set/)
@@ -159,7 +159,7 @@ test('server shutdown is idempotent and drains HTTP streams before destroying se
 })
 
 test('dynamic catalogue startup preserves persisted models until refresh succeeds', () => {
-  const storeSource = fs.readFileSync('src/main/store/store.ts', 'utf8')
+  const storeSource = fs.readFileSync('backend/store/store.ts', 'utf8')
 
   assert.match(storeSource, /preservesDynamicModelCatalogue/)
   assert.match(storeSource, /\.\.\.\(p\.supportedModels \|\| \[\]\)/)

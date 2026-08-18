@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { getToolStreamValidationFailure } from '../../src/main/proxy/toolCalling/streamValidationPolicy.ts'
-import type { ToolCallingPlan } from '../../src/main/proxy/toolCalling/types.ts'
+import { getToolStreamValidationFailure } from '../../backend/proxy/toolCalling/streamValidationPolicy.ts'
+import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 function plan(
   toolChoiceMode: ToolCallingPlan['toolChoiceMode'],

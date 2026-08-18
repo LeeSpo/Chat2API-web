@@ -4,7 +4,7 @@ import test from 'node:test'
 import ts from 'typescript'
 
 function loadCancellationClassifier() {
-  const source = fs.readFileSync('src/main/proxy/utils/errors.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/utils/errors.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -37,9 +37,9 @@ test('client cancellation classifier separates expected disconnects from upstrea
 })
 
 test('proxy logging keeps cancellation below warning/error while preserving timeout errors', () => {
-  const chatSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
-  const qwenSource = fs.readFileSync('src/main/proxy/adapters/qwen-ai.ts', 'utf8')
+  const chatSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
+  const qwenSource = fs.readFileSync('backend/proxy/adapters/qwen-ai.ts', 'utf8')
 
   assert.match(chatSource, /requestFailureLogLevel\(status: number \| undefined\)/)
   assert.match(chatSource, /if \(status === 499\) return 'debug'/)
@@ -56,8 +56,8 @@ test('proxy logging keeps cancellation below warning/error while preserving time
 })
 
 test('synthesized errors only forward retry metadata from upstream headers', () => {
-  const errorsSource = fs.readFileSync('src/main/proxy/utils/errors.ts', 'utf8')
-  const chatSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
+  const errorsSource = fs.readFileSync('backend/proxy/utils/errors.ts', 'utf8')
+  const chatSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
 
   assert.match(errorsSource, /sanitizeForwardedErrorHeaders/)
   assert.match(errorsSource, /retry-after\|x-ratelimit-/)
@@ -66,9 +66,9 @@ test('synthesized errors only forward retry metadata from upstream headers', () 
 })
 
 test('chat failures preserve machine-readable error codes in responses and logs', () => {
-  const chatSource = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
-  const requestLogTypes = fs.readFileSync('src/main/store/types.ts', 'utf8')
-  const requestLogSanitizer = fs.readFileSync('src/main/requestLogs/sanitizer.ts', 'utf8')
+  const chatSource = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
+  const requestLogTypes = fs.readFileSync('backend/store/types.ts', 'utf8')
+  const requestLogSanitizer = fs.readFileSync('backend/requestLogs/sanitizer.ts', 'utf8')
 
   assert.equal(
     chatSource.match(/code: result\.errorCode \?\? null/g)?.length,

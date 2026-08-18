@@ -5,7 +5,7 @@ import test from 'node:test'
 import {
   BufferedSseError,
   bufferValidatedSseStream,
-} from '../../src/main/proxy/utils/validatedSseStream.ts'
+} from '../../backend/proxy/utils/validatedSseStream.ts'
 
 async function collect(stream: NodeJS.ReadableStream): Promise<string> {
   let output = ''

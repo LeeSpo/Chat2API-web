@@ -4,7 +4,7 @@ import test from 'node:test'
 import ts from 'typescript'
 
 function loadRepairModule({ accounts, providers, repairWebSession }) {
-  const source = fs.readFileSync('src/main/proxy/qwenAiSessionRepair.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/qwenAiSessionRepair.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -178,10 +178,10 @@ test('Qwen AI session repair skips an account persisted as unregistered', async 
 })
 
 test('Qwen AI repair is wired into server lifecycle, validation, and governor status', () => {
-  const serverSource = fs.readFileSync('src/main/proxy/server.ts', 'utf8')
-  const accountsSource = fs.readFileSync('src/main/store/accounts.ts', 'utf8')
+  const serverSource = fs.readFileSync('backend/proxy/server.ts', 'utf8')
+  const accountsSource = fs.readFileSync('backend/store/accounts.ts', 'utf8')
   const governorRouteSource = fs.readFileSync(
-    'src/main/proxy/routes/management/qwenAiGovernor.ts',
+    'backend/proxy/routes/management/qwenAiGovernor.ts',
     'utf8',
   )
 

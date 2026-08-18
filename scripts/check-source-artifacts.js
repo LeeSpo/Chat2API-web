@@ -5,9 +5,8 @@ const path = require('node:path')
 
 const DEFAULT_SCAN_ROOTS = [
   '.',
-  'src/main',
-  'src/server',
-  'src/shared',
+  'backend',
+  'shared',
 ]
 
 const SKIP_DIRS = new Set([
@@ -16,7 +15,7 @@ const SKIP_DIRS = new Set([
   'out',
   'dist',
   'backup',
-  'src/renderer/next-app',
+  'frontend/next-app',
 ])
 
 function toPosix(filePath) {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { Readable } from 'node:stream'
 import test from 'node:test'
-import { createAssistantOutputBoundaryStream } from '../../src/main/proxy/toolCalling/assistantOutputBoundary.ts'
+import { createAssistantOutputBoundaryStream } from '../../backend/proxy/toolCalling/assistantOutputBoundary.ts'
 
 async function collect(stream: NodeJS.ReadableStream): Promise<string> {
   const chunks: string[] = []

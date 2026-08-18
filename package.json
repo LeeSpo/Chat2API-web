@@ -11,7 +11,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "tsx src/server/index.ts",
+    "dev:backend": "tsx backend/index.ts",
     "dev:frontend": "vite --config vite.admin.config.ts",
     "check:source-artifacts": "node scripts/check-source-artifacts.js",
     "build:admin": "vite build --config vite.admin.config.ts",

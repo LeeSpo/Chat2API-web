@@ -31,15 +31,15 @@ function loadTypeScriptModule(path, localModules = {}) {
   return module.exports
 }
 
-const sessionBridge = loadTypeScriptModule('src/main/proxy/qwenAiSessionBridge.ts')
-const qwenAiAccountPolicy = loadTypeScriptModule('src/main/proxy/qwenAiAccountPolicy.ts')
-const storeModule = loadTypeScriptModule('src/main/proxy/responses/store.ts', {
+const sessionBridge = loadTypeScriptModule('backend/proxy/qwenAiSessionBridge.ts')
+const qwenAiAccountPolicy = loadTypeScriptModule('backend/proxy/qwenAiAccountPolicy.ts')
+const storeModule = loadTypeScriptModule('backend/proxy/responses/store.ts', {
   '../qwenAiSessionBridge': sessionBridge,
 })
-const accountFailover = loadTypeScriptModule('src/main/proxy/accountFailover.ts')
-const workflowHeuristics = loadTypeScriptModule('src/main/proxy/toolCalling/workflowHeuristics.ts')
+const accountFailover = loadTypeScriptModule('backend/proxy/accountFailover.ts')
+const workflowHeuristics = loadTypeScriptModule('backend/proxy/toolCalling/workflowHeuristics.ts')
 const toolCallSessionStoreModule = loadTypeScriptModule(
-  'src/main/proxy/qwenAiToolCallSessionStore.ts',
+  'backend/proxy/qwenAiToolCallSessionStore.ts',
   { './toolCalling/workflowHeuristics': workflowHeuristics },
 )
 
@@ -269,7 +269,7 @@ test('Qwen tool-call store removes an entire old batch when one ID is reused', (
 })
 
 function loadResponsesRouteHarness(options = {}) {
-  const source = fs.readFileSync('src/main/proxy/routes/responses.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/responses.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -1178,7 +1178,7 @@ function adapterWithMatcher(name, matches = false) {
 }
 
 function loadForwarderForBridgeTests(overrides = {}) {
-  const source = fs.readFileSync('src/main/proxy/forwarder.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/forwarder.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

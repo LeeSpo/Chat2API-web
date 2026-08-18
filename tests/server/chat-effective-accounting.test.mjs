@@ -4,11 +4,11 @@ import fs from 'node:fs'
 import { PassThrough } from 'node:stream'
 import test from 'node:test'
 import ts from 'typescript'
-import { createAssistantOutputBoundaryStream } from '../../src/main/proxy/toolCalling/assistantOutputBoundary.ts'
+import { createAssistantOutputBoundaryStream } from '../../backend/proxy/toolCalling/assistantOutputBoundary.ts'
 import {
   isQwenAiAccountFault,
   qwenAiAccountRetryScope,
-} from '../../src/main/proxy/qwenAiAccountPolicy.ts'
+} from '../../backend/proxy/qwenAiAccountPolicy.ts'
 
 const QWEN_AI_STREAM_FAILURE_EVENT = 'qwen-ai-stream-failure'
 
@@ -20,7 +20,7 @@ function loadChatRoute({
   qwenAiProvider = true,
   deferManagedStreamCommit = false,
 }) {
-  const source = fs.readFileSync('src/main/proxy/routes/chat.ts', 'utf8')
+  const source = fs.readFileSync('backend/proxy/routes/chat.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

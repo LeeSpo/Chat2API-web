@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Readable } from 'node:stream'
 
-import { DeepSeekStreamHandler } from '../../src/main/proxy/adapters/deepseek-stream.ts'
-import type { ToolCallingPlan } from '../../src/main/proxy/toolCalling/types.ts'
+import { DeepSeekStreamHandler } from '../../backend/proxy/adapters/deepseek-stream.ts'
+import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 function sse(events: unknown[]): Readable {
   return Readable.from(events.map(event => `data: ${JSON.stringify(event)}\n\n`))

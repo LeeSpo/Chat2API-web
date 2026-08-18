@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { getToolClientAdapter } from '../../src/main/proxy/toolCalling/clientAdapters/index.ts'
-import type { ChatCompletionRequest } from '../../src/main/proxy/types.ts'
+import { getToolClientAdapter } from '../../backend/proxy/toolCalling/clientAdapters/index.ts'
+import type { ChatCompletionRequest } from '../../backend/proxy/types.ts'
 
 function request(overrides: Partial<ChatCompletionRequest> = {}): ChatCompletionRequest {
   return {

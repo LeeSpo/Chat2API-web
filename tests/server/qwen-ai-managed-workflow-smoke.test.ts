@@ -1,17 +1,17 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { prepareQwenAiMultimodalMessage } from '../../src/main/proxy/adapters/qwen-ai-files.ts'
-import { createQwenAiFeatureConfig } from '../../src/main/proxy/adapters/qwen-ai-feature-config.ts'
-import { ToolCallingEngine } from '../../src/main/proxy/toolCalling/ToolCallingEngine.ts'
-import { ToolStreamParser } from '../../src/main/proxy/toolCalling/ToolStreamParser.ts'
+import { prepareQwenAiMultimodalMessage } from '../../backend/proxy/adapters/qwen-ai-files.ts'
+import { createQwenAiFeatureConfig } from '../../backend/proxy/adapters/qwen-ai-feature-config.ts'
+import { ToolCallingEngine } from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
+import { ToolStreamParser } from '../../backend/proxy/toolCalling/ToolStreamParser.ts'
 import {
   hasManagedWorkflowCompletionMarker,
   requiresManagedWorkflowCompletionMarker,
   stripManagedWorkflowCompletionMarker,
-} from '../../src/main/proxy/toolCalling/workflowCompletion.ts'
-import type { Provider } from '../../src/main/store/types.ts'
-import type { ChatCompletionRequest, ChatMessage } from '../../src/main/proxy/types.ts'
+} from '../../backend/proxy/toolCalling/workflowCompletion.ts'
+import type { Provider } from '../../backend/store/types.ts'
+import type { ChatCompletionRequest, ChatMessage } from '../../backend/proxy/types.ts'
 
 const provider = {
   id: 'qwen-ai',

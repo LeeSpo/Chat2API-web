@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import test from 'node:test'
 
-import { SseKeepAliveStream } from '../../src/main/proxy/utils/sseKeepAlive.ts'
+import { SseKeepAliveStream } from '../../backend/proxy/utils/sseKeepAlive.ts'
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 

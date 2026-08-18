@@ -6,13 +6,13 @@ import test from 'node:test'
 import { brotliCompressSync, deflateSync, gzipSync } from 'node:zlib'
 import ts from 'typescript'
 
-import { ToolStreamParser } from '../../src/main/proxy/toolCalling/ToolStreamParser.ts'
-import type { ToolCallingPlan } from '../../src/main/proxy/toolCalling/types.ts'
+import { ToolStreamParser } from '../../backend/proxy/toolCalling/ToolStreamParser.ts'
+import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
-function loadQwenStreamHandler(): typeof import('../../src/main/proxy/adapters/qwen.ts') {
-  const source = fs.readFileSync('src/main/proxy/adapters/qwen.ts', 'utf8')
+function loadQwenStreamHandler(): typeof import('../../backend/proxy/adapters/qwen.ts') {
+  const source = fs.readFileSync('backend/proxy/adapters/qwen.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

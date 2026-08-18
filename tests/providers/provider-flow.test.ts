@@ -4,15 +4,15 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-import { deepseekConfig } from '../../src/main/providers/builtin/deepseek.ts'
-import { glmConfig } from '../../src/main/providers/builtin/glm.ts'
-import { kimiConfig } from '../../src/main/providers/builtin/kimi.ts'
-import { minimaxConfig } from '../../src/main/providers/builtin/minimax.ts'
-import { mimoConfig } from '../../src/main/providers/builtin/mimo.ts'
-import { perplexityConfig } from '../../src/main/providers/builtin/perplexity.ts'
-import { qwenConfig } from '../../src/main/providers/builtin/qwen.ts'
-import { qwenAiConfig } from '../../src/main/providers/builtin/qwen-ai.ts'
-import { zaiConfig } from '../../src/main/providers/builtin/zai.ts'
+import { deepseekConfig } from '../../backend/providers/builtin/deepseek.ts'
+import { glmConfig } from '../../backend/providers/builtin/glm.ts'
+import { kimiConfig } from '../../backend/providers/builtin/kimi.ts'
+import { minimaxConfig } from '../../backend/providers/builtin/minimax.ts'
+import { mimoConfig } from '../../backend/providers/builtin/mimo.ts'
+import { perplexityConfig } from '../../backend/providers/builtin/perplexity.ts'
+import { qwenConfig } from '../../backend/providers/builtin/qwen.ts'
+import { qwenAiConfig } from '../../backend/providers/builtin/qwen-ai.ts'
+import { zaiConfig } from '../../backend/providers/builtin/zai.ts'
 import {
   DEEPSEEK_PRIMARY_MODELS,
   DEFAULT_DEEPSEEK_MODEL_MAPPINGS,
@@ -20,15 +20,15 @@ import {
   isDefaultModelMapping,
   normalizeModelMappingsWithDefaults,
   sanitizeDeepSeekModelOverrides,
-} from '../../src/main/store/types.ts'
+} from '../../backend/store/types.ts'
 import {
   createKimiChatPayload,
   encodeKimiGrpcFrame,
   normalizeProviderModelForMatch,
   resolveDeepSeekChatOptions,
   resolveKimiScenario,
-} from '../../src/main/proxy/adapters/providerModelOptions.ts'
-import { mergeProviderModelCapabilities } from '../../src/main/providers/modelSync.ts'
+} from '../../backend/proxy/adapters/providerModelOptions.ts'
+import { mergeProviderModelCapabilities } from '../../backend/providers/modelSync.ts'
 
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 
@@ -95,7 +95,7 @@ test('DeepSeek persisted model overrides are migrated away from old built-in ali
   )
 
   const storeSource = readFileSync(
-    join(root, 'src/main/store/store.ts'),
+    join(root, 'backend/store/store.ts'),
     'utf8',
   )
 
@@ -162,7 +162,7 @@ test('DeepSeek default model mapping seeding preserves editable replacement sema
   assert.equal(createDefaultModelMappings()['deepseek-v4-flash-search'].actualModel, 'deepseek-v4-flash')
 
   const storeSource = readFileSync(
-    join(root, 'src/main/store/store.ts'),
+    join(root, 'backend/store/store.ts'),
     'utf8',
   )
 
@@ -194,7 +194,7 @@ test('GLM, Kimi, and MiniMax built-in default models match current web providers
   })
 
   const minimaxAdapterSource = readFileSync(
-    join(root, 'src/main/proxy/adapters/minimax.ts'),
+    join(root, 'backend/proxy/adapters/minimax.ts'),
     'utf8',
   )
   assert.match(minimaxAdapterSource, /this\.model = 'MiniMax-M2\.7'/)
@@ -252,7 +252,7 @@ test('Kimi K2.6 and K3 model mappings reach current web chat payloads', () => {
 })
 
 test('Kimi forwarder preserves feature aliases and provider conversation identifiers', () => {
-  const forwarderSource = readFileSync(join(root, 'src/main/proxy/forwarder.ts'), 'utf8')
+  const forwarderSource = readFileSync(join(root, 'backend/proxy/forwarder.ts'), 'utf8')
 
   assert.match(forwarderSource, /request\.reasoning_effort \?\? request\.reasoningEffort/)
   assert.match(forwarderSource, /request\.web_search \?\? Boolean\(request\.web_search_options\)/)
@@ -266,10 +266,10 @@ test('Kimi forwarder preserves feature aliases and provider conversation identif
 })
 
 test('Kimi and domestic Qwen support account-level chat cleanup', () => {
-  const accountsSource = readFileSync(join(root, 'src/main/proxy/routes/management/accounts.ts'), 'utf8')
-  const accountListSource = readFileSync(join(root, 'src/renderer/src/components/providers/AccountList.tsx'), 'utf8')
-  const kimiAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/kimi.ts'), 'utf8')
-  const qwenAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/qwen.ts'), 'utf8')
+  const accountsSource = readFileSync(join(root, 'backend/proxy/routes/management/accounts.ts'), 'utf8')
+  const accountListSource = readFileSync(join(root, 'frontend/src/components/providers/AccountList.tsx'), 'utf8')
+  const kimiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/kimi.ts'), 'utf8')
+  const qwenAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen.ts'), 'utf8')
 
   assert.match(accountsSource, /import \{ KimiAdapter \} from '\.\.\/\.\.\/adapters\/kimi'/)
   assert.match(accountsSource, /import \{ QwenAdapter \} from '\.\.\/\.\.\/adapters\/qwen'/)
@@ -312,9 +312,9 @@ test('domestic Qwen models match the web chat model ids captured from HAR', () =
   assert.deepEqual(qwenConfig.supportedModels, expectedModels)
   assert.deepEqual(qwenConfig.modelMappings, expectedMappings)
 
-  const qwenAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/qwen.ts'), 'utf8')
-  const zh = JSON.parse(readFileSync(join(root, 'src/renderer/src/i18n/locales/zh-CN.json'), 'utf8'))
-  const en = JSON.parse(readFileSync(join(root, 'src/renderer/src/i18n/locales/en-US.json'), 'utf8'))
+  const qwenAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen.ts'), 'utf8')
+  const zh = JSON.parse(readFileSync(join(root, 'frontend/src/i18n/locales/zh-CN.json'), 'utf8'))
+  const en = JSON.parse(readFileSync(join(root, 'frontend/src/i18n/locales/en-US.json'), 'utf8'))
 
   assert.match(qwenAdapterSource, /'Qwen3\.6': 'Qwen'/)
   assert.match(qwenAdapterSource, /'Qwen3-Coder': 'Qwen3-Coder'/)
@@ -365,7 +365,7 @@ test('Qwen AI defaults prefer the configured stable model while retaining explic
     assert.equal(qwenAiConfig.modelMappings?.[removedModel], undefined, removedModel)
   }
 
-  const qwenAiAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/qwen-ai.ts'), 'utf8')
+  const qwenAiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen-ai.ts'), 'utf8')
   assert.match(qwenAiAdapterSource, /'qwen3\.8':\s*'qwen3\.8-max'/)
   assert.match(qwenAiAdapterSource, /'qwen3\.8-max-preview':\s*'qwen3\.8-max-preview'/)
   assert.match(qwenAiAdapterSource, /qwen:\s*'qwen3\.7-max'/)
@@ -424,7 +424,7 @@ test('Z.ai default models match the latest chat.z.ai HAR model ids', () => {
     assert.equal(zaiConfig.modelMappings?.[removedModel], undefined, removedModel)
   }
 
-  const zaiAdapterSource = readFileSync(join(root, 'src/main/proxy/adapters/zai.ts'), 'utf8')
+  const zaiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/zai.ts'), 'utf8')
   assert.match(zaiAdapterSource, /'glm-5\.1': 'GLM-5\.1'/)
   assert.match(zaiAdapterSource, /'glm-5v-turbo': 'GLM-5v-Turbo'/)
   assert.match(zaiAdapterSource, /'GLM-5V-Turbo': 'GLM-5v-Turbo'/)
@@ -546,7 +546,7 @@ test('Mimo model names and conversation flow match Xiaomi AI Studio web requests
   assert.equal(mimoConfig.modelMappings?.['MiMo-V2-Flash'], 'mimo-v2-flash')
 
   const forwarderSource = readFileSync(
-    join(root, 'src/main/proxy/forwarder.ts'),
+    join(root, 'backend/proxy/forwarder.ts'),
     'utf8',
   )
   const forwardMimoStart = forwarderSource.indexOf('private async forwardMimo')
@@ -561,7 +561,7 @@ test('Mimo model names and conversation flow match Xiaomi AI Studio web requests
   assert.match(forwardMimoSource, /this\.applyToolCallsToResponse\(.*transformed/s)
 
   const mimoAdapterSource = readFileSync(
-    join(root, 'src/main/proxy/adapters/mimo.ts'),
+    join(root, 'backend/proxy/adapters/mimo.ts'),
     'utf8',
   )
 
@@ -578,7 +578,7 @@ test('Mimo model names and conversation flow match Xiaomi AI Studio web requests
 
 test('Add provider dialog uses IPC built-in providers instead of duplicated model templates', () => {
   const source = readFileSync(
-    join(root, 'src/renderer/src/components/providers/AddProviderDialog.tsx'),
+    join(root, 'frontend/src/components/providers/AddProviderDialog.tsx'),
     'utf8',
   )
 
@@ -590,7 +590,7 @@ test('Add provider dialog uses IPC built-in providers instead of duplicated mode
 
 test('built-in model reset restores source defaults instead of stale persisted provider models', () => {
   const source = readFileSync(
-    join(root, 'src/main/store/store.ts'),
+    join(root, 'backend/store/store.ts'),
     'utf8',
   )
 
@@ -602,8 +602,8 @@ test('built-in model reset restores source defaults instead of stale persisted p
 })
 
 test('DeepSeek locale model labels only describe primary provider models', () => {
-  const zh = readFileSync(join(root, 'src/renderer/src/i18n/locales/zh-CN.json'), 'utf8')
-  const en = readFileSync(join(root, 'src/renderer/src/i18n/locales/en-US.json'), 'utf8')
+  const zh = readFileSync(join(root, 'frontend/src/i18n/locales/zh-CN.json'), 'utf8')
+  const en = readFileSync(join(root, 'frontend/src/i18n/locales/en-US.json'), 'utf8')
   const zhData = JSON.parse(zh)
   const enData = JSON.parse(en)
 
@@ -621,7 +621,7 @@ test('DeepSeek locale model labels only describe primary provider models', () =>
 
 test('forwarder delegates managed tool transformation to ToolCallingEngine', () => {
   const source = readFileSync(
-    join(root, 'src/main/proxy/forwarder.ts'),
+    join(root, 'backend/proxy/forwarder.ts'),
     'utf8',
   )
 
@@ -637,7 +637,7 @@ test('forwarder delegates managed tool transformation to ToolCallingEngine', () 
 
 test('forwarder reads toolCallingConfig and does not use legacy prompt config for P0 tool calls', () => {
   const source = readFileSync(
-    join(root, 'src/main/proxy/forwarder.ts'),
+    join(root, 'backend/proxy/forwarder.ts'),
     'utf8',
   )
 
@@ -649,7 +649,7 @@ test('forwarder reads toolCallingConfig and does not use legacy prompt config fo
 
 test('built-in provider sync keeps credential field updates on existing providers', () => {
   const source = readFileSync(
-    join(root, 'src/main/store/store.ts'),
+    join(root, 'backend/store/store.ts'),
     'utf8',
   )
 
@@ -658,7 +658,7 @@ test('built-in provider sync keeps credential field updates on existing provider
 
 test('DeepSeek forwarder preserves requested model aliases for response parsing semantics', () => {
   const source = readFileSync(
-    join(root, 'src/main/proxy/forwarder.ts'),
+    join(root, 'backend/proxy/forwarder.ts'),
     'utf8',
   )
 
@@ -667,10 +667,10 @@ test('DeepSeek forwarder preserves requested model aliases for response parsing 
 
 test('active source no longer exposes DS2API or DSML tool protocol markers', () => {
   const activeFiles = [
-    'src/main/proxy/toolCalling/ToolCallingEngine.ts',
-    'src/main/proxy/toolCalling/providerProfiles.ts',
-    'src/main/proxy/toolCalling/protocols/managedXml.ts',
-    'src/renderer/src/pages/Models.tsx',
+    'backend/proxy/toolCalling/ToolCallingEngine.ts',
+    'backend/proxy/toolCalling/providerProfiles.ts',
+    'backend/proxy/toolCalling/protocols/managedXml.ts',
+    'frontend/src/pages/Models.tsx',
   ]
 
   for (const file of activeFiles) {
@@ -681,8 +681,8 @@ test('active source no longer exposes DS2API or DSML tool protocol markers', () 
 
 test('tool calling UI copy hides internal managed protocol ids', () => {
   const localeFiles = [
-    'src/renderer/src/i18n/locales/zh-CN.json',
-    'src/renderer/src/i18n/locales/en-US.json',
+    'frontend/src/i18n/locales/zh-CN.json',
+    'frontend/src/i18n/locales/en-US.json',
   ]
 
   for (const file of localeFiles) {

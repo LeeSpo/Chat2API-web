@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { buildToolCallingRuntimePlan } from '../../src/main/proxy/toolCalling/runtimePlan.ts'
-import type { NormalizedToolDefinition } from '../../src/main/proxy/toolCalling/types.ts'
+import { buildToolCallingRuntimePlan } from '../../backend/proxy/toolCalling/runtimePlan.ts'
+import type { NormalizedToolDefinition } from '../../backend/proxy/toolCalling/types.ts'
 
 const tools: NormalizedToolDefinition[] = [{
   name: 'weather-test:get_weather',
