@@ -972,6 +972,13 @@ class StoreManager {
       }
     }
 
+    if (updates.managementApi) {
+      newConfig.managementApi = {
+        ...currentConfig.managementApi,
+        ...updates.managementApi,
+      }
+    }
+
     const normalized = this.normalizeConfig(newConfig)
     this.store!.set('config', normalized)
     this.appLogManager?.setMaxEntries(this.getMaxLogEntries(normalized))

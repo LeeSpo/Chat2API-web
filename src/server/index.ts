@@ -38,6 +38,23 @@ async function main(): Promise<void> {
   await storeManager.initialize()
   await storeManager.syncDynamicBuiltinProviderModels()
   const config = applyServerConfigOverrides()
+  const envSecretApplied = Boolean(process.env.CHAT2API_MANAGEMENT_SECRET?.trim())
+  const firstRun = !config.managementApi?.firstRunCompleted
+
+  if (envSecretApplied) {
+    console.log('[Server] Management API: secret loaded from CHAT2API_MANAGEMENT_SECRET')
+  } else if (firstRun) {
+    console.log('')
+    console.log('================================================================')
+    console.log('  First run detected.')
+    console.log('  Open the web UI to create your administrator password.')
+    console.log('  Until you do, the management API will reject every request')
+    console.log('  except /v0/management/auth/{status,setup,login}.')
+    console.log('================================================================')
+    console.log('')
+  } else {
+    console.log('[Server] Management API: ready (password set; awaiting login)')
+  }
 
   const started = await proxyServer.start(config.proxyPort, config.proxyHost)
   if (!started) {

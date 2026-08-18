@@ -19,5 +19,6 @@ test('server env produces config overrides', async () => {
   assert.deepEqual(overrides.managementApi, {
     enableManagementApi: true,
     managementApiSecret: 'mgmt_test_secret',
+    firstRunCompleted: true,
   })
 })

@@ -15,6 +15,7 @@ import { storeManager } from '../store/store'
 import { sessionManager } from './sessionManager'
 import { qwenAiSessionRepairService } from './qwenAiSessionRepair'
 import { mountWebAdminAssets } from '../../server/admin/assets'
+import { isPublicManagementPath } from './middleware/managementAuth'
 
 const SLOW_REQUEST_THRESHOLD_MS = 1500
 const BROWSER_IMPORT_MAX_CONTENT_LENGTH = 128 * 1024
@@ -361,6 +362,11 @@ export class ProxyServer {
     // This must be registered before management routes
     const managementEnableCheck = async (ctx: Context, next: Next) => {
       if (!ctx.path.startsWith('/v0/management')) {
+        await next()
+        return
+      }
+
+      if (isPublicManagementPath(ctx.path)) {
         await next()
         return
       }

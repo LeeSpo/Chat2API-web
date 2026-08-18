@@ -427,6 +427,17 @@ export interface ManagementApiConfig {
   managementApiSecret: string
   /** Management API port (optional, defaults to proxyPort) */
   managementApiPort?: number
+  /**
+   * Whether the first-run setup (initial password creation) has completed.
+   * When false the web UI shows a "create password" screen instead of "log in".
+   */
+  firstRunCompleted?: boolean
+  /** scrypt-derived hash (hex) of the management password. */
+  passwordHash?: string
+  /** scrypt salt (hex) used together with passwordHash. */
+  passwordSalt?: string
+  /** When the password was last set/changed (ms since epoch). */
+  passwordSetAt?: number
 }
 
 /**

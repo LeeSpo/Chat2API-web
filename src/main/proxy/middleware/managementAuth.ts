@@ -4,7 +4,7 @@
  */
 
 import type { Context, Next } from 'koa'
-import { randomUUID } from 'crypto'
+import { randomUUID, timingSafeEqual } from 'crypto'
 import { storeManager } from '../../store/store'
 
 /**
@@ -72,12 +72,44 @@ function extractAuthToken(ctx: Context): string | null {
 }
 
 /**
+ * Timing-safe string comparison to prevent timing attacks on secret validation.
+ */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    const dummy = Buffer.alloc(b.length)
+    timingSafeEqual(dummy, Buffer.from(b))
+    return false
+  }
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b))
+}
+
+/**
+ * Public auth endpoints that must remain reachable before any secret has
+ * been issued. The status / setup / login routes need to work on first run
+ * so the operator can create their password from the web UI.
+ */
+const PUBLIC_AUTH_PATHS = new Set<string>([
+  '/v0/management/auth/status',
+  '/v0/management/auth/setup',
+  '/v0/management/auth/login',
+])
+
+export function isPublicManagementPath(path: string): boolean {
+  return PUBLIC_AUTH_PATHS.has(path)
+}
+
+/**
  * Management API Authentication Middleware
  * Validates Bearer token from Authorization header or X-Management-Secret header
  * Compares against managementApiSecret from config
  * Returns 401 Unauthorized for invalid/missing authentication
  */
 export async function managementAuthMiddleware(ctx: Context, next: Next): Promise<void> {
+  if (isPublicManagementPath(ctx.path)) {
+    await next()
+    return
+  }
+
   const config = storeManager.getConfig()
   const managementConfig = config.managementApi
 
@@ -110,7 +142,7 @@ export async function managementAuthMiddleware(ctx: Context, next: Next): Promis
     return
   }
 
-  if (providedToken !== managementConfig.managementApiSecret) {
+  if (!safeEqual(providedToken, managementConfig.managementApiSecret)) {
     ctx.status = 401
     ctx.body = createUnauthorizedResponse(
       'Invalid management API secret',

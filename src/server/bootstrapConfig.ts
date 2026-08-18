@@ -34,7 +34,8 @@ export function createServerConfigOverrides(): Partial<AppConfig> {
   const host = process.env.CHAT2API_HOST
   const strategy = process.env.CHAT2API_LOAD_BALANCE_STRATEGY as LoadBalanceStrategy | undefined
   const enableManagementApi = parseBoolean(process.env.CHAT2API_ENABLE_MANAGEMENT_API)
-  const managementSecret = process.env.CHAT2API_MANAGEMENT_SECRET
+  const disableManagementApi = process.env.CHAT2API_DISABLE_MANAGEMENT_API === '1'
+  const managementSecret = process.env.CHAT2API_MANAGEMENT_SECRET?.trim()
   const enableApiKey = parseBoolean(process.env.CHAT2API_ENABLE_API_KEY)
   const logLevel = process.env.CHAT2API_LOG_LEVEL as AppConfig['logLevel'] | undefined
 
@@ -64,20 +65,34 @@ export function createServerConfigOverrides(): Partial<AppConfig> {
     overrides.enableApiKey = enableApiKey
   }
 
-  if (enableManagementApi !== undefined || managementSecret) {
-    overrides.managementApi = {
-      enableManagementApi: enableManagementApi ?? Boolean(managementSecret),
-      managementApiSecret: managementSecret || '',
-    }
+  const managementEnabled = disableManagementApi
+    ? false
+    : (enableManagementApi ?? true)
+
+  overrides.managementApi = {
+    enableManagementApi: managementEnabled,
+    ...(managementSecret
+      ? {
+          managementApiSecret: managementSecret,
+          firstRunCompleted: true,
+        }
+      : {}),
   }
 
   return overrides
 }
 
 export function applyServerConfigOverrides(): AppConfig {
+  const current = storeManager.getConfig()
   const overrides = createServerConfigOverrides()
+  if (overrides.managementApi) {
+    overrides.managementApi = {
+      ...current.managementApi,
+      ...overrides.managementApi,
+    }
+  }
   if (Object.keys(overrides).length === 0) {
-    return storeManager.getConfig()
+    return current
   }
 
   return storeManager.updateConfig(overrides)

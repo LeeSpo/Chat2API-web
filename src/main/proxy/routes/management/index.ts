@@ -3,6 +3,7 @@
  * Exports all management route modules
  */
 
+import authRouter from './auth'
 import configRouter from './config'
 import providersRouter from './providers'
 import accountsRouter from './accounts'
@@ -15,6 +16,7 @@ import toolCallingRouter from './toolCalling'
 import qwenAiGovernorRouter from './qwenAiGovernor'
 
 export {
+  authRouter,
   configRouter,
   providersRouter,
   accountsRouter,
@@ -28,6 +30,8 @@ export {
 }
 
 export default [
+  // Public first-run / login routes must be registered first.
+  authRouter,
   configRouter,
   providersRouter,
   accountsRouter,

@@ -326,6 +326,10 @@ export interface ManagementApiConfig {
   enableManagementApi: boolean
   managementApiSecret: string
   managementApiPort?: number
+  firstRunCompleted?: boolean
+  passwordHash?: string
+  passwordSalt?: string
+  passwordSetAt?: number
 }
 
 export interface ManagementApiResponse<T = unknown> {
