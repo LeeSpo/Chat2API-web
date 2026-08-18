@@ -6,6 +6,9 @@ export const qwenAiBookmarklet: ProviderTokenSpec = {
   tokenField: 'token',
   extras: [
     { sourceKey: '*', storageType: 'cookie', field: 'cookies' },
+    { sourceKey: 'x5secdata', storageType: 'cookie', field: 'x5secdata' },
+    { sourceKey: 'x5sectag', storageType: 'cookie', field: 'x5sectag' },
+    { sourceKey: 'baxiaUidToken', storageType: 'runtime', field: 'baxiaUidToken' },
   ],
   originLabel: 'Qwen Chat',
   expectedOrigin: 'https://chat.qwen.ai',

@@ -12,6 +12,8 @@ test('bookmarklet routes cover issue, public ingest, poll, and disable flag', ()
   assert.match(source, /CHAT2API_DISABLE_BOOKMARKLET/)
   assert.match(source, /Access-Control-Allow-Origin/)
   assert.match(source, /loginWithToken/)
+  assert.match(source, /ticket\.providerType === 'qwen-ai'/)
+  assert.match(source, /stringCredentials/)
   assert.match(source, /managementAuthMiddleware/)
 })
 
@@ -28,14 +30,18 @@ test('bookmarklet ticket store is single-use with a 10 minute ttl', () => {
   assert.match(source, /consume\(/)
 })
 
-test('bookmarklet script covers built-in providers including qwen-ai cookies', () => {
+test('bookmarklet script covers built-in providers including the complete qwen-ai browser session', () => {
   const source = fs.readFileSync('backend/oauth/bookmarkletScript.ts', 'utf8')
   const qwenAi = fs.readFileSync('backend/providers/qwen-ai/bookmarklet.ts', 'utf8')
   for (const provider of ['deepseek', 'glm', 'kimi', 'minimax', 'qwen', "'qwen-ai'", 'zai', 'mimo', 'perplexity']) {
     assert.match(source, new RegExp(provider))
   }
   assert.match(qwenAi, /cookies/)
+  assert.match(qwenAi, /x5secdata/)
+  assert.match(qwenAi, /x5sectag/)
+  assert.match(qwenAi, /baxiaUidToken/)
   assert.match(source, /document\.cookie/)
+  assert.match(source, /window\.__baxia__/)
 })
 
 test('management router registers bookmarklet routes before other oauth handlers', () => {

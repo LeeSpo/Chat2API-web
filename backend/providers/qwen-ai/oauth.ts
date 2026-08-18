@@ -5,6 +5,7 @@
 
 import axios from 'axios'
 import { BaseOAuthAdapter } from '../../oauth/adapters/base'
+import { resolveQwenAiAuthHeaders } from './token-refresh'
 import {
   OAuthResult,
   OAuthOptions,
@@ -31,6 +32,43 @@ const FAKE_HEADERS = {
   'Sec-Fetch-Site': 'same-origin',
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
   source: 'web',
+  Version: '0.2.67',
+}
+
+type UserInfoLookup =
+  | { kind: 'success'; userInfo: Record<string, unknown> }
+  | { kind: 'authentication-failed'; error: string }
+  | { kind: 'unavailable' }
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=')
+    const payload = JSON.parse(Buffer.from(padded, 'base64').toString('utf8'))
+    return payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : null
+  } catch {
+    return null
+  }
+}
+
+function readCredential(credentials: Record<string, string>, ...keys: string[]): string {
+  for (const key of keys) {
+    const value = credentials[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return ''
+}
+
+function hasExplicitAuthenticationFailure(status: number, body: unknown): boolean {
+  if (status === 401 || status === 403) return true
+  try {
+    return /(?:invalid|expired|missing|unauthori[sz]ed|not[ _-]*login|login[ _-]*required).{0,80}(?:token|auth|credential|session)|(?:token|auth|credential|session).{0,80}(?:invalid|expired|missing|unauthori[sz]ed|not[ _-]*login|login[ _-]*required)/i
+      .test(JSON.stringify(body || {}))
+  } catch {
+    return false
+  }
 }
 
 export class QwenAiAdapter extends BaseOAuthAdapter {
@@ -44,11 +82,16 @@ export class QwenAiAdapter extends BaseOAuthAdapter {
     })
   }
 
-  async loginWithToken(providerId: string, token: string): Promise<OAuthResult> {
+  async loginWithToken(
+    providerId: string,
+    token: string,
+    importedCredentials: Record<string, string> = {},
+  ): Promise<OAuthResult> {
     this.emitProgress('pending', 'Validating Token...')
     
     try {
-      const validation = await this.validateToken({ token })
+      const credentials = { ...importedCredentials, token }
+      const validation = await this.validateToken(credentials)
       
       if (!validation.valid) {
         return {
@@ -65,7 +108,7 @@ export class QwenAiAdapter extends BaseOAuthAdapter {
         success: true,
         providerId,
         providerType: 'qwen-ai',
-        credentials: { token },
+        credentials,
         accountInfo: validation.accountInfo,
       }
     } catch (error) {
@@ -94,60 +137,63 @@ export class QwenAiAdapter extends BaseOAuthAdapter {
     }
     
     if (token.startsWith('eyJ') && token.split('.').length === 3) {
-      try {
-        const parts = token.split('.')
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
-        
-        if (payload.email && payload.email.includes('@guest.com')) {
-          return {
-            valid: false,
-            error: 'Guest account not allowed, please login with a real account',
-          }
-        }
-        
-        if (payload && (payload.sub || payload.id || payload.user_id || payload.uid)) {
-          const userId = payload.sub || payload.id || payload.user_id || payload.uid
-          
-          try {
-            const userInfo = await this.getUserInfo(token)
-            console.log('[QwenAi OAuth] User info:', userInfo)
-
-            if (!userInfo) {
-              return {
-                valid: false,
-                error: 'Token validation failed against chat.qwen.ai user API. Re-import token and cookies from a logged-in browser session.',
-              }
-            }
-            
-            if (userInfo && userInfo.is_guest === true) {
-              return {
-                valid: false,
-                error: 'Guest account not allowed, please login with a real account',
-              }
-            }
-            
-            return {
-              valid: true,
-              tokenType: 'access',
-              accountInfo: {
-                userId: userId,
-                email: payload.email || userInfo?.email || '',
-                name: payload.name || userInfo?.name || payload.email || userId,
-              },
-            }
-          } catch (apiError) {
-            console.log('[QwenAi OAuth] API validation failed:', apiError)
-            return {
-              valid: false,
-              error: 'Token validation request failed. Re-import token and cookies from a logged-in browser session.',
-            }
-          }
-        }
-      } catch {
+      const payload = decodeJwtPayload(token)
+      if (!payload) {
         return {
           valid: false,
           error: 'Invalid JWT token',
         }
+      }
+
+      const email = typeof payload.email === 'string' ? payload.email : ''
+      if (email.includes('@guest.com')) {
+        return {
+          valid: false,
+          error: 'Guest account not allowed, please login with a real account',
+        }
+      }
+
+      const userId = payload.sub || payload.id || payload.user_id || payload.uid
+      if (typeof userId !== 'string' && typeof userId !== 'number') {
+        return {
+          valid: false,
+          error: 'Token does not contain an account identity',
+        }
+      }
+
+      const normalizedUserId = String(userId)
+      const lookup = await this.getUserInfo(credentials)
+      console.log('[QwenAi OAuth] User info lookup:', lookup.kind)
+
+      if (lookup.kind === 'authentication-failed') {
+        return {
+          valid: false,
+          error: lookup.error,
+        }
+      }
+
+      if (lookup.kind === 'success' && lookup.userInfo.is_guest === true) {
+        return {
+          valid: false,
+          error: 'Guest account not allowed, please login with a real account',
+        }
+      }
+
+      const userInfo = lookup.kind === 'success' ? lookup.userInfo : {}
+      const name = typeof payload.name === 'string'
+        ? payload.name
+        : typeof userInfo.name === 'string'
+          ? userInfo.name
+          : email || normalizedUserId
+
+      return {
+        valid: true,
+        tokenType: 'access',
+        accountInfo: {
+          userId: normalizedUserId,
+          email: email || (typeof userInfo.email === 'string' ? userInfo.email : ''),
+          name,
+        },
       }
     }
     
@@ -157,24 +203,48 @@ export class QwenAiAdapter extends BaseOAuthAdapter {
     }
   }
 
-  async getUserInfo(token: string): Promise<Record<string, unknown> | null> {
+  async getUserInfo(credentials: Record<string, string>): Promise<UserInfoLookup> {
     try {
+      const token = readCredential(credentials, 'token', 'accessToken')
+      const cookies = readCredential(credentials, 'cookies', 'cookie')
       const response = await axios.get(`${QWEN_AI_API_BASE}/api/v2/user/info`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           ...FAKE_HEADERS,
+          ...resolveQwenAiAuthHeaders(token, cookies),
+          ...(readCredential(credentials, 'baxiaUidToken', 'baxia_uid_token', 'uidToken')
+            ? { 'bx-umidtoken': readCredential(credentials, 'baxiaUidToken', 'baxia_uid_token', 'uidToken') }
+            : {}),
+          ...(readCredential(credentials, 'baxiaUa', 'baxia_ua', 'bxUa', 'bx_ua')
+            ? { 'bx-ua': readCredential(credentials, 'baxiaUa', 'baxia_ua', 'bxUa', 'bx_ua') }
+            : {}),
+          ...(readCredential(credentials, 'baxiaVersion', 'baxia_version', 'bxV', 'bx_v')
+            ? { 'bx-v': readCredential(credentials, 'baxiaVersion', 'baxia_version', 'bxV', 'bx_v') }
+            : {}),
+          ...(readCredential(credentials, 'x5secdata')
+            ? { x5secdata: readCredential(credentials, 'x5secdata') }
+            : {}),
+          ...(readCredential(credentials, 'x5sectag')
+            ? { x5sectag: readCredential(credentials, 'x5sectag') }
+            : {}),
         },
         timeout: 15000,
         validateStatus: () => true,
       })
       
-      if (response.status !== 200 || !response.data?.success) {
-        return null
+      if (response.status === 200 && response.data?.success && response.data.data) {
+        return { kind: 'success', userInfo: response.data.data }
       }
-      
-      return response.data.data
+
+      if (hasExplicitAuthenticationFailure(response.status, response.data)) {
+        return {
+          kind: 'authentication-failed',
+          error: 'Qwen AI rejected the imported browser session. Please sign in again and generate a new bookmarklet.',
+        }
+      }
+
+      return { kind: 'unavailable' }
     } catch {
-      return null
+      return { kind: 'unavailable' }
     }
   }
 

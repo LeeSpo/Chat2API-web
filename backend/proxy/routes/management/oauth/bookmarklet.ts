@@ -180,13 +180,18 @@ router.post('/ingest', async (ctx: Context) => {
       return
     }
 
-    const result = await adapter.loginWithToken(
-      ticket.providerId,
-      token,
-      typeof creds.realUserID === 'string' ? creds.realUserID : undefined,
-      typeof creds.mimoUserId === 'string' ? creds.mimoUserId : undefined,
-      typeof creds.mimoPhToken === 'string' ? creds.mimoPhToken : undefined,
+    const stringCredentials = Object.fromEntries(
+      Object.entries(creds).filter(([, value]): value is string => typeof value === 'string'),
     )
+    const result = ticket.providerType === 'qwen-ai'
+      ? await adapter.loginWithToken(ticket.providerId, token, stringCredentials)
+      : await adapter.loginWithToken(
+        ticket.providerId,
+        token,
+        typeof creds.realUserID === 'string' ? creds.realUserID : undefined,
+        typeof creds.mimoUserId === 'string' ? creds.mimoUserId : undefined,
+        typeof creds.mimoPhToken === 'string' ? creds.mimoPhToken : undefined,
+      )
 
     if (result.success && result.credentials) {
       const extras: Record<string, string> = {}

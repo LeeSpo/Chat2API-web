@@ -10,12 +10,12 @@ import { zaiBookmarklet } from '../providers/zai/bookmarklet'
 import { qwenAiBookmarklet } from '../providers/qwen-ai/bookmarklet'
 
 export interface ProviderTokenSpec {
-  storageType: 'localStorage' | 'cookie'
+  storageType: 'localStorage' | 'cookie' | 'runtime'
   tokenKey: string
   tokenField?: string
   extras?: Array<{
     sourceKey: string
-    storageType?: 'localStorage' | 'cookie'
+    storageType?: 'localStorage' | 'cookie' | 'runtime'
     field: string
     required?: boolean
   }>
@@ -70,6 +70,7 @@ export function buildBookmarkletSource(opts: BookmarkletBuildOptions): string {
     'function read(storage,key){',
     '  try{',
     '    if(key==="*")return document.cookie;',
+    '    if(storage==="runtime"&&key==="baxiaUidToken")return window.__baxia__?.getFYModule?.getUidToken?.()||null;',
     '    if(storage==="cookie")return readCookie(key);',
     '    return window.localStorage.getItem(key);',
     '  }catch(e){return null;}',
