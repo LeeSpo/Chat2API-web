@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Readable } from 'node:stream'
 
-import { DeepSeekStreamHandler } from '../../backend/proxy/adapters/deepseek-stream.ts'
+import { DeepSeekStreamHandler } from '../../backend/providers/deepseek/stream.ts'
 import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 function sse(events: unknown[]): Readable {

@@ -5,7 +5,7 @@
 
 import axios from 'axios'
 import crypto from 'crypto'
-import { BaseOAuthAdapter } from './base'
+import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import { getRuntime } from '../../runtime'
 import {
   OAuthResult,
@@ -14,7 +14,7 @@ import {
   CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
-} from '../types'
+} from '../../oauth/types'
 
 const MINIMAX_API_BASE = 'https://agent.minimaxi.com'
 

@@ -4,15 +4,15 @@
  */
 
 export { BaseOAuthAdapter } from './base'
-export { DeepSeekAdapter } from './deepseek'
-export { GLMAdapter } from './glm'
-export { KimiAdapter } from './kimi'
-export { MimoAdapter } from './mimo'
-export { MiniMaxAdapter } from './minimax'
-export { PerplexityAdapter } from './perplexity'
-export { QwenAdapter } from './qwen'
+export { DeepSeekAdapter } from '../../providers/deepseek/oauth'
+export { GLMAdapter } from '../../providers/glm/oauth'
+export { KimiAdapter } from '../../providers/kimi/oauth'
+export { MimoAdapter } from '../../providers/mimo/oauth'
+export { MiniMaxAdapter } from '../../providers/minimax/oauth'
+export { PerplexityAdapter } from '../../providers/perplexity/oauth'
+export { QwenAdapter } from '../../providers/qwen/oauth'
 export { QwenAiAdapter } from './qwen-ai'
-export { ZaiAdapter } from './zai'
+export { ZaiAdapter } from '../../providers/zai/oauth'
 
 import {
   createAdapter as createRegistryAdapter,

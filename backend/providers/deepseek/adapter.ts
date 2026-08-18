@@ -9,8 +9,8 @@
 import axios, { AxiosResponse } from 'axios'
 import { getDeepSeekHash } from '../../lib/challenge'
 import type { Account, Provider } from '../../store/types'
-import { resolveDeepSeekChatOptions } from './providerModelOptions'
-import { getProviderToolProfile } from '../toolCalling/providerProfiles'
+import { resolveDeepSeekChatOptions } from '../../proxy/adapters/providerModelOptions'
+import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles'
 
 const DEEPSEEK_API_BASE = 'https://chat.deepseek.com/api'
 

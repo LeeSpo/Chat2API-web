@@ -11,8 +11,8 @@ import type { ToolCallingPlan } from '../../backend/proxy/toolCalling/types.ts'
 
 const runtimeRequire = createRequire(import.meta.url)
 
-function loadQwenStreamHandler(): typeof import('../../backend/proxy/adapters/qwen.ts') {
-  const source = fs.readFileSync('backend/proxy/adapters/qwen.ts', 'utf8')
+function loadQwenStreamHandler(): typeof import('../../backend/providers/qwen/adapter.ts') {
+  const source = fs.readFileSync('backend/providers/qwen/adapter.ts', 'utf8')
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,

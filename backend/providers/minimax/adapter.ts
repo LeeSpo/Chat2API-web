@@ -11,15 +11,15 @@ import crypto from 'crypto'
 import { createParser, EventSourceMessage } from 'eventsource-parser'
 import FormData from 'form-data'
 import { Account, Provider } from '../../store/types'
-import { toolsToSystemPrompt, TOOL_WRAP_HINT, hasToolPromptInjected, shouldInjectToolPrompt } from '../utils/tools'
-import { parseToolCallsFromText } from '../utils/toolParser'
+import { toolsToSystemPrompt, TOOL_WRAP_HINT, hasToolPromptInjected, shouldInjectToolPrompt } from '../../proxy/utils/tools'
+import { parseToolCallsFromText } from '../../proxy/utils/toolParser'
 import { 
   createToolCallState, 
   processStreamContent, 
   flushToolCallBuffer,
   createBaseChunk,
   ToolCallState 
-} from '../utils/streamToolHandler'
+} from '../../proxy/utils/streamToolHandler'
 
 const AGENT_BASE_URL = 'https://agent.minimaxi.com'
 

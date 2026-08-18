@@ -4,15 +4,15 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-import { deepseekConfig } from '../../backend/providers/builtin/deepseek.ts'
-import { glmConfig } from '../../backend/providers/builtin/glm.ts'
-import { kimiConfig } from '../../backend/providers/builtin/kimi.ts'
-import { minimaxConfig } from '../../backend/providers/builtin/minimax.ts'
-import { mimoConfig } from '../../backend/providers/builtin/mimo.ts'
-import { perplexityConfig } from '../../backend/providers/builtin/perplexity.ts'
-import { qwenConfig } from '../../backend/providers/builtin/qwen.ts'
+import { deepseekConfig } from '../../backend/providers/deepseek/config.ts'
+import { glmConfig } from '../../backend/providers/glm/config.ts'
+import { kimiConfig } from '../../backend/providers/kimi/config.ts'
+import { minimaxConfig } from '../../backend/providers/minimax/config.ts'
+import { mimoConfig } from '../../backend/providers/mimo/config.ts'
+import { perplexityConfig } from '../../backend/providers/perplexity/config.ts'
+import { qwenConfig } from '../../backend/providers/qwen/config.ts'
 import { qwenAiConfig } from '../../backend/providers/builtin/qwen-ai.ts'
-import { zaiConfig } from '../../backend/providers/builtin/zai.ts'
+import { zaiConfig } from '../../backend/providers/zai/config.ts'
 import {
   DEEPSEEK_PRIMARY_MODELS,
   DEFAULT_DEEPSEEK_MODEL_MAPPINGS,
@@ -194,7 +194,7 @@ test('GLM, Kimi, and MiniMax built-in default models match current web providers
   })
 
   const minimaxAdapterSource = readFileSync(
-    join(root, 'backend/proxy/adapters/minimax.ts'),
+    join(root, 'backend/providers/minimax/adapter.ts'),
     'utf8',
   )
   assert.match(minimaxAdapterSource, /this\.model = 'MiniMax-M2\.7'/)
@@ -268,8 +268,8 @@ test('Kimi forwarder preserves feature aliases and provider conversation identif
 test('Kimi and domestic Qwen support account-level chat cleanup', () => {
   const accountsSource = readFileSync(join(root, 'backend/proxy/routes/management/accounts.ts'), 'utf8')
   const accountListSource = readFileSync(join(root, 'frontend/src/components/providers/AccountList.tsx'), 'utf8')
-  const kimiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/kimi.ts'), 'utf8')
-  const qwenAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen.ts'), 'utf8')
+  const kimiAdapterSource = readFileSync(join(root, 'backend/providers/kimi/adapter.ts'), 'utf8')
+  const qwenAdapterSource = readFileSync(join(root, 'backend/providers/qwen/adapter.ts'), 'utf8')
 
   assert.match(accountsSource, /import \{ KimiAdapter \} from '\.\.\/\.\.\/adapters\/kimi'/)
   assert.match(accountsSource, /import \{ QwenAdapter \} from '\.\.\/\.\.\/adapters\/qwen'/)
@@ -312,7 +312,7 @@ test('domestic Qwen models match the web chat model ids captured from HAR', () =
   assert.deepEqual(qwenConfig.supportedModels, expectedModels)
   assert.deepEqual(qwenConfig.modelMappings, expectedMappings)
 
-  const qwenAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/qwen.ts'), 'utf8')
+  const qwenAdapterSource = readFileSync(join(root, 'backend/providers/qwen/adapter.ts'), 'utf8')
   const zh = JSON.parse(readFileSync(join(root, 'frontend/src/i18n/locales/zh-CN.json'), 'utf8'))
   const en = JSON.parse(readFileSync(join(root, 'frontend/src/i18n/locales/en-US.json'), 'utf8'))
 
@@ -424,7 +424,7 @@ test('Z.ai default models match the latest chat.z.ai HAR model ids', () => {
     assert.equal(zaiConfig.modelMappings?.[removedModel], undefined, removedModel)
   }
 
-  const zaiAdapterSource = readFileSync(join(root, 'backend/proxy/adapters/zai.ts'), 'utf8')
+  const zaiAdapterSource = readFileSync(join(root, 'backend/providers/zai/adapter.ts'), 'utf8')
   assert.match(zaiAdapterSource, /'glm-5\.1': 'GLM-5\.1'/)
   assert.match(zaiAdapterSource, /'glm-5v-turbo': 'GLM-5v-Turbo'/)
   assert.match(zaiAdapterSource, /'GLM-5V-Turbo': 'GLM-5v-Turbo'/)
@@ -561,7 +561,7 @@ test('Mimo model names and conversation flow match Xiaomi AI Studio web requests
   assert.match(forwardMimoSource, /this\.applyToolCallsToResponse\(.*transformed/s)
 
   const mimoAdapterSource = readFileSync(
-    join(root, 'backend/proxy/adapters/mimo.ts'),
+    join(root, 'backend/providers/mimo/adapter.ts'),
     'utf8',
   )
 

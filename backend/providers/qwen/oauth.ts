@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios'
-import { BaseOAuthAdapter } from './base'
+import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import { getRuntime } from '../../runtime'
 import {
   OAuthResult,
@@ -13,7 +13,7 @@ import {
   CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
-} from '../types'
+} from '../../oauth/types'
 
 const QWEN_API_BASE = 'https://chat2-api.qianwen.com'
 const QWEN_WEB_BASE = 'https://www.qianwen.com'

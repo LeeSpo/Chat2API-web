@@ -9,15 +9,15 @@ import { PassThrough } from 'stream'
 import { createParser } from 'eventsource-parser'
 import FormData from 'form-data'
 import { Account, Provider } from '../../store/types'
-import { hasToolUse, parseToolUse, ToolCall } from '../promptToolUse'
-import { parseToolCallsFromText } from '../utils/toolParser'
+import { hasToolUse, parseToolUse, ToolCall } from '../../proxy/promptToolUse'
+import { parseToolCallsFromText } from '../../proxy/utils/toolParser'
 import { 
   createToolCallState, 
   processStreamContent, 
   flushToolCallBuffer,
   createBaseChunk,
   ToolCallState 
-} from '../utils/streamToolHandler'
+} from '../../proxy/utils/streamToolHandler'
 
 const ZAI_API_BASE = 'https://chat.z.ai'
 const X_FE_VERSION = 'prod-fe-1.1.37'

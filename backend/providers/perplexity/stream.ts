@@ -1,13 +1,13 @@
 import { PassThrough } from 'stream'
-import { parseToolCallsFromText } from '../utils/toolParser'
+import { parseToolCallsFromText } from '../../proxy/utils/toolParser'
 import { 
   createToolCallState, 
   processStreamContent, 
   flushToolCallBuffer,
   createBaseChunk,
   ToolCallState 
-} from '../utils/streamToolHandler'
-import type { PerplexityAdapter } from './perplexity'
+} from '../../proxy/utils/streamToolHandler'
+import type { PerplexityAdapter } from './adapter'
 
 function filterCitations(content: string): string {
   // Filter out citation markers like [1], [perplexity+1], [perplexity-1], etc.

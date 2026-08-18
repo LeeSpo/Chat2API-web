@@ -17,12 +17,11 @@ import {
 import { proxyStatusManager } from './status'
 import { storeManager } from '../store/store'
 import { loadBalancer } from './loadbalancer'
-import { DeepSeekAdapter } from './adapters/deepseek'
-import { DeepSeekStreamHandler } from './adapters/deepseek-stream'
-import { GLMAdapter, GLMStreamHandler } from './adapters/glm'
-import { KimiAdapter, KimiStreamHandler } from './adapters/kimi'
-import { MimoAdapter, MimoStreamHandler } from './adapters/mimo'
-import { QwenAdapter, QwenStreamHandler } from './adapters/qwen'
+import { DeepSeekAdapter, DeepSeekStreamHandler } from '../providers/deepseek'
+import { GLMAdapter, GLMStreamHandler } from '../providers/glm/adapter'
+import { KimiAdapter, KimiStreamHandler } from '../providers/kimi/adapter'
+import { MimoAdapter, MimoStreamHandler } from '../providers/mimo/adapter'
+import { QwenAdapter, QwenStreamHandler } from '../providers/qwen/adapter'
 import {
   describeErrorForLog,
   QWEN_AI_STREAM_FAILURE_EVENT,
@@ -38,10 +37,9 @@ import {
   createQwenAiResumableStream,
 } from './adapters/qwen-ai'
 import type { QwenAiMessageTransport } from './adapters/qwen-ai-files'
-import { ZaiAdapter, ZaiStreamHandler } from './adapters/zai'
-import { MiniMaxAdapter, MiniMaxStreamHandler } from './adapters/minimax'
-import { PerplexityAdapter } from './adapters/perplexity'
-import { PerplexityStreamHandler } from './adapters/perplexity-stream'
+import { ZaiAdapter, ZaiStreamHandler } from '../providers/zai/adapter'
+import { MiniMaxAdapter, MiniMaxStreamHandler } from '../providers/minimax/adapter'
+import { PerplexityAdapter, PerplexityStreamHandler } from '../providers/perplexity'
 import {
   createToolWorkflowContinuationMessage,
   extractLatestActiveUserRequest,

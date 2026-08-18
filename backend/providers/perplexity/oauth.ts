@@ -6,7 +6,7 @@
  * via API calls. We accept cookies directly as valid credentials.
  */
 
-import { BaseOAuthAdapter } from './base'
+import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import {
   OAuthResult,
   OAuthOptions,
@@ -14,7 +14,7 @@ import {
   CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
-} from '../types'
+} from '../../oauth/types'
 
 const PERPLEXITY_WEB_BASE = 'https://www.perplexity.ai'
 

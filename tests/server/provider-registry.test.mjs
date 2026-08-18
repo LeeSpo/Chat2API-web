@@ -32,7 +32,20 @@ test('ProviderPlugin contract and registry are the single vendor list', () => {
   assert.match(registry, /export const builtinProviders/)
 
   for (const id of EXPECTED_IDS) {
-    assert.match(registry, new RegExp(`['"]${id}['"]`))
+    const pluginName = id === 'qwen-ai' ? 'qwenAiPlugin' : `${id}Plugin`
+    assert.match(registry, new RegExp(pluginName))
+  }
+})
+
+test('non-Qwen-AI vendors live under backend/providers/<id>/', () => {
+  for (const id of EXPECTED_IDS.filter((item) => item !== 'qwen-ai')) {
+    assert.equal(fs.existsSync(`backend/providers/${id}/config.ts`), true)
+    assert.equal(fs.existsSync(`backend/providers/${id}/oauth.ts`), true)
+    assert.equal(fs.existsSync(`backend/providers/${id}/adapter.ts`), true)
+    assert.equal(fs.existsSync(`backend/providers/${id}/index.ts`), true)
+    assert.equal(fs.existsSync(`backend/providers/builtin/${id}.ts`), false)
+    assert.equal(fs.existsSync(`backend/proxy/adapters/${id}.ts`), false)
+    assert.equal(fs.existsSync(`backend/oauth/adapters/${id}.ts`), false)
   }
 })
 

@@ -8,7 +8,7 @@
  * - xiaomichatbot_ph
  */
 
-import { BaseOAuthAdapter } from './base'
+import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import {
   OAuthResult,
   OAuthOptions,
@@ -16,7 +16,7 @@ import {
   CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
-} from '../types'
+} from '../../oauth/types'
 
 const MIMO_WEB_BASE = 'https://aistudio.xiaomimimo.com'
 

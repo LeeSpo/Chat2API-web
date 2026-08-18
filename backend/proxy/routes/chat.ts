@@ -20,7 +20,7 @@ import {
 import { forwardWithAccountFailover, resolveAccountFailoverLimit } from '../accountFailover'
 import { createDeferredQwenAiFailoverStream } from '../qwenAiDeferredStream'
 import { qwenAiRequestGovernor } from '../qwenAiRequestGovernor'
-import { KimiAdapter } from '../adapters/kimi'
+import { KimiAdapter } from '../../providers/kimi/adapter'
 import {
   QwenAiAdapter,
   QWEN_AI_STREAM_FAILURE_EVENT,

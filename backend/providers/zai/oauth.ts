@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios'
-import { BaseOAuthAdapter } from './base'
+import { BaseOAuthAdapter } from '../../oauth/adapters/base'
 import {
   OAuthResult,
   OAuthOptions,
@@ -12,7 +12,7 @@ import {
   CredentialInfo,
   AdapterConfig,
   OAuthCallbackData,
-} from '../types'
+} from '../../oauth/types'
 
 const ZAI_API_BASE = 'https://chat.z.ai'
 const X_FE_VERSION = 'prod-fe-1.1.37'

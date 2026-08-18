@@ -18,13 +18,13 @@ before(async () => {
     appType: 'custom',
     logLevel: 'silent',
   })
-  const module = await vite.ssrLoadModule('/backend/proxy/adapters/kimi.ts')
+  const module = await vite.ssrLoadModule('/backend/providers/kimi/adapter.ts')
   KimiAdapter = module.KimiAdapter
   KimiStreamHandler = module.KimiStreamHandler
   detectTokenType = module.detectTokenType
   const storeModule = await vite.ssrLoadModule('/backend/store/store.ts')
   storeManager = storeModule.storeManager
-  const oauthModule = await vite.ssrLoadModule('/backend/oauth/adapters/kimi.ts')
+  const oauthModule = await vite.ssrLoadModule('/backend/providers/kimi/oauth.ts')
   KimiOAuthAdapter = oauthModule.KimiAdapter
   const checkerModule = await vite.ssrLoadModule('/backend/providers/checker.ts')
   ProviderChecker = checkerModule.ProviderChecker

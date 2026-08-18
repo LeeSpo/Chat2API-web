@@ -1,4 +1,12 @@
 import type { ProviderType } from './types'
+import { deepseekBookmarklet } from '../providers/deepseek/bookmarklet'
+import { glmBookmarklet } from '../providers/glm/bookmarklet'
+import { kimiBookmarklet } from '../providers/kimi/bookmarklet'
+import { minimaxBookmarklet } from '../providers/minimax/bookmarklet'
+import { mimoBookmarklet } from '../providers/mimo/bookmarklet'
+import { perplexityBookmarklet } from '../providers/perplexity/bookmarklet'
+import { qwenBookmarklet } from '../providers/qwen/bookmarklet'
+import { zaiBookmarklet } from '../providers/zai/bookmarklet'
 
 export interface ProviderTokenSpec {
   storageType: 'localStorage' | 'cookie'
@@ -15,48 +23,11 @@ export interface ProviderTokenSpec {
 }
 
 export const PROVIDER_TOKEN_SPECS: Record<ProviderType, ProviderTokenSpec> = {
-  deepseek: {
-    storageType: 'localStorage',
-    tokenKey: 'userToken',
-    tokenField: 'token',
-    originLabel: 'DeepSeek',
-    expectedOrigin: 'https://chat.deepseek.com',
-  },
-  glm: {
-    storageType: 'cookie',
-    tokenKey: 'chatglm_refresh_token',
-    tokenField: 'token',
-    originLabel: 'ChatGLM',
-    expectedOrigin: 'https://chatglm.cn',
-  },
-  kimi: {
-    storageType: 'localStorage',
-    tokenKey: 'access_token',
-    tokenField: 'token',
-    extras: [
-      { sourceKey: 'refresh_token', field: 'refreshToken' },
-      { sourceKey: 'kimi-auth', storageType: 'cookie', field: 'kimiAuth' },
-    ],
-    originLabel: 'Kimi',
-    expectedOrigin: 'https://www.kimi.com',
-  },
-  minimax: {
-    storageType: 'localStorage',
-    tokenKey: '_token',
-    tokenField: 'token',
-    extras: [
-      { sourceKey: '_userId', field: 'realUserID', required: true },
-    ],
-    originLabel: 'MiniMax',
-    expectedOrigin: 'https://chat.minimaxi.com',
-  },
-  qwen: {
-    storageType: 'cookie',
-    tokenKey: 'tongyi_sso_ticket',
-    tokenField: 'token',
-    originLabel: 'Tongyi Qianwen',
-    expectedOrigin: 'https://www.qianwen.com',
-  },
+  deepseek: deepseekBookmarklet,
+  glm: glmBookmarklet,
+  kimi: kimiBookmarklet,
+  minimax: minimaxBookmarklet,
+  qwen: qwenBookmarklet,
   'qwen-ai': {
     storageType: 'localStorage',
     tokenKey: 'token',
@@ -67,31 +38,9 @@ export const PROVIDER_TOKEN_SPECS: Record<ProviderType, ProviderTokenSpec> = {
     originLabel: 'Qwen Chat',
     expectedOrigin: 'https://chat.qwen.ai',
   },
-  zai: {
-    storageType: 'localStorage',
-    tokenKey: 'token',
-    tokenField: 'token',
-    originLabel: 'Z.ai',
-    expectedOrigin: 'https://chat.z.ai',
-  },
-  mimo: {
-    storageType: 'localStorage',
-    tokenKey: 'service_token',
-    tokenField: 'token',
-    extras: [
-      { sourceKey: 'user_id', field: 'mimoUserId', required: true },
-      { sourceKey: 'ph_token', field: 'mimoPhToken', required: true },
-    ],
-    originLabel: 'Mimo Studio',
-    expectedOrigin: 'https://aistudio.xiaomimimo.com',
-  },
-  perplexity: {
-    storageType: 'cookie',
-    tokenKey: '__Secure-next-auth.session-token',
-    tokenField: 'token',
-    originLabel: 'Perplexity',
-    expectedOrigin: 'https://www.perplexity.ai',
-  },
+  zai: zaiBookmarklet,
+  mimo: mimoBookmarklet,
+  perplexity: perplexityBookmarklet,
 }
 
 export function getTokenSpec(providerType: ProviderType): ProviderTokenSpec | undefined {
