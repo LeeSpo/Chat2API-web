@@ -91,6 +91,14 @@ docker compose up -d --build
 docker compose logs -f chat2api
 ```
 
+标准镜像不包含 Chromium。若要启用可选的 Qwen AI 浏览器传输，请启动独立的 Compose sidecar：
+
+```bash
+COMPOSE_PROFILES=qwen-browser \
+CHAT2API_QWEN_AI_BROWSER_MODE=sidecar \
+docker compose up -d --build
+```
+
 也可以直接拉取 GitHub Actions 发布到 GHCR 的多架构镜像（`linux/amd64`、`linux/arm64`）：
 
 ```bash

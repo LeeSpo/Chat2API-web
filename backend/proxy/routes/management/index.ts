@@ -15,6 +15,8 @@ import proxyRouter from './proxy'
 import toolCallingRouter from './toolCalling'
 import qwenAiGovernorRouter from './qwenAiGovernor'
 import bookmarkletRouter from './oauth/bookmarklet'
+import qwenAiBrowserRouter from './qwenAiBrowser'
+import zaiBrowserRouter from './zaiBrowser'
 
 export {
   authRouter,
@@ -29,6 +31,8 @@ export {
   toolCallingRouter,
   qwenAiGovernorRouter,
   bookmarkletRouter,
+  qwenAiBrowserRouter,
+  zaiBrowserRouter,
 }
 
 export default [
@@ -45,4 +49,6 @@ export default [
   toolCallingRouter,
   qwenAiGovernorRouter,
   bookmarkletRouter,
+  qwenAiBrowserRouter,
+  zaiBrowserRouter,
 ]

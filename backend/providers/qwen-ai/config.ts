@@ -1,4 +1,5 @@
 import type { BuiltinProviderConfig } from '../../store/types'
+import { DEFAULT_QWEN_AI_WEB_VERSION } from './client-metadata'
 
 export const qwenAiConfig: BuiltinProviderConfig = {
   id: 'qwen-ai',
@@ -19,7 +20,7 @@ export const qwenAiConfig: BuiltinProviderConfig = {
     Accept: 'application/json, text/plain, */*',
     Referer: 'https://chat.qwen.ai/',
     source: 'web',
-    Version: '0.2.67',
+    Version: DEFAULT_QWEN_AI_WEB_VERSION,
   },
   supportedModels: [
     'Qwen3.8-Max',

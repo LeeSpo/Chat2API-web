@@ -9,17 +9,27 @@ import { qwenBookmarklet } from '../providers/qwen/bookmarklet'
 import { zaiBookmarklet } from '../providers/zai/bookmarklet'
 import { qwenAiBookmarklet } from '../providers/qwen-ai/bookmarklet'
 
+type BookmarkletStorage = 'localStorage' | 'cookie' | 'runtime'
+type BookmarkletEncoding = 'raw' | 'json-value-or-raw' | 'json-id-or-raw'
+
 export interface ProviderTokenSpec {
-  storageType: 'localStorage' | 'cookie' | 'runtime'
+  storageType: BookmarkletStorage
+  /** Additional storages to try after `storageType`. */
+  storageTypes?: BookmarkletStorage[]
   tokenKey: string
+  /** Additional keys to try after `tokenKey`. */
+  tokenKeys?: string[]
   tokenField?: string
   /** How the stored primary value should be converted before it is sent. */
-  valueEncoding?: 'raw' | 'json-value-or-raw'
+  valueEncoding?: BookmarkletEncoding
   extras?: Array<{
     sourceKey: string
-    storageType?: 'localStorage' | 'cookie' | 'runtime'
+    sourceKeys?: string[]
+    storageType?: BookmarkletStorage
+    storageTypes?: BookmarkletStorage[]
     field: string
     required?: boolean
+    valueEncoding?: BookmarkletEncoding
   }>
   originLabel: string
   expectedOrigin?: string
@@ -54,11 +64,19 @@ export function buildBookmarkletSource(opts: BookmarkletBuildOptions): string {
     ingestUrl: opts.ingestUrl,
     providerType: opts.providerType,
     storageType: opts.spec.storageType,
+    storageTypes: opts.spec.storageTypes || [opts.spec.storageType],
     tokenKey: opts.spec.tokenKey,
+    tokenKeys: [opts.spec.tokenKey, ...(opts.spec.tokenKeys || [])],
     tokenField: opts.spec.tokenField || 'token',
     valueEncoding: opts.spec.valueEncoding || 'raw',
     originLabel: opts.spec.originLabel,
-    extras: opts.spec.extras || [],
+    extras: (opts.spec.extras || []).map((extra) => ({
+      sourceKeys: [extra.sourceKey, ...(extra.sourceKeys || [])],
+      storageTypes: extra.storageTypes || [extra.storageType || opts.spec.storageType],
+      field: extra.field,
+      required: Boolean(extra.required),
+      valueEncoding: extra.valueEncoding || 'raw',
+    })),
   }
 
   const configLiteral = JSON.stringify(config).replace(/<\//g, '<\\/')
@@ -131,25 +149,42 @@ export function buildBookmarkletSource(opts: BookmarkletBuildOptions): string {
     '    return window.localStorage.getItem(key);',
     '  }catch(e){return null;}',
     '}',
-    'function decodePrimary(value){',
-    '  if(!value||CFG.valueEncoding!=="json-value-or-raw")return value;',
+    'function decodeValue(value,encoding){',
+    '  if(!value)return value;',
+    '  if(encoding!=="json-value-or-raw"&&encoding!=="json-id-or-raw")return value;',
     '  try{',
     '    var parsed=JSON.parse(value);',
+    '    if(encoding==="json-id-or-raw"){',
+    '      var id=parsed&&(parsed.id||parsed.userId||parsed.user_id||parsed.realUserID);',
+    '      if(typeof id==="string"&&id)return id;',
+    '      if(parsed&&parsed.user&&typeof parsed.user.id==="string"&&parsed.user.id)return parsed.user.id;',
+    '      return null;',
+    '    }',
     '    return parsed&&typeof parsed.value==="string"&&parsed.value?parsed.value:null;',
     '  }catch(e){return value;}',
     '}',
-    'var primary=decodePrimary(read(CFG.storageType,CFG.tokenKey));',
+    'function readAny(storages,keys,encoding){',
+    '  for(var s=0;s<storages.length;s++){',
+    '    for(var k=0;k<keys.length;k++){',
+    '      var found=decodeValue(read(storages[s],keys[k]),encoding);',
+    '      if(found)return found;',
+    '    }',
+    '  }',
+    '  return null;',
+    '}',
+    'var primary=readAny(CFG.storageTypes||[CFG.storageType],CFG.tokenKeys||[CFG.tokenKey],CFG.valueEncoding);',
     'if(!primary){',
-    '  alert("Chat2API: could not find "+CFG.tokenKey+" in "+CFG.storageType+" for "+CFG.originLabel+".\\n\\nMake sure you are logged in on this page first.");',
+    '  var hint=CFG.providerType==="perplexity"?" It is often HttpOnly; copy __Secure-next-auth.session-token from DevTools Application Cookies.":"";',
+    '  alert("Chat2API: could not find "+CFG.tokenKey+" in "+CFG.storageType+" for "+CFG.originLabel+"."+hint+"\\n\\nMake sure you are logged in on this page first.");',
     '  return;',
     '}',
     'var payload={ticket:CFG.ticket,providerType:CFG.providerType,credentials:{}};',
     'payload.credentials[CFG.tokenField]=primary;',
     'for(var i=0;i<CFG.extras.length;i++){',
     '  var ex=CFG.extras[i];',
-    '  var v=read(ex.storageType||CFG.storageType,ex.sourceKey);',
+    '  var v=readAny(ex.storageTypes||[ex.storageType||CFG.storageType],ex.sourceKeys||[ex.sourceKey],ex.valueEncoding);',
     '  if(!v&&ex.required){',
-    '    alert("Chat2API: missing "+ex.sourceKey+" in "+(ex.storageType||CFG.storageType)+" for "+CFG.originLabel+".");',
+    '    alert("Chat2API: missing "+(ex.sourceKeys&&ex.sourceKeys[0]||ex.sourceKey)+" in "+((ex.storageTypes&&ex.storageTypes[0])||ex.storageType||CFG.storageType)+" for "+CFG.originLabel+".");',
     '    return;',
     '  }',
     '  if(v)payload.credentials[ex.field]=v;',

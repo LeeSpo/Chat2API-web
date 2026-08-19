@@ -13,6 +13,7 @@ import { parseToolCallsFromText } from '../../proxy/utils/toolParser'
 import { createBaseChunk } from '../../proxy/utils/streamToolHandler'
 import { createKimiChatPayload, encodeKimiGrpcFrame } from '../../proxy/adapters/providerModelOptions'
 import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles'
+import { expandKimiImportedSession } from './credentials'
 import { ToolStreamParser } from '../../proxy/toolCalling/ToolStreamParser'
 import type { ToolCallingPlan } from '../../proxy/toolCalling/types'
 
@@ -208,8 +209,12 @@ export class KimiAdapter {
     accessTokenRevisionMap.delete(this.account.id)
   }
 
+  private getAccountCredentials(): Record<string, string> {
+    return expandKimiImportedSession(this.account.credentials)
+  }
+
   private getCredentialTokens(): { accessToken: string; refreshToken: string } {
-    const credentials = this.account.credentials
+    const credentials = this.getAccountCredentials()
     // Browser imports can contain all of access_token, token, kimi-auth and
     // refresh_token at once. Prefer explicitly named access credentials, then
     // select the first JWT-shaped value; never let an opaque cookie hide it.
@@ -236,7 +241,7 @@ export class KimiAdapter {
   }
 
   private getRequestHeaders(accessToken?: string): Record<string, string> {
-    const credentials = this.account.credentials
+    const credentials = this.getAccountCredentials()
     const claims = accessToken ? parseJWTPayload(accessToken) : undefined
     const deviceId = credentials.deviceId
       || credentials.device_id
@@ -317,7 +322,7 @@ export class KimiAdapter {
       return cached
     }
 
-    const currentCredentials = this.account.credentials
+    const currentCredentials = this.getAccountCredentials()
     const claims = parseJWTPayload(result.accessToken)
     const nextCredentials: Record<string, string> = {
       ...currentCredentials,

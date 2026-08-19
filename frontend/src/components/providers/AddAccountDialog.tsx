@@ -36,7 +36,7 @@ const PROVIDER_LOGIN_URLS: Record<string, string> = {
   deepseek: 'https://chat.deepseek.com',
   glm: 'https://chatglm.cn',
   kimi: 'https://www.kimi.com',
-  minimax: 'https://chat.minimaxi.com',
+  minimax: 'https://agent.minimaxi.com',
   qwen: 'https://www.qianwen.com',
   'qwen-ai': 'https://chat.qwen.ai',
   zai: 'https://chat.z.ai',

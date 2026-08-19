@@ -38,6 +38,13 @@ export class PerplexityAdapter extends BaseOAuthAdapter {
     }
   }
 
+  async loginWithToken(providerId: string, token: string): Promise<OAuthResult> {
+    return this.loginWithCookies(providerId, {
+      sessionToken: token,
+      '__Secure-next-auth.session-token': token,
+    })
+  }
+
   async loginWithCookies(providerId: string, cookies: Record<string, string>): Promise<OAuthResult> {
     this.emitProgress('pending', 'Validating cookies...')
 

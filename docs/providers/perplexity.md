@@ -23,6 +23,6 @@
 ## 教程
 
 1. 登录 `www.perplexity.ai`。
-2. 打开 DevTools -> Application -> Cookies，复制 `__Secure-next-auth.session-token`。
+2. 打开 DevTools -> Application -> Cookies，复制 `__Secure-next-auth.session-token`。该 Cookie 经常是 HttpOnly，书签读不到时请手动粘贴。
 3. 在供应商管理中添加 Perplexity 账号，填入 `sessionToken`。
 4. Free 用户默认仅保留 `Auto`。如账号具备额外模型权限，可在供应商管理 -> 模型管理中自行添加模型映射。

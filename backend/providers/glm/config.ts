@@ -45,7 +45,7 @@ export const glmConfig: BuiltinProviderConfig = {
       type: 'password',
       required: true,
       placeholder: 'Enter GLM refresh token',
-      helpText: 'Get refresh_token from Zhipu Qingyan web version, found in browser DevTools Application -> Local Storage -> chatglm_refresh_token',
+      helpText: 'Get chatglm_refresh_token from Zhipu Qingyan cookies (Application -> Cookies). Local Storage with the same key is also accepted.',
     },
   ],
   tokenCheckEndpoint: '/chatglm/user-api/user/refresh',

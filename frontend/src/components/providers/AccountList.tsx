@@ -28,7 +28,8 @@ import {
   AlertCircle,
   Activity,
   Plus,
-  Trash
+  Trash,
+  ShieldCheck,
 } from 'lucide-react'
 import {
   Dialog,
@@ -40,6 +41,7 @@ import {
 } from '@/components/ui/dialog'
 import type { Account, AccountStatus } from '@/types/electron'
 import { cn } from '@/lib/utils'
+import { QwenBrowserVerificationDialog } from './QwenBrowserVerificationDialog'
 
 interface AccountListProps {
   accounts: Account[]
@@ -65,6 +67,7 @@ export function AccountList({
   const [clearingChatsId, setClearingChatsId] = useState<string | null>(null)
   const [showClearChatsDialog, setShowClearChatsDialog] = useState(false)
   const [selectedAccountForClear, setSelectedAccountForClear] = useState<Account | null>(null)
+  const [verificationAccount, setVerificationAccount] = useState<Account | null>(null)
 
   const statusConfig: Record<AccountStatus, { 
     labelKey: string
@@ -241,6 +244,19 @@ export function AccountList({
                     </div>
 
                     <div className="flex items-center gap-2">
+                      {(providerId === 'qwen-ai' || providerId === 'zai') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setVerificationAccount(account)
+                          }}
+                        >
+                          <ShieldCheck className="mr-2 h-4 w-4" />
+                          {t('providers.serverBrowserVerification')}
+                        </Button>
+                      )}
                       <div className="text-right text-xs text-muted-foreground">
                         <div>{t('providers.lastCheck')}</div>
                         <div>{formatDate(account.lastUsed)}</div>
@@ -280,6 +296,18 @@ export function AccountList({
                             {isValidating ? t('oauth.validating') : t('providers.validateCredentials')}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          {(providerId === 'qwen-ai' || providerId === 'zai') && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setVerificationAccount(account)
+                              }}
+                            >
+                              <ShieldCheck className="mr-2 h-4 w-4" />
+                              {t('providers.serverBrowserVerification')}
+                            </DropdownMenuItem>
+                          )}
+                          {(providerId === 'qwen-ai' || providerId === 'zai') && <DropdownMenuSeparator />}
                           <DropdownMenuItem 
                             onClick={(e) => {
                               e.stopPropagation()
@@ -356,6 +384,15 @@ export function AccountList({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <QwenBrowserVerificationDialog
+        account={verificationAccount}
+        providerId={providerId === 'zai' ? 'zai' : 'qwen-ai'}
+        open={Boolean(verificationAccount)}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) setVerificationAccount(null)
+        }}
+      />
     </div>
   )
 }

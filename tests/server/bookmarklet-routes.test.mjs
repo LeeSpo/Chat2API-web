@@ -43,6 +43,8 @@ test('bookmarklet script covers built-in providers including the complete qwen-a
   assert.match(qwenAi, /cookies/)
   assert.match(qwenAi, /x5secdata/)
   assert.match(qwenAi, /x5sectag/)
+  assert.match(qwenAi, /x5secStroage/)
+  assert.match(qwenAi, /x5secStorage/)
   assert.match(qwenAi, /baxiaUidToken/)
   assert.match(qwenAi, /baxiaVersion/)
   assert.match(qwenAi, /qwenWebVersion/)

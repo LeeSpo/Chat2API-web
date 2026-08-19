@@ -8,6 +8,7 @@ export const qwenAiBookmarklet: ProviderTokenSpec = {
     { sourceKey: '*', storageType: 'cookie', field: 'cookies' },
     { sourceKey: 'x5secdata', storageType: 'cookie', field: 'x5secdata' },
     { sourceKey: 'x5sectag', storageType: 'cookie', field: 'x5sectag' },
+    { sourceKey: 'x5secStroage', storageType: 'localStorage', field: 'x5secStorage' },
     { sourceKey: 'baxiaUidToken', storageType: 'runtime', field: 'baxiaUidToken' },
     { sourceKey: 'baxiaVersion', storageType: 'runtime', field: 'baxiaVersion' },
     { sourceKey: 'qwenWebVersion', storageType: 'runtime', field: 'qwenWebVersion' },

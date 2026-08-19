@@ -20,6 +20,7 @@
     "start": "node out-server/server/index.js",
     "start:server": "node out-server/server/index.js",
     "test:deepseek-auth": "tsx --test tests/providers/deepseek-auth.test.ts",
+    "test:provider-import": "tsx --test tests/providers/provider-import-auth.test.ts tests/providers/deepseek-auth.test.ts",
     "test:server-compat": "npm run build:server && node tests/server/run-server-tests.mjs",
     "test:litellm": "npm run build:server && node --test tests/litellm/integration.test.mjs",
     "prebuild:check": "node scripts/prebuild-check.js"
@@ -58,6 +59,7 @@
     "react-i18next": "^16.5.4",
     "react-router-dom": "^6.28.0",
     "react-window": "^2.2.7",
+    "rebrowser-playwright-core": "^1.52.0",
     "recharts": "^3.7.0",
     "tailwind-merge": "^2.5.4",
     "zstd-codec": "^0.1.5",

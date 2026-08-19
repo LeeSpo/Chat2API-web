@@ -40,10 +40,35 @@ export class MimoAdapter extends BaseOAuthAdapter {
     }
   }
 
+  async loginWithToken(
+    providerId: string,
+    token: string,
+    realUserIDOrCreds?: string | Record<string, string>,
+    mimoUserId?: string,
+    mimoPhToken?: string,
+  ): Promise<OAuthResult> {
+    const imported = typeof realUserIDOrCreds === 'object' && realUserIDOrCreds
+      ? realUserIDOrCreds
+      : {}
+    return this.loginWithCookies(providerId, {
+      serviceToken: token
+        || imported.xiaomichatbot_serviceToken
+        || imported.michatbot_serviceToken
+        || imported.serviceToken
+        || imported.service_token
+        || imported.token,
+      userId: imported.userId || imported.user_id || mimoUserId || '',
+      xiaomichatbot_ph: imported.xiaomichatbot_ph || imported.ph_token || mimoPhToken || '',
+    })
+  }
+
   async loginWithCookies(providerId: string, cookies: Record<string, string>): Promise<OAuthResult> {
     this.emitProgress('pending', 'Validating cookies...')
 
-    const serviceToken = cookies['serviceToken'] || cookies['service_token']
+    const serviceToken = cookies['xiaomichatbot_serviceToken']
+      || cookies['michatbot_serviceToken']
+      || cookies['serviceToken']
+      || cookies['service_token']
     const userId = cookies['userId'] || cookies['user_id']
     const phToken = cookies['xiaomichatbot_ph'] || cookies['ph_token']
 

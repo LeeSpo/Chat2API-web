@@ -135,6 +135,18 @@ async function managementFetch<T>(
   return payload.data as T
 }
 
+async function managementBlob(path: string): Promise<Blob> {
+  const response = await fetch(`${MANAGEMENT_BASE}${path}`, {
+    headers: { Authorization: `Bearer ${getManagementSecret()}` },
+    cache: 'no-store',
+  })
+  if (!response.ok) {
+    const payload = await response.json().catch(() => undefined) as ManagementResponse | undefined
+    throw new Error(payload?.error?.message || `Management API request failed: HTTP ${response.status}`)
+  }
+  return response.blob()
+}
+
 async function publicManagementFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   if (init.body !== undefined && !headers.has('Content-Type')) {
@@ -822,6 +834,70 @@ const accounts = {
     }),
 }
 
+const qwenAiBrowser = {
+  status: (accountId: string) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/qwen-ai-browser/accounts/${encodeURIComponent(accountId)}/status`),
+  start: (accountId: string) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/qwen-ai-browser/accounts/${encodeURIComponent(accountId)}/start`, { method: 'POST' }),
+  screenshot: (accountId: string) =>
+    managementBlob(`/qwen-ai-browser/accounts/${encodeURIComponent(accountId)}/screenshot`),
+  drag: (accountId: string, points: Array<{ x: number; y: number; delayMs?: number }>) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/qwen-ai-browser/accounts/${encodeURIComponent(accountId)}/drag`, {
+      method: 'POST',
+      body: JSON.stringify({ points }),
+    }),
+}
+
+const zaiBrowser = {
+  status: (accountId: string) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/zai-browser/accounts/${encodeURIComponent(accountId)}/status`),
+  start: (accountId: string) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/zai-browser/accounts/${encodeURIComponent(accountId)}/start`, { method: 'POST' }),
+  screenshot: (accountId: string) =>
+    managementBlob(`/zai-browser/accounts/${encodeURIComponent(accountId)}/screenshot`),
+  drag: (accountId: string, points: Array<{ x: number; y: number; delayMs?: number }>) =>
+    managementFetch<{
+      available: boolean
+      initialized: boolean
+      verificationRequired: boolean
+      viewport: { width: number; height: number }
+      lastError?: string
+    }>(`/zai-browser/accounts/${encodeURIComponent(accountId)}/drag`, {
+      method: 'POST',
+      body: JSON.stringify({ points }),
+    }),
+}
+
 const oauth = {
   bookmarklet: {
     issue: (providerId: string, providerType: string) =>
@@ -1199,6 +1275,8 @@ window.electronAPI = {
   store,
   providers,
   accounts,
+  qwenAiBrowser,
+  zaiBrowser,
   oauth,
   browserImport,
   logs,

@@ -5,6 +5,7 @@
 
 import axios from 'axios'
 import { BaseOAuthAdapter } from '../../oauth/adapters/base'
+import { expandKimiImportedSession } from './credentials'
 import { getRuntime } from '../../runtime'
 import {
   OAuthResult,
@@ -128,14 +129,16 @@ export class KimiAdapter extends BaseOAuthAdapter {
       || credentials.msh_user_id || credentials.userId || credentials.user_id || extra.trafficId
       || (typeof claims.sub === 'string' ? claims.sub : '')
 
-    return {
+    return expandKimiImportedSession({
       token: accessToken,
       accessToken,
       ...(refreshToken ? { refreshToken } : {}),
       ...(deviceId ? { deviceId } : {}),
       ...(sessionId ? { sessionId } : {}),
       ...(trafficId ? { trafficId } : {}),
-    }
+      ...(credentials.volcanoTokenInfo ? { volcanoTokenInfo: credentials.volcanoTokenInfo } : {}),
+      ...(credentials['volcano-token-info'] ? { 'volcano-token-info': credentials['volcano-token-info'] } : {}),
+    })
   }
 
   /**

@@ -35,7 +35,7 @@ at `www.kimi.com`. The import flow also preserves request identifiers such as
 ## Tutorial
 
 1. Log in at `www.kimi.com`.
-2. Add a Kimi account in Chat2API and enter an access or refresh token.
+2. Add a Kimi account in Chat2API and enter an access or refresh token. The bookmarklet also imports `refresh_token` and `volcano-token-info` (`webId` / `ssid` / `userId`) when they are present.
 3. For Docker, run the generated browser-import script in the logged-in Kimi
    page console, then return to the account dialog.
 

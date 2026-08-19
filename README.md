@@ -91,6 +91,15 @@ docker compose up -d --build
 docker compose logs -f chat2api
 ```
 
+The standard image does not contain Chromium. To enable the optional Qwen AI
+browser transport, start its isolated Compose sidecar:
+
+```bash
+COMPOSE_PROFILES=qwen-browser \
+CHAT2API_QWEN_AI_BROWSER_MODE=sidecar \
+docker compose up -d --build
+```
+
 Or pull a prebuilt image from GHCR (`linux/amd64`, `linux/arm64`):
 
 ```bash

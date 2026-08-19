@@ -47,6 +47,80 @@ $env:CHAT2API_MANAGEMENT_SECRET='mgmt_change_me'
 docker compose up -d --build
 ```
 
+## Optional Qwen AI Browser Sidecar
+
+The normal `chat2api` image and service do not contain or start Chromium. Direct
+HTTP transport remains the default. If Qwen AI risk control requires a real
+browser session, enable the isolated `qwen-browser` Compose profile and select
+the sidecar transport:
+
+```bash
+COMPOSE_PROFILES=qwen-browser \
+CHAT2API_QWEN_AI_BROWSER_MODE=sidecar \
+QWEN_AI_BROWSER_SIDECAR_SECRET='replace-with-a-long-random-value' \
+docker compose up -d --build
+```
+
+The equivalent `.env` configuration is:
+
+```dotenv
+COMPOSE_PROFILES=qwen-browser
+CHAT2API_QWEN_AI_BROWSER_MODE=sidecar
+QWEN_AI_BROWSER_SIDECAR_SECRET=replace-with-a-long-random-value
+```
+
+The sidecar is reachable only on the Compose network; it does not publish a
+host port. Its authenticated internal API carries Qwen credentials and streams
+between the main service and Chromium. The same sidecar also mints short-lived
+Z.ai `captcha_verify_param` values; Z.ai chat requests themselves still leave
+from the main process. Browser profiles are stored separately in the
+`qwen-browser-data` volume (`qwen-browser-profiles` and `zai-browser-profiles`).
+The account menu's **Server browser verification** action continues to show the
+headless sidecar screenshot in the web admin and relays the user's verification
+drag to that container.
+
+If `docker compose` is unavailable, start the sidecar with `docker run` and
+point the main container at it:
+
+```bash
+docker run -d --name chat2api-qwen-browser --restart unless-stopped \
+  --shm-size=1g \
+  -v chat2api-qwen-browser-data:/data \
+  -e QWEN_AI_BROWSER_SIDECAR_SECRET=chat2api-qwen-browser-internal \
+  -e CHAT2API_DATA_DIR=/data \
+  chat2api-qwen-browser:latest
+
+docker run -d --name chat2api --restart unless-stopped \
+  -p 8080:8080 \
+  --link chat2api-qwen-browser:qwen-browser \
+  -v chat2api-data:/data \
+  -e CHAT2API_QWEN_AI_BROWSER_MODE=sidecar \
+  -e CHAT2API_ZAI_BROWSER_MODE=sidecar \
+  -e QWEN_AI_BROWSER_SIDECAR_URL=http://qwen-browser:3000 \
+  -e QWEN_AI_BROWSER_SIDECAR_SECRET=chat2api-qwen-browser-internal \
+  chat2api:latest
+```
+
+To disable Chromium again, set `CHAT2API_QWEN_AI_BROWSER_MODE=off`, remove
+`qwen-browser` from `COMPOSE_PROFILES`, and stop the optional service:
+
+```bash
+docker compose --profile qwen-browser stop qwen-browser
+docker compose up -d
+```
+
+The two supported Docker modes are:
+
+| `CHAT2API_QWEN_AI_BROWSER_MODE` | Result |
+| --- | --- |
+| `off` (default) | Chromium is not started; Qwen uses the existing direct HTTP path. |
+| `sidecar` | Protected Qwen completion requests, Qwen verification, and Z.ai captcha minting use the `qwen-browser` service. |
+
+`CHAT2API_ZAI_BROWSER_MODE` accepts the same values. When unset, Z.ai follows the sidecar URL or a local Chrome binary.
+
+`local` is intended only for non-Docker development when a compatible Chromium
+executable exists on the same machine as the Node process.
+
 ## Health Check
 
 ```bash

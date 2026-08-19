@@ -18,9 +18,13 @@ import {
   createBaseChunk,
   ToolCallState 
 } from '../../proxy/utils/streamToolHandler'
+import { FALLBACK_X_FE_VERSION, resolveZaiFeVersion } from './frontendVersion'
+import { toZaiUpstreamError, zaiVerificationRequiredError } from './errors'
+import { attachZaiCaptchaParam } from './captcha'
+import { zaiPlaywrightTransport } from './playwrightTransport'
 
 const ZAI_API_BASE = 'https://chat.z.ai'
-const X_FE_VERSION = 'prod-fe-1.1.37'
+const X_FE_VERSION = FALLBACK_X_FE_VERSION
 const ZAI_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
 
 const FAKE_HEADERS = {
@@ -37,6 +41,7 @@ const FAKE_HEADERS = {
   'Sec-Fetch-Mode': 'cors',
   'Sec-Fetch-Site': 'same-origin',
   'User-Agent': ZAI_USER_AGENT,
+  'X-FE-Version': X_FE_VERSION,
   'X-Region': 'domestic',
 }
 
@@ -96,6 +101,7 @@ interface ChatCompletionRequest {
   reasoning_effort?: 'low' | 'medium' | 'high' | boolean
   chatId?: string
   parentMessageId?: string
+  forceCaptchaMint?: boolean
 }
 
 function uuid(separator: boolean = true): string {
@@ -133,6 +139,30 @@ export class ZaiAdapter {
       return token
     }
     throw new Error('Z.ai token not configured, please add token in account settings')
+  }
+
+  private async getFeVersion(): Promise<string> {
+    return resolveZaiFeVersion()
+  }
+
+  invalidateCaptcha(): void {
+    zaiPlaywrightTransport.invalidate(this.account.id)
+  }
+
+  private async resolveCaptchaParam(force = false): Promise<string | undefined> {
+    const stored = this.getCaptchaVerifyParam()
+    if (!force && stored) return stored
+    if (!zaiPlaywrightTransport.isAvailable()) return stored
+    try {
+      const minted = await zaiPlaywrightTransport.mint(this.account, { force })
+      if (minted.captchaVerifyParam) return minted.captchaVerifyParam
+    } catch (error) {
+      const code = error && typeof error === 'object' ? (error as { code?: string }).code : undefined
+      if (code === 'zai_browser_verification_required') throw error
+      console.warn('[Z.ai] Captcha mint failed:', error instanceof Error ? error.message : error)
+    }
+    if (stored) return stored
+    throw zaiVerificationRequiredError()
   }
 
   private extractLastUserMessage(messages: ZaiMessage[]): string {
@@ -258,6 +288,7 @@ export class ZaiAdapter {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
           ...FAKE_HEADERS,
+          'X-FE-Version': await this.getFeVersion(),
           'Cookie': `token=${token}`,
           Referer: `${ZAI_API_BASE}/`,
         },
@@ -285,6 +316,7 @@ export class ZaiAdapter {
           headers: {
             Authorization: `Bearer ${token}`,
             ...FAKE_HEADERS,
+            'X-FE-Version': await this.getFeVersion(),
             Referer: `${ZAI_API_BASE}/`,
           },
           timeout: 15000,
@@ -312,6 +344,7 @@ export class ZaiAdapter {
           headers: {
             Authorization: `Bearer ${token}`,
             ...FAKE_HEADERS,
+            'X-FE-Version': await this.getFeVersion(),
             Referer: `${ZAI_API_BASE}/`,
           },
           timeout: 30000,
@@ -466,10 +499,8 @@ export class ZaiAdapter {
       },
     }
 
-    const captchaVerifyParam = this.getCaptchaVerifyParam()
-    if (captchaVerifyParam) {
-      requestBody.captcha_verify_param = captchaVerifyParam
-    }
+    const captchaVerifyParam = await this.resolveCaptchaParam(Boolean(request.forceCaptchaMint))
+    Object.assign(requestBody, attachZaiCaptchaParam(requestBody, captchaVerifyParam))
 
     console.log('[Z.ai] Sending chat request...')
     console.log('[Z.ai] Model:', request.model)
@@ -526,7 +557,7 @@ export class ZaiAdapter {
           'Content-Type': 'application/json',
           ...FAKE_HEADERS,
           'X-Signature': signature,
-          'X-FE-Version': X_FE_VERSION,
+          'X-FE-Version': await this.getFeVersion(),
           'Cookie': `token=${token}`,
           Referer: `${ZAI_API_BASE}/c/${chatId}`,
           Priority: 'u=1, i',
@@ -768,18 +799,9 @@ export class ZaiStreamHandler {
               }
             }
           } else if (result.error || data.error) {
-            const error = result.error || data.error
-            console.error('[Z.ai] Stream error:', error)
-            transStream.write(
-              `data: ${JSON.stringify({
-                id: this.chatId,
-                model: this.model,
-                object: 'chat.completion.chunk',
-                choices: [{ index: 0, delta: { content: `\nError: ${error.detail || JSON.stringify(error)}` }, finish_reason: 'stop' }],
-                created: this.created,
-              })}\n\n`
-            )
-            safeEnd('data: [DONE]\n\n')
+            const mapped = toZaiUpstreamError(result.error || data.error)
+            console.error('[Z.ai] Stream error:', mapped.message)
+            transStream.destroy(mapped)
           }
         } catch (err) {
           console.error('[Z.ai] Stream parse error:', err)
@@ -824,9 +846,11 @@ export class ZaiStreamHandler {
 
       let resolved = false
       let reasoningContent = ''
+      let timeout: ReturnType<typeof setTimeout> | undefined
       const resolveOnce = (result: any) => {
         if (resolved) return
         resolved = true
+        if (timeout) clearTimeout(timeout)
         if (reasoningContent) {
           result.choices[0].message.reasoning_content = reasoningContent
         }
@@ -836,10 +860,11 @@ export class ZaiStreamHandler {
       const rejectOnce = (err: Error) => {
         if (resolved) return
         resolved = true
+        if (timeout) clearTimeout(timeout)
         reject(err)
       }
 
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         if (!resolved) {
           console.log('[Z.ai] Non-stream timeout, resolving with current data, content length:', data.choices[0].message.content.length)
           resolveOnce(data)
@@ -881,9 +906,7 @@ export class ZaiStreamHandler {
                 }
                 resolveOnce(data)
               } else if (result.error || eventData.error) {
-                const error = result.error || eventData.error
-                data.choices[0].message.content += `\nError: ${error.detail || JSON.stringify(error)}`
-                resolveOnce(data)
+                rejectOnce(toZaiUpstreamError(result.error || eventData.error))
               }
             } catch (err) {
               console.error('[Z.ai] Non-stream parse error:', err)

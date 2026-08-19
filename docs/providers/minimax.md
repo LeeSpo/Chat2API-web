@@ -23,6 +23,6 @@
 ## 教程
 
 1. 登录 `agent.minimaxi.com`。
-2. 从浏览器请求或本地存储中复制 JWT token；如有 `realUserID`，可单独填入。
+2. 从 Local Storage 复制 `_token`。`_userId` 或 `user_detail_agent` 可选；没有时会从 JWT 解析用户 ID。
 3. 在供应商管理中添加 MiniMax 账号。
 4. 默认模型仅保留 `MiniMax-M2.7`；旧的 `MiniMax-M2.5` 不再作为内置默认模型。

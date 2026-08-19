@@ -428,7 +428,8 @@ test('Z.ai default models match the latest chat.z.ai HAR model ids', () => {
   assert.match(zaiAdapterSource, /'glm-5\.1': 'GLM-5\.1'/)
   assert.match(zaiAdapterSource, /'glm-5v-turbo': 'GLM-5v-Turbo'/)
   assert.match(zaiAdapterSource, /'GLM-5V-Turbo': 'GLM-5v-Turbo'/)
-  assert.match(zaiAdapterSource, /const X_FE_VERSION = 'prod-fe-1\.1\.37'/)
+  assert.match(zaiAdapterSource, /const X_FE_VERSION = FALLBACK_X_FE_VERSION/)
+  assert.match(zaiAdapterSource, /resolveZaiFeVersion/)
   assert.match(zaiAdapterSource, /'X-Region': 'domestic'/)
   assert.match(zaiAdapterSource, /captcha_verify_param/)
   assert.match(zaiAdapterSource, /new URLSearchParams\(\{[\s\S]*token,/)
@@ -439,16 +440,20 @@ test('Z.ai default models match the latest chat.z.ai HAR model ids', () => {
   assert.doesNotMatch(zaiAdapterSource, /'glm-4\.5-air':/)
 })
 
-test('Z.ai docs mark provider temporarily unavailable due to captcha risk control', () => {
+test('Z.ai docs explain version headers, account checks, and captcha risk control', () => {
   const readme = readFileSync(join(root, 'README.md'), 'utf8')
   const readmeCn = readFileSync(join(root, 'README_CN.md'), 'utf8')
   const doc = readFileSync(join(root, 'docs/providers/zai.md'), 'utf8')
 
-  assert.match(readme, /Z\.ai[^\n]*Temporarily unavailable due to frontend captcha risk control/)
-  assert.match(readmeCn, /Z\.ai[^\n]*受前端验证码风控限制，暂不可用/)
-  assert.match(doc, /当前状态 \| 受前端验证码风控限制，暂不可用/)
+  assert.match(readme, /\| Z\.ai \| JWT \|/)
+  assert.match(readmeCn, /\| Z\.ai \| JWT \|/)
+  assert.match(doc, /当前状态 \| 可用；对话需要短时/)
+  assert.match(doc, /prod-fe-1\.1\.88/)
+  assert.match(doc, /frontend_version_outdated/)
   assert.match(doc, /FRONTEND_CAPTCHA_REQUIRED/)
-  assert.match(doc, /captcha_verify_param.*调试字段/)
+  assert.match(doc, /检查账号/)
+  assert.match(doc, /qwen-browser/)
+  assert.match(doc, /zai_browser_verification_required/)
 })
 
 test('provider docs cover every built-in provider and Qwen AI manual model additions', () => {
@@ -528,8 +533,8 @@ test('README Supported Providers model lists mirror current defaults with Perple
     assert.match(readmeCn, new RegExp(`\\| ${provider.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^\\n]*\\| ${models?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\|`))
   }
 
-  assert.match(readme, /Z\.ai[^\n]*Temporarily unavailable due to frontend captcha risk control/)
-  assert.match(readmeCn, /Z\.ai[^\n]*受前端验证码风控限制，暂不可用/)
+  assert.match(readme, /\| Z\.ai \| JWT \| `GLM-5\.1`, `GLM-5-Turbo`, `GLM-5V-Turbo`, `GLM-5`, `GLM-4\.7` \|/)
+  assert.match(readmeCn, /\| Z\.ai \| JWT \| `GLM-5\.1`、`GLM-5-Turbo`、`GLM-5V-Turbo`、`GLM-5`、`GLM-4\.7` \|/)
 
   assert.doesNotMatch(readme, /Perplexity[^\n]*(Turbo|PPLX-Pro|GPT-5|Gemini-2\.5-Pro|Claude-Sonnet-4|Claude-Opus-4|Nemotron)/)
   assert.doesNotMatch(readmeCn, /Perplexity[^\n]*(Turbo|PPLX-Pro|GPT-5|Gemini-2\.5-Pro|Claude-Sonnet-4|Claude-Opus-4|Nemotron)/)

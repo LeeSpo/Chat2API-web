@@ -23,6 +23,6 @@
 ## 教程
 
 1. 登录 `chatglm.cn`。
-2. 打开 DevTools -> Application -> Local Storage，复制 `chatglm_refresh_token`。
+2. 打开 DevTools -> Application -> Cookies，复制 `chatglm_refresh_token`。Local Storage 里的同名值也可以。
 3. 在供应商管理中添加 GLM 账号，填入 `refresh_token`。
 4. 使用默认模型 `GLM-5.1` 验证流式和非流式请求。

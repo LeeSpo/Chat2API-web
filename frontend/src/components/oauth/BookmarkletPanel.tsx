@@ -10,6 +10,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Textarea } from '@/components/ui/textarea'
+import { parseMimoCredentials } from '@/lib/mimoCredentials'
 
 interface BookmarkletPanelProps {
   providerId: string
@@ -39,6 +41,7 @@ export function BookmarkletPanel({
   const [expectedOrigin, setExpectedOrigin] = useState('')
   const [error, setError] = useState('')
   const [expiresAt, setExpiresAt] = useState(0)
+  const [mimoImportValue, setMimoImportValue] = useState('')
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const ticketRef = useRef('')
 
@@ -114,6 +117,73 @@ export function BookmarkletPanel({
 
   const timeLeft = Math.max(0, Math.round((expiresAt - Date.now()) / 1000))
 
+  if (providerType === 'mimo') {
+    const importMimoSession = () => {
+      const parsed = parseMimoCredentials(mimoImportValue)
+      if (!parsed.success) {
+        setError(t('oauth.bookmarklet.mimoImportMissing', { fields: parsed.missing.join(', ') }))
+        return
+      }
+      setError('')
+      setPhase('success')
+      onSuccess(parsed.credentials, { name: 'Mimo User' })
+    }
+
+    return (
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground">
+          {t('oauth.bookmarklet.mimoImportDescription')}
+        </p>
+        <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
+          {t('oauth.bookmarklet.mimoProtectedCookieNotice')}
+        </p>
+        <ol className="list-decimal list-inside space-y-1.5 text-xs text-muted-foreground">
+          <li>{t('oauth.bookmarklet.mimoInstructions.login')}</li>
+          <li>{t('oauth.bookmarklet.mimoInstructions.network')}</li>
+          <li>{t('oauth.bookmarklet.mimoInstructions.copy')}</li>
+          <li>{t('oauth.bookmarklet.mimoInstructions.paste')}</li>
+        </ol>
+        <Button
+          type="button"
+          onClick={() => window.open(loginUrl, '_blank', 'noopener,noreferrer')}
+          className="w-full"
+          variant="outline"
+        >
+          <ExternalLink className="mr-2 h-4 w-4" />
+          {t('oauth.bookmarklet.openLogin', { host: safeHost(loginUrl) })}
+        </Button>
+        <Textarea
+          value={mimoImportValue}
+          onChange={(event) => setMimoImportValue(event.target.value)}
+          placeholder={t('oauth.bookmarklet.mimoImportPlaceholder')}
+          className="min-h-28 font-mono text-xs"
+          spellCheck={false}
+        />
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {phase === 'success' ? (
+          <Alert>
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertDescription>{t('oauth.bookmarklet.success')}</AlertDescription>
+          </Alert>
+        ) : (
+          <Button
+            type="button"
+            onClick={importMimoSession}
+            disabled={!mimoImportValue.trim()}
+            className="w-full"
+          >
+            {t('oauth.bookmarklet.mimoImport')}
+          </Button>
+        )}
+      </div>
+    )
+  }
+
   if (phase === 'idle' || phase === 'issuing') {
     return (
       <div className="space-y-3">
@@ -123,6 +193,11 @@ export function BookmarkletPanel({
         {providerType === 'deepseek' && (
           <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
             {t('oauth.bookmarklet.deepseekUserTokenNotice')}
+          </p>
+        )}
+        {providerType === 'perplexity' && (
+          <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
+            {t('oauth.bookmarklet.perplexityCookieNotice')}
           </p>
         )}
         <Button type="button" onClick={() => void issueTicket()} disabled={phase === 'issuing'} className="w-full">

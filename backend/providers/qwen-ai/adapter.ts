@@ -65,6 +65,7 @@ import {
 import type { QwenAiSessionState } from './sessionBridge'
 import { resolveQwenAiClientHeaders } from './client-metadata'
 import { qwenAiBrowserBridgeManager } from './browserBridge'
+import { qwenAiPlaywrightTransport } from './playwrightTransport'
 
 const QWEN_AI_BASE = 'https://chat.qwen.ai'
 const QWEN_AI_REQUEST_TIMEOUT_MS = positiveNumberFromEnv('QWEN_AI_REQUEST_TIMEOUT_MS', 840000)
@@ -3185,6 +3186,13 @@ export class QwenAiAdapter {
   ): Promise<AxiosResponse> {
     const send = async (options: Record<string, any>): Promise<AxiosResponse> => {
       if (url.includes('/api/v2/chat/completions')) {
+        const playwrightResponse = await qwenAiPlaywrightTransport.execute(
+          this.account,
+          url,
+          payload,
+          options,
+        )
+        if (playwrightResponse) return playwrightResponse
         const bridged = await qwenAiBrowserBridgeManager.execute(
           this.getToken(),
           url,

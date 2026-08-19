@@ -14,7 +14,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build:server
 
-FROM ${NODE_IMAGE} AS runtime
+FROM ${NODE_IMAGE} AS runtime-base
 WORKDIR /app
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
@@ -120,4 +120,34 @@ RUN mkdir -p /data && \
 VOLUME ["/data"]
 EXPOSE 8080
 USER chat2api
+
+FROM ${NODE_IMAGE} AS qwen-browser-os
+WORKDIR /app
+ENV NODE_ENV=production \
+    CHAT2API_DATA_DIR=/data \
+    QWEN_AI_BROWSER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    REBROWSER_PATCHES_RUNTIME_FIX_MODE=addBinding \
+    REBROWSER_PATCHES_UTILITY_WORLD_NAME=qwen_world \
+    QWEN_AI_BROWSER_SIDECAR_HOST=0.0.0.0 \
+    QWEN_AI_BROWSER_SIDECAR_PORT=3000
+RUN apk add --no-cache \
+    chromium \
+    ca-certificates \
+    freetype \
+    harfbuzz \
+    nss \
+    ttf-freefont \
+    font-wqy-zenhei && \
+    mkdir -p /data && \
+    addgroup -S chat2api && adduser -S chat2api -G chat2api && \
+    chown -R chat2api:chat2api /app /data
+
+FROM qwen-browser-os AS qwen-browser
+COPY --from=runtime-base --chown=chat2api:chat2api /app /app
+VOLUME ["/data"]
+EXPOSE 3000
+USER chat2api
+CMD ["node", "out-server/server/qwenBrowserSidecar.js"]
+
+FROM runtime-base AS app
 CMD ["node", "out-server/server/index.js"]

@@ -13,9 +13,10 @@ import {
   AdapterConfig,
   OAuthCallbackData,
 } from '../../oauth/types'
+import { FALLBACK_X_FE_VERSION } from './frontendVersion'
 
 const ZAI_API_BASE = 'https://chat.z.ai'
-const X_FE_VERSION = 'prod-fe-1.1.37'
+const X_FE_VERSION = FALLBACK_X_FE_VERSION
 const ZAI_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
 
 const FAKE_HEADERS = {

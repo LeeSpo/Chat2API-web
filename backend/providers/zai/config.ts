@@ -1,4 +1,5 @@
 import type { BuiltinProviderConfig } from '../../store/types'
+import { FALLBACK_X_FE_VERSION } from './frontendVersion'
 
 export const zaiConfig: BuiltinProviderConfig = {
   id: 'zai',
@@ -21,7 +22,7 @@ export const zaiConfig: BuiltinProviderConfig = {
     'Sec-Fetch-Dest': 'empty',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin',
-    'X-FE-Version': 'prod-fe-1.1.37',
+    'X-FE-Version': FALLBACK_X_FE_VERSION,
     'X-Region': 'domestic',
   },
   enabled: true,
@@ -47,7 +48,7 @@ export const zaiConfig: BuiltinProviderConfig = {
       type: 'password',
       required: true,
       placeholder: 'Enter Z.ai JWT Token',
-      helpText: 'Get token from Z.ai web version, found in browser DevTools Application -> Cookie, starts with "eyJ..."',
+      helpText: 'Get the JWT from chat.z.ai Local Storage or Cookies (key: token). It starts with "eyJ...". Conversation may still require the site captcha.',
     },
     {
       name: 'captcha_verify_param',

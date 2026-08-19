@@ -169,6 +169,26 @@ interface AccountsAPI {
   clearChats: (accountId: string) => Promise<{ success: boolean; error?: string }>
 }
 
+interface QwenAiBrowserStatus {
+  available: boolean
+  initialized: boolean
+  verificationRequired: boolean
+  viewport: { width: number; height: number }
+  lastError?: string
+}
+
+interface QwenAiBrowserAPI {
+  status: (accountId: string) => Promise<QwenAiBrowserStatus>
+  start: (accountId: string) => Promise<QwenAiBrowserStatus>
+  screenshot: (accountId: string) => Promise<Blob>
+  drag: (
+    accountId: string,
+    points: Array<{ x: number; y: number; delayMs?: number }>,
+  ) => Promise<QwenAiBrowserStatus>
+}
+
+type ZaiBrowserAPI = QwenAiBrowserAPI
+
 interface OAuthAPI {
   bookmarklet: {
     issue: (providerId: string, providerType: string) => Promise<{
@@ -521,6 +541,8 @@ interface ElectronAPI {
   store: StoreAPI
   providers: ProvidersAPI
   accounts: AccountsAPI
+  qwenAiBrowser: QwenAiBrowserAPI
+  zaiBrowser: ZaiBrowserAPI
   oauth: OAuthAPI
   browserImport: BrowserImportAPI
   logs: LogsAPI

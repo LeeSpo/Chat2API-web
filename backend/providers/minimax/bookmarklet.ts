@@ -5,8 +5,13 @@ export const minimaxBookmarklet: ProviderTokenSpec = {
   tokenKey: '_token',
   tokenField: 'token',
   extras: [
-    { sourceKey: '_userId', field: 'realUserID', required: true },
+    {
+      sourceKey: '_userId',
+      sourceKeys: ['user_detail_agent'],
+      field: 'realUserID',
+      valueEncoding: 'json-id-or-raw',
+    },
   ],
   originLabel: 'MiniMax',
-  expectedOrigin: 'https://chat.minimaxi.com',
+  expectedOrigin: 'https://agent.minimaxi.com',
 }

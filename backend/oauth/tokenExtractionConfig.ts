@@ -82,6 +82,10 @@ export const TOKEN_EXTRACTION_CONFIGS: Record<ProviderType, TokenExtractionConfi
         type: 'cookie',
         key: 'chatglm_refresh_token',
       },
+      {
+        type: 'localStorage',
+        key: 'chatglm_refresh_token',
+      },
     ],
     targetDomains: ['.chatglm.cn', 'chatglm.cn'],
     successUrlPatterns: [/chatglm\.cn/i],

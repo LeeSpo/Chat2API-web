@@ -3825,7 +3825,7 @@ export class RequestForwarder {
       const transformed = this.transformRequestForPromptToolUse(request, provider)
       
       const adapter = new ZaiAdapter(provider, account)
-      const { response, chatId, requestId } = await adapter.chatCompletion({
+      const runCompletion = async (forceCaptchaMint: boolean) => adapter.chatCompletion({
         model: actualModel,
         originalModel: request.model,
         messages: transformed.messages as any,
@@ -3833,7 +3833,10 @@ export class RequestForwarder {
         temperature: request.temperature,
         web_search: request.web_search,
         reasoning_effort: toThreeLevelReasoningEffort(request.reasoning_effort),
+        forceCaptchaMint,
       })
+
+      let { response, chatId } = await runCompletion(false)
 
       const latency = Date.now() - startTime
 
@@ -3874,27 +3877,52 @@ export class RequestForwarder {
         }
       }
 
-      const result = await handler.handleNonStream(response.data)
-
-      this.applyToolCallsToResponse(result, transformed)
-      
-      if (deleteChatCallback) {
-        await deleteChatCallback(chatId)
-      }
-
-      return {
-        success: true,
-        status: response.status,
-        headers: this.extractHeaders(response.headers),
-        body: result,
-        latency,
-        providerSessionId: chatId,
+      try {
+        const result = await handler.handleNonStream(response.data)
+        this.applyToolCallsToResponse(result, transformed)
+        if (deleteChatCallback) {
+          await deleteChatCallback(chatId)
+        }
+        return {
+          success: true,
+          status: response.status,
+          headers: this.extractHeaders(response.headers),
+          body: result,
+          latency,
+          providerSessionId: chatId,
+        }
+      } catch (error) {
+        const code = error && typeof error === 'object' ? (error as { code?: string }).code : undefined
+        if (code !== 'frontend_captcha_required') throw error
+        adapter.invalidateCaptcha()
+        const retried = await runCompletion(true)
+        chatId = retried.chatId
+        response = retried.response
+        handler.setChatId(chatId)
+        const result = await handler.handleNonStream(response.data)
+        this.applyToolCallsToResponse(result, transformed)
+        if (deleteChatCallback) {
+          await deleteChatCallback(chatId)
+        }
+        return {
+          success: true,
+          status: response.status,
+          headers: this.extractHeaders(response.headers),
+          body: result,
+          latency: Date.now() - startTime,
+          providerSessionId: chatId,
+        }
       }
     } catch (error) {
       const latency = Date.now() - startTime
+      const mapped = error && typeof error === 'object'
+        ? error as { message?: string; code?: string; status?: number }
+        : undefined
       return {
         success: false,
+        status: mapped?.status || 500,
         error: error instanceof Error ? error.message : 'Unknown error',
+        errorCode: mapped?.code,
         latency,
       }
     }

@@ -5,6 +5,7 @@
 
 import axios from 'axios'
 import { BaseOAuthAdapter } from '../../oauth/adapters/base'
+import { resolveGlmRefreshToken } from './credentials'
 import { getRuntime } from '../../runtime'
 import {
   OAuthResult,
@@ -134,7 +135,9 @@ export class GLMAdapter extends BaseOAuthAdapter {
         providerId,
         providerType: 'glm',
         credentials: {
+          refresh_token: refreshToken,
           refreshToken,
+          token: refreshToken,
           accessToken: tokens.value,
         },
         accountInfo: validation.accountInfo,
@@ -163,7 +166,7 @@ export class GLMAdapter extends BaseOAuthAdapter {
    * Validate token validity
    */
   async validateToken(credentials: Record<string, string>): Promise<TokenValidationResult> {
-    const refreshToken = credentials.chatglm_refresh_token || credentials.refreshToken || credentials.refresh_token || credentials.token
+    const refreshToken = resolveGlmRefreshToken(credentials)
     
     if (!refreshToken) {
       return {
@@ -295,7 +298,7 @@ export class GLMAdapter extends BaseOAuthAdapter {
    * Get new access_token using refresh_token
    */
   async refreshToken(credentials: Record<string, string>): Promise<CredentialInfo | null> {
-    const refreshToken = credentials.refreshToken || credentials.token
+    const refreshToken = resolveGlmRefreshToken(credentials)
     
     if (!refreshToken) {
       return null

@@ -255,7 +255,7 @@ router.post('/ingest', async (ctx: Context) => {
     const stringCredentials = Object.fromEntries(
       Object.entries(creds).filter(([, value]): value is string => typeof value === 'string'),
     )
-    const result = ticket.providerType === 'qwen-ai'
+    const result = ticket.providerType === 'qwen-ai' || ticket.providerType === 'mimo'
       ? await adapter.loginWithToken(ticket.providerId, token, stringCredentials)
       : await adapter.loginWithToken(
         ticket.providerId,

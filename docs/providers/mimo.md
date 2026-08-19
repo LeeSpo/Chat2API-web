@@ -25,6 +25,8 @@
 ## 教程
 
 1. 登录 `aistudio.xiaomimimo.com`。
-2. 打开 DevTools -> Application -> Cookies，复制 `serviceToken`、`userId`、`xiaomichatbot_ph`。
-3. 在供应商管理中添加 Mimo 账号并填写三项凭据。
-4. 使用 `MiMo-V2.5-Pro` 作为首选验证模型。
+2. 打开 DevTools -> Network，在 MiMo Chat 中发送一句短消息。
+3. 选中 `/open-apis/bot/chat` 请求，使用 Copy -> Copy as cURL。
+4. 在供应商管理的 OAuth 登录页粘贴 cURL 并导入。当前官网使用 `xiaomichatbot_serviceToken`、`userId`、`xiaomichatbot_ph`，导入器也兼容旧的 `serviceToken` 名称。
+5. MiMo 的认证 Cookie 无法被页面 JavaScript 稳定读取，因此不使用书签脚本导入。
+6. 使用 `MiMo-V2.5-Pro` 作为首选验证模型。

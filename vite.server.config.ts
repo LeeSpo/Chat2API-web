@@ -16,6 +16,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         'server/index': resolve(__dirname, 'backend/index.ts'),
+        'server/qwenBrowserSidecar': resolve(__dirname, 'backend/qwenBrowserSidecar.ts'),
         'server/bootstrapConfig': resolve(__dirname, 'backend/bootstrapConfig.ts'),
         'main/runtime/nodeRuntime': resolve(__dirname, 'backend/runtime/nodeRuntime.ts'),
         'main/store/storage/nodeJsonStore': resolve(__dirname, 'backend/store/storage/nodeJsonStore.ts'),

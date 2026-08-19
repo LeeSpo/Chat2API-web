@@ -18,6 +18,7 @@ import {
   createBaseChunk,
 } from '../../proxy/utils/streamToolHandler'
 import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles'
+import { resolveGlmRefreshToken } from './credentials'
 import { ToolStreamParser } from '../../proxy/toolCalling/ToolStreamParser'
 import type { ToolCallingPlan } from '../../proxy/toolCalling/types'
 
@@ -115,8 +116,7 @@ export class GLMAdapter {
   }
 
   private getRefreshToken(): string {
-    const credentials = this.account.credentials
-    return credentials.refresh_token || credentials.token || ''
+    return resolveGlmRefreshToken(this.account.credentials)
   }
 
   private async acquireToken(): Promise<string> {
