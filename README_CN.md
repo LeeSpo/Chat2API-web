@@ -41,7 +41,7 @@ Chat2API 是一个跨平台桌面应用和无 Electron 服务端。它将基于 
 | GLM | Refresh Token | `GLM-5.1` |
 | Kimi | JWT / Web Token | `Kimi-K2.6`、`Kimi-K3` |
 | MiniMax | JWT | `MiniMax-M2.7` |
-| Mimo | 浏览器 Cookie | `MiMo-V2.5-Pro`、`MiMo-V2.5`、`MiMo-V2-Flash` |
+| Mimo | 浏览器 Cookie | `MiMo-V2.5-Pro`、`MiMo-V2.5`、`MiMo-V2-Flash`（兼容别名，实际使用 `MiMo-V2.5`） |
 | Perplexity | Session Cookie | `Auto` |
 | Qwen（国内版） | SSO Ticket | `Qwen3.6`、`Qwen3.7-Max`、`Qwen3.5-Flash`、`Qwen3-Max`、`Qwen3-Max-Thinking-Preview`、`Qwen3-Coder` |
 | Qwen AI（国际版） | JWT，可选 Cookie 和登录凭证 | `Qwen3.8-Max`、`Qwen3.8-Max_Fast`、`Qwen3.8-Max_Auto`、`Qwen3.8-Max_Thinking`、`Qwen3.7-Plus`、`Qwen3.7-Max` |
@@ -105,7 +105,7 @@ docker compose up -d --build
 CHAT2API_IMAGE=ghcr.io/leespo/chat2api-web:latest docker compose up -d
 ```
 
-打开 `http://localhost:8080/`，首次启动时创建管理员密码。也可以在 `.env` 中设置 `CHAT2API_MANAGEMENT_SECRET` 跳过首次设置。详见 [DEPLOYMENT.md](DEPLOYMENT.md) 和 [Docker 指南](docs/docker.md)。
+打开 `http://localhost:8080/`，首次启动时创建管理员密码。也可以在 `.env` 中设置 `CHAT2API_MANAGEMENT_SECRET` 跳过首次设置。详见 [DEPLOYMENT.md](DEPLOYMENT.md)、[Docker 指南](docs/docker.md) 和 [当前服务器运维指南](DOCKER_GUIDE_CN.md)。
 
 ## 快速开始
 

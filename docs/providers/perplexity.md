@@ -18,6 +18,8 @@
 
 已适配：Free 用户 Auto 模型、搜索增强对话、流式响应、非流式响应、账号级清理对话记录。
 
+Electron 桌面版使用 Chromium 网络栈。Node/Docker 服务端可能因 Cloudflare TLS 指纹校验返回 403，因此 Docker 部署不保证原生大写 `Auto` 可用。当前服务器将客户端使用的小写 `auto` 映射到 DeepSeek 的 `deepseek-v4-flash`。
+
 后续验证：官网模型代号、搜索来源字段、回答引用字段。
 
 ## 教程

@@ -199,7 +199,10 @@ function stripCitationsWithBuffer(text: string, buffer: { value: string }): stri
     buffer.value = ''
   }
   
-  return cleaned.replace(/\s+/g, ' ').trim()
+  // MiMo streams token deltas whose leading whitespace belongs to the token
+  // boundary (for example "The", " user", " is"). Trimming each delta
+  // joins otherwise valid words when OpenAI clients concatenate the stream.
+  return cleaned
 }
 
 function stripThinkTags(text: string): string {

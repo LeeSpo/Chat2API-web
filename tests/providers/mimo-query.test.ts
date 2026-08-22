@@ -5,6 +5,26 @@ import { Readable } from 'node:stream'
 import { buildMimoQuery, MimoStreamHandler } from '../../backend/providers/mimo/adapter.ts'
 import { ToolCallingEngine } from '../../backend/proxy/toolCalling/ToolCallingEngine.ts'
 
+async function collectOpenAiDeltas(stream: AsyncIterable<string>): Promise<{
+  content: string
+  reasoningContent: string
+}> {
+  let content = ''
+  let reasoningContent = ''
+
+  for await (const chunk of stream) {
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data:') || line.trim() === 'data: [DONE]') continue
+      const payload = JSON.parse(line.slice(5).trim())
+      const delta = payload.choices?.[0]?.delta || {}
+      content += delta.content || ''
+      reasoningContent += delta.reasoning_content || ''
+    }
+  }
+
+  return { content, reasoningContent }
+}
+
 test('Mimo query includes injected tool prompt and the user request', () => {
   const query = buildMimoQuery([
     {
@@ -163,4 +183,21 @@ test('Mimo stream reports a managed tool-result wrapper as a protocol error', as
       error.status === 502 && error.code === 'managed_tool_result_wrapper_leak'
     ),
   )
+})
+
+test('Mimo stream preserves whitespace between reasoning token deltas', async () => {
+  const stream = Readable.from([
+    'event: message\n',
+    'data: {"content":"<think>\\u0000The"}\n\n',
+    'event: message\n',
+    'data: {"content":" user is"}\n\n',
+    'event: message\n',
+    'data: {"content":" thinking.\\n\\nNext paragraph.</think>Answer"}\n\n',
+  ])
+  const handler = new MimoStreamHandler('mimo-v2.5-pro', 'conv_whitespace', 'separate')
+
+  const result = await collectOpenAiDeltas(handler.handleStream(stream))
+
+  assert.equal(result.reasoningContent, 'The user is thinking.\n\nNext paragraph.')
+  assert.equal(result.content, 'Answer')
 })

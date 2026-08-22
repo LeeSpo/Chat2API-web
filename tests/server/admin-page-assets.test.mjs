@@ -17,4 +17,13 @@ test('docker admin uses the existing React renderer instead of the lightweight s
 
   assert.match(serverSource, /mountWebAdminAssets/)
   assert.doesNotMatch(serverSource, /mountAdminAssets/)
+
+  const assetMountIndex = serverSource.indexOf('mountWebAdminAssets(this.app)')
+  const apiKeyMiddlewareIndex = serverSource.indexOf('// API Key validation middleware')
+  assert.ok(assetMountIndex >= 0)
+  assert.ok(apiKeyMiddlewareIndex >= 0)
+  assert.ok(
+    assetMountIndex < apiKeyMiddlewareIndex,
+    'web assets must be mounted before API-key validation',
+  )
 })

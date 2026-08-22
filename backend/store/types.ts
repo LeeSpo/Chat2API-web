@@ -912,6 +912,11 @@ export const DEFAULT_REQUEST_LOG_CONFIG: RequestLogConfig = {
 }
 
 export const DEFAULT_DEEPSEEK_MODEL_MAPPINGS: Record<string, ModelMapping> = {
+  auto: {
+    requestModel: 'auto',
+    actualModel: 'deepseek-v4-flash',
+    preferredProviderId: 'deepseek',
+  },
   'deepseek-v4-flash-think': {
     requestModel: 'deepseek-v4-flash-think',
     actualModel: 'deepseek-v4-flash',

@@ -202,6 +202,11 @@ export class ProxyServer {
       textLimit: '50mb',
     }))
 
+    // Serve the web admin before API-key validation. The SPA shell, static
+    // assets, and client-side routes are public; its management requests use
+    // the separate management authentication middleware.
+    mountWebAdminAssets(this.app)
+
     // API Key validation middleware
     this.app.use(async (ctx, next) => {
       // Skip paths that don't require authentication
@@ -307,8 +312,6 @@ export class ProxyServer {
    * Setup routes
    */
   private setupRoutes(): void {
-    mountWebAdminAssets(this.app)
-
     // Register OpenAI API routes
     for (const route of routes) {
       this.router.use(route.routes())

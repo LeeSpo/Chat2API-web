@@ -13,6 +13,7 @@ import { resolveDeepSeekChatOptions } from '../../proxy/adapters/providerModelOp
 import { getProviderToolProfile } from '../../proxy/toolCalling/providerProfiles'
 import {
   createDeepSeekWebHeaders,
+  getDeepSeekCompletionFailure,
   getDeepSeekTokenValidationError,
   normalizeDeepSeekUserToken,
 } from './credentials'
@@ -53,6 +54,43 @@ interface ChatCompletionRequest {
 
 const tokenCache = new Map<string, TokenInfo>()
 const sessionCache = new Map<string, { sessionId: string; createdAt: number }>()
+const MAX_JSON_COMPLETION_BYTES = 64 * 1024
+
+class DeepSeekCompletionResponseError extends Error {
+  readonly status: number
+  readonly code: string
+  readonly retryable: boolean
+  readonly accountFault: boolean
+  readonly retryScope?: 'next-account'
+  readonly muteUntil?: number
+
+  constructor(failure: ReturnType<typeof getDeepSeekCompletionFailure>) {
+    super(failure.message)
+    this.name = 'DeepSeekCompletionResponseError'
+    this.status = failure.status
+    this.code = failure.code
+    this.retryable = failure.retryable
+    this.accountFault = failure.accountFault
+    this.retryScope = failure.retryScope
+    this.muteUntil = failure.muteUntil
+  }
+}
+
+async function readBoundedResponseBody(stream: NodeJS.ReadableStream): Promise<string> {
+  const chunks: Buffer[] = []
+  let totalBytes = 0
+
+  for await (const chunk of stream) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk))
+    totalBytes += buffer.length
+    if (totalBytes > MAX_JSON_COMPLETION_BYTES) {
+      throw new Error('DeepSeek JSON completion response exceeded the size limit.')
+    }
+    chunks.push(buffer)
+  }
+
+  return Buffer.concat(chunks).toString('utf8')
+}
 
 function generateRandomString(length: number, charset: string = 'alphanumeric'): string {
   const sets = {
@@ -379,6 +417,20 @@ export class DeepSeekAdapter {
         responseType: 'stream',
       }
     )
+
+    const contentType = String(response.headers?.['content-type'] || '').toLowerCase()
+    if (contentType.includes('application/json')) {
+      const responseText = await readBoundedResponseBody(response.data)
+      let payload: unknown
+      try {
+        payload = JSON.parse(responseText)
+      } catch {
+        payload = null
+      }
+      throw new DeepSeekCompletionResponseError(
+        getDeepSeekCompletionFailure(response.status, payload),
+      )
+    }
 
     return { response, sessionId }
   }

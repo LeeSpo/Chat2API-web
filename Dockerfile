@@ -4,7 +4,7 @@ ARG NODE_IMAGE=node:22-alpine
 FROM ${NODE_IMAGE} AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,id=chat2api-npm-dev,target=/root/.npm,sharing=locked \
     npm ci --ignore-scripts --no-audit --no-fund && \
     npm rebuild esbuild
 
@@ -108,9 +108,8 @@ ENV QWEN_AI_FILE_PARSE_POLL_INTERVAL_MS=2000
 ENV QWEN_AI_FILE_PARSE_TIMEOUT_MS=120000
 ENV QWEN_AI_OSS_STS_REFRESH_INTERVAL_MS=240000
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev --ignore-scripts --no-audit --no-fund && \
-    npm cache clean --force
+RUN --mount=type=cache,id=chat2api-npm-prod,target=/root/.npm,sharing=locked \
+    npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 COPY --from=build /app/out-server ./out-server
 COPY --from=build /app/out-admin ./out-admin
 COPY --from=build /app/sha3_wasm_bg.7b9ca65ddd.wasm ./sha3_wasm_bg.7b9ca65ddd.wasm

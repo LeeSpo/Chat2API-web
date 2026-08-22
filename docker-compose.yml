@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     stop_grace_period: ${CHAT2API_STOP_GRACE_PERIOD:-10m}
     ports:
-      - "8080:8080"
+      - "127.0.0.1:${API_HOST_PORT:-8080}:8080"
     environment:
       HOST: "0.0.0.0"
       PORT: "8080"
@@ -17,10 +17,14 @@ services:
       CHAT2API_MANAGEMENT_SECRET: "${CHAT2API_MANAGEMENT_SECRET:-}"
       CHAT2API_ENCRYPTION_KEY: "${CHAT2API_ENCRYPTION_KEY:-${CHAT2API_STORAGE_ENCRYPTION_KEY:-}}"
       CHAT2API_QWEN_AI_BROWSER_MODE: "${CHAT2API_QWEN_AI_BROWSER_MODE:-off}"
+      CHAT2API_ZAI_BROWSER_MODE: "${CHAT2API_ZAI_BROWSER_MODE:-off}"
       QWEN_AI_BROWSER_SIDECAR_URL: "http://qwen-browser:3000"
       QWEN_AI_BROWSER_SIDECAR_SECRET: "${QWEN_AI_BROWSER_SIDECAR_SECRET:-chat2api-qwen-browser-internal}"
     volumes:
       - chat2api-data:/data
+    networks:
+      - default
+      - litellm-shared
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
       interval: 15s
@@ -53,4 +57,10 @@ services:
 
 volumes:
   chat2api-data:
+    name: chat2api-data
   qwen-browser-data:
+
+networks:
+  litellm-shared:
+    external: true
+    name: 1panel-network

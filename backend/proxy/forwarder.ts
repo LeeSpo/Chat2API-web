@@ -1856,10 +1856,22 @@ export class RequestForwarder {
       }
     } catch (error) {
       const latency = Date.now() - startTime
+      const details = error && typeof error === 'object'
+        ? error as {
+            code?: unknown
+            retryable?: unknown
+            accountFault?: unknown
+            retryScope?: unknown
+          }
+        : {}
       return {
         success: false,
         status: statusFromError(error),
         error: error instanceof Error ? error.message : 'Unknown error',
+        errorCode: typeof details.code === 'string' ? details.code : undefined,
+        retryable: typeof details.retryable === 'boolean' ? details.retryable : undefined,
+        accountFault: typeof details.accountFault === 'boolean' ? details.accountFault : undefined,
+        retryScope: details.retryScope === 'next-account' ? 'next-account' : undefined,
         latency,
       }
     }

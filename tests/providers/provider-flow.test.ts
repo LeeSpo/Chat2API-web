@@ -548,7 +548,7 @@ test('Mimo model names and conversation flow match Xiaomi AI Studio web requests
   assert.deepEqual(mimoConfig.supportedModels, ['MiMo-V2.5-Pro', 'MiMo-V2.5', 'MiMo-V2-Flash'])
   assert.equal(mimoConfig.modelMappings?.['MiMo-V2.5-Pro'], 'mimo-v2.5-pro')
   assert.equal(mimoConfig.modelMappings?.['MiMo-V2.5'], 'mimo-v2.5')
-  assert.equal(mimoConfig.modelMappings?.['MiMo-V2-Flash'], 'mimo-v2-flash')
+  assert.equal(mimoConfig.modelMappings?.['MiMo-V2-Flash'], 'mimo-v2.5')
 
   const forwarderSource = readFileSync(
     join(root, 'backend/proxy/forwarder.ts'),

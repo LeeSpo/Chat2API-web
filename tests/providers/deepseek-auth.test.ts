@@ -5,6 +5,7 @@ import { buildBookmarkletSource } from '../../backend/oauth/bookmarkletScript'
 import { deepseekBookmarklet } from '../../backend/providers/deepseek/bookmarklet'
 import {
   createDeepSeekWebHeaders,
+  getDeepSeekCompletionFailure,
   getDeepSeekTokenValidationError,
   getDeepSeekUserData,
   normalizeDeepSeekUserToken,
@@ -91,6 +92,31 @@ test('maps DeepSeek invalid-token and malformed-account responses to actionable 
   const valid = { code: 0, data: { biz_code: 0, biz_data: { id: 'account-id' } } }
   assert.equal(getDeepSeekTokenValidationError(200, valid), null)
   assert.deepEqual(getDeepSeekUserData(valid), { id: 'account-id' })
+})
+
+test('maps DeepSeek HTTP 200 muted completion envelopes to an actionable 429 failure', () => {
+  const failure = getDeepSeekCompletionFailure(200, {
+    code: 0,
+    msg: '',
+    data: {
+      biz_code: 5,
+      biz_msg: 'user is muted',
+      biz_data: {
+        is_muted: 1,
+        mute_until: 1787667202.641,
+      },
+    },
+  })
+
+  assert.deepEqual(failure, {
+    status: 429,
+    code: 'deepseek_user_muted',
+    message: 'DeepSeek account is temporarily muted until 2026-08-25T14:13:22.641Z.',
+    retryable: false,
+    accountFault: true,
+    retryScope: 'next-account',
+    muteUntil: 1787667202.641,
+  })
 })
 
 test('uses the current public DeepSeek client header contract', () => {

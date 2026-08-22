@@ -34,7 +34,9 @@ export const mimoConfig: BuiltinProviderConfig = {
   modelMappings: {
     'MiMo-V2.5-Pro': 'mimo-v2.5-pro',
     'MiMo-V2.5': 'mimo-v2.5',
-    'MiMo-V2-Flash': 'mimo-v2-flash',
+    // Xiaomi retired the legacy V2 Flash route on 2026-06-30. Keep the
+    // public name as a compatibility alias for existing API clients.
+    'MiMo-V2-Flash': 'mimo-v2.5',
   },
   credentialFields: [
     {
